@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de usuario - ReviewStar</title>
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:to-black min-h-screen text-white font-[Poppins]">
+
+  <!-- Navbar -->
+  <nav class="flex justify-between items-center p-4 bg-black/30 backdrop-blur-sm">
+    <h1 class="text-2xl font-semibold">Mis Reseñas ⭐</h1>
+    <div class="flex gap-4 items-center">
+      <button id="nuevaReseñaBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">+ Nueva</button>
+      <button id="themeToggle" class="text-xl">🌙</button>
+      <button onclick="logout()" class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded">Salir</button>
+    </div>
+  </nav>
+
+  <main class="p-6">
+    <section id="misReseñas" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modalReseña" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center">
+    <div class="bg-gray-900 rounded-lg p-6 w-full max-w-lg relative">
+      <h3 id="modalTitulo" class="text-xl font-semibold mb-4">Nueva reseña</h3>
+      <form id="reseñaForm" class="space-y-4">
+        <div>
+          <label class="block mb-1">Título</label>
+          <input id="titulo" type="text" required class="w-full p-2 rounded bg-gray-700 focus:outline-none">
+        </div>
+        <div>
+          <label class="block mb-1">Descripción</label>
+          <textarea id="contenido" rows="4" required class="w-full p-2 rounded bg-gray-700 focus:outline-none"></textarea>
+        </div>
+        <div>
+          <label class="block mb-1">URL de imagen (opcional)</label>
+          <input id="imagenUrl" type="url" placeholder="https://..." class="w-full p-2 rounded bg-gray-700 focus:outline-none">
+        </div>
+        <div>
+          <label class="block mb-1">Calificación (1–10)</label>
+          <input id="ratingInput" type="number" min="1" max="10" required class="w-20 p-2 rounded bg-gray-700 focus:outline-none">
+        </div>
+        <div class="flex justify-end gap-4 pt-2">
+          <button type="button" id="cancelarBtn" class="px-3 py-2 bg-gray-600 rounded">Cancelar</button>
+          <button type="submit" class="px-3 py-2 bg-blue-600 rounded hover:bg-blue-700">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+  <script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = "./index.html";
+    }
+  </script>
+</body>
+</html>
