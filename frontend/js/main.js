@@ -4,7 +4,7 @@
 import { initPublicReviews } from './reviews.js';
 import { initDashboard } from './reviews.js';
 
-// --- Efectos de scroll (animaciones al aparecer) --- //
+// --- Efectos de scroll (animaciones al aparecer/desaparecer) --- //
 function initScrollAnimations() {
   const animatedElements = document.querySelectorAll(".fade-up, .fade-in, .scale-in");
 
@@ -13,7 +13,8 @@ function initScrollAnimations() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
-          observer.unobserve(entry.target); // mejora rendimiento
+        } else {
+          entry.target.classList.remove("visible");
         }
       });
     },
@@ -38,5 +39,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     await initDashboard();
   }
 
-  // Si estamos en login/register, no hacemos nada aquí (esas páginas importan auth.js directamente)
+  // Para login/register, no hacemos nada aquí; esas páginas manejan sus propias animaciones
 });

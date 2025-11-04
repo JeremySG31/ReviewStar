@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
   .brand {
-    background: linear-gradient(to right,#22d3ee,#3b82f6);
+    background: linear-gradient(to right,#3b82f6,#22d3ee);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -23,20 +23,26 @@
     100% { transform: translateY(0) scale(1); }
   }
   .bounce-fade { animation: bounceFade 0.8s ease forwards; }
+
+  /* Quitar el ojo nativo del navegador */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-webkit-password-toggle-button {
+      display: none;
+  }
 </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen flex items-center justify-center text-white font-[Poppins]">
 
-<main class="bg-black/20 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full max-w-sm bounce-fade">
+<main class="bg-black/20 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full max-w-sm bounce-fade relative">
   <div class="text-center mb-6">
     <a href="./index.html" class="text-2xl brand">ReviewStar ⭐</a>
   </div>
 
-  <h2 class="text-xl font-semibold mb-4 text-center fade-up">Crear cuenta</h2>
+  <h2 class="text-xl font-semibold mb-4 text-center fade-up">Registrarse</h2>
 
-  <form id="registerForm" class="space-y-4 fade-up">
+  <form id="registerForm" class="space-y-4 fade-up relative">
     <div class="fade-up">
-      <label for="nombre" class="block mb-1 text-sm text-gray-300">Nombre de usuario</label>
+      <label for="nombre" class="block mb-1 text-sm text-gray-300">Nombre</label>
       <input id="nombre" type="text" required
         class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
     </div>
@@ -47,15 +53,21 @@
         class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
     </div>
 
-    <div class="fade-up">
+    <div class="fade-up relative">
       <label for="contrasenia" class="block mb-1 text-sm text-gray-300">Contraseña</label>
-      <input id="contrasenia" type="password" required
-        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+      <div class="relative">
+        <input id="contrasenia" type="password" required
+          class="w-full p-2.5 pr-10 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+        <!-- Ojo blanco al lado derecho -->
+        <button type="button" id="togglePassword" class="absolute right-2 top-1/2 -translate-y-1/2 text-white">
+          👁️
+        </button>
+      </div>
     </div>
 
     <button type="submit"
-      class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition button-click">
-      Registrarme
+    class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition button-click">
+    Registrarme
     </button>
 
     <p class="text-center text-sm text-gray-400 mt-3 fade-up">
@@ -73,6 +85,14 @@
     });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Toggle password
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('contrasenia');
+  togglePassword.addEventListener('click', () => {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+  });
 </script>
 
 </body>

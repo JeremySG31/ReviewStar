@@ -5,27 +5,21 @@
   0% { opacity: 0; transform: translateY(40px); }
   100% { opacity: 1; transform: translateY(0); }
 }
-.animate-fadeUp {
-  animation: fadeUp 0.8s ease forwards;
-}
+.animate-fadeUp { animation: fadeUp 0.8s ease forwards; }
 
 /* Fade In */
 @keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
-.animate-fadeIn {
-  animation: fadeIn 1s ease forwards;
-}
+.animate-fadeIn { animation: fadeIn 1s ease forwards; }
 
 /* Scale In */
 @keyframes scaleIn {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }
 }
-.animate-scaleIn {
-  animation: scaleIn 0.8s ease forwards;
-}
+.animate-scaleIn { animation: scaleIn 0.8s ease forwards; }
 
 /* ------------------- Login/Register ------------------- */
 
@@ -35,9 +29,7 @@
   20%, 60% { transform: translateX(-5px); }
   40%, 80% { transform: translateX(5px); }
 }
-.shake {
-  animation: shake 0.4s;
-}
+.shake { animation: shake 0.4s; }
 
 /* Pulse al click */
 @keyframes pulse-click {
@@ -45,9 +37,7 @@
   50% { transform: scale(0.95); }
   100% { transform: scale(1); }
 }
-.button-click:active {
-  animation: pulse-click 0.2s;
-}
+.button-click:active { animation: pulse-click 0.2s; }
 
 /* Toasts */
 @keyframes toastIn {
@@ -58,12 +48,8 @@
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-20px); }
 }
-.toast-show {
-  animation: toastIn 0.4s forwards;
-}
-.toast-hide {
-  animation: toastOut 0.4s forwards;
-}
+.toast-show { animation: toastIn 0.4s forwards; }
+.toast-hide { animation: toastOut 0.4s forwards; }
 
 /* ------------------- Index especiales ------------------- */
 
