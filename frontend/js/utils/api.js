@@ -1,7 +1,7 @@
 // Funciones para comunicar el frontend con el backend (REST API).
 // Ajusta API_BASE si tu servidor no corre en localhost:4000
 
-export const API_BASE = 'http://localhost:4000/api';
+export const API_BASE = 'http://localhost:5000/api';
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token');
