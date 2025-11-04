@@ -12,56 +12,63 @@ import { createReviewCard } from './utils/dom.js';
 import { validateReviewPayload } from './utils/validation.js';
 
 // Selectores esperados en los HTML
-const PUBLIC_LIST_ID = 'reseñas';      // en index.html
-const DASHBOARD_LIST_ID = 'misReseñas';// en dashboard.html
-const MODAL_ID = 'modalReseña';        // modal para crear/editar en dashboard
+const PUBLIC_LIST_ID = 'reseñas';       // en index.html
+const DASHBOARD_LIST_ID = 'misReseñas'; // en dashboard.html
+const MODAL_ID = 'modalReseña';         // modal para crear/editar en dashboard
 const FORM_ID = 'reseñaForm';
 
 let editingId = null; // id actual en edición (si aplica)
 
+// Inicializa reseñas públicas en index.html
 export async function initPublicReviews() {
   const container = document.getElementById(PUBLIC_LIST_ID);
   if (!container) return;
+
   try {
     const reviews = await apiGetReviews();
     renderList(container, reviews, false);
   } catch (err) {
     console.error(err);
-    container.innerHTML = '<div class="text-center text-red-400">No se pudieron cargar las reseñas.</div>';
+    container.innerHTML = `
+      <div class="text-center text-red-400">
+        No se pudieron cargar las reseñas.
+      </div>`;
   }
 }
 
+// Inicializa el dashboard del usuario (CRUD)
 export async function initDashboard() {
   const container = document.getElementById(DASHBOARD_LIST_ID);
   const modal = document.getElementById(MODAL_ID);
   if (!container) return;
 
-  // cargar mis reseñas
+  // Cargar reseñas del usuario
   await refreshMyReviews(container);
 
-  // botones: nueva reseña
+  // Botón nueva reseña
   const nuevaBtn = document.getElementById('nuevaReseñaBtn');
   if (nuevaBtn) nuevaBtn.addEventListener('click', () => openModal());
 
-  // form submit
+  // Formulario de reseña
   const form = document.getElementById(FORM_ID);
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       await submitReviewForm(form, container, modal);
     });
-    // cancelar
+
     const cancelar = document.getElementById('cancelarBtn');
     if (cancelar) cancelar.addEventListener('click', () => closeModal(modal));
   }
 
-  // delegación para editar / eliminar
+  // Delegación de eventos para editar / eliminar
   container.addEventListener('click', async (e) => {
     const editBtn = e.target.closest('.btn-edit');
     const delBtn = e.target.closest('.btn-delete');
+
     if (editBtn) {
       const id = editBtn.dataset.id;
-      openModal(id); // carga datos en el modal
+      openModal(id);
     } else if (delBtn) {
       const id = delBtn.dataset.id;
       if (confirm('¿Eliminar reseña?')) {
@@ -72,72 +79,84 @@ export async function initDashboard() {
   });
 }
 
+// Refresca reseñas del usuario logueado
 async function refreshMyReviews(container) {
   try {
     const reviews = await apiGetMyReviews();
     renderList(container, reviews, true);
   } catch (err) {
     console.error(err);
-    container.innerHTML = '<div class="text-center text-red-400">No se pudieron cargar tus reseñas.</div>';
+    container.innerHTML = `
+      <div class="text-center text-red-400">
+        No se pudieron cargar tus reseñas.
+      </div>`;
   }
 }
 
+// Renderiza lista de reseñas (públicas o privadas)
 function renderList(container, reviews, controls = false) {
-  if (!reviews || !reviews.length) {
-    container.innerHTML = '<div class="text-center text-gray-400">No hay reseñas aún.</div>';
+  if (!reviews || reviews.length === 0) {
+    container.innerHTML = `
+      <div class="text-center text-gray-400">
+        No hay reseñas aún.
+      </div>`;
     return;
   }
-  container.innerHTML = reviews.map(r => {
-    return `<div>${createReviewCard(r, { controls })}</div>`;
-  }).join('');
+
+  // ✅ Se usa join seguro y sin expresiones ambiguas
+  let html = '';
+  for (const r of reviews) {
+    html += createReviewCard(r, { controls });
+  }
+  container.innerHTML = html;
 }
 
+// Abre modal para crear o editar reseña
 async function openModal(editId) {
   editingId = null;
   const modal = document.getElementById(MODAL_ID);
   const form = document.getElementById(FORM_ID);
   if (!form || !modal) return;
+
   form.reset();
 
   if (editId) {
-    // cargar datos del backend (aquí asumimos que apiGetMyReviews devuelve lista; mejor: endpoint /reseñas/:id)
     const my = await apiGetMyReviews();
-    const item = my.find(x => x._id === editId);
+    const item = my.find((x) => x._id === editId);
     if (item) {
       form.querySelector('#titulo').value = item.titulo || item.title || '';
       form.querySelector('#contenido').value = item.descripcion || item.description || '';
       form.querySelector('#imagenUrl').value = item.imagenURL || item.image || '';
-      form.querySelector('#ratingInput')?.value = item.calificacion || item.rating || '';
+      const ratingInput = form.querySelector('#ratingInput');
+      if (ratingInput) ratingInput.value = item.calificacion || item.rating || '';
       editingId = editId;
-      document.getElementById('modalTitulo').textContent = 'Editar reseña';
+      const titleEl = document.getElementById('modalTitulo');
+      if (titleEl) titleEl.textContent = 'Editar reseña';
     }
   } else {
-    document.getElementById('modalTitulo').textContent = 'Nueva reseña';
+    const titleEl = document.getElementById('modalTitulo');
+    if (titleEl) titleEl.textContent = 'Nueva reseña';
   }
 
   modal.classList.remove('hidden');
 }
 
+// Cierra modal
 function closeModal(modal) {
   if (!modal) modal = document.getElementById(MODAL_ID);
   if (modal) modal.classList.add('hidden');
   editingId = null;
 }
 
+// Envía formulario (crear o editar)
 async function submitReviewForm(form, container, modal) {
-  // obtener datos del formulario (nombres en el HTML)
   const titulo = form.querySelector('#titulo')?.value.trim();
   const descripcion = form.querySelector('#contenido')?.value.trim();
   const imagenURL = form.querySelector('#imagenUrl')?.value.trim();
   const calificacionRaw = form.querySelector('#ratingInput')?.value;
   const calificacion = calificacionRaw ? Number(calificacionRaw) : 0;
 
-  const payload = {
-    titulo,
-    descripcion,
-    imagenURL,
-    calificacion
-  };
+  const payload = { titulo, descripcion, imagenURL, calificacion };
 
   const valid = validateReviewPayload(payload);
   if (!valid.ok) {

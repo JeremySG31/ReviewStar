@@ -1,11 +1,56 @@
-/* Animaciones suaves y elegantes para secciones */
-.fade-section {
+/* animations.css */
+
+/* --- Animaciones suaves --- */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Clases para aplicar --- */
+.fade-up {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(40px);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-.fade-section.visible {
-  opacity: 1;
-  transform: translateY(0);
+.fade-in {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.scale-in {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.8s ease;
+}
+
+.visible {
+  opacity: 1 !important;
+  transform: none !important;
 }

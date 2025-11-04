@@ -8,7 +8,7 @@
   <!-- Tailwind generado -->
   <link rel="stylesheet" href="./css/output.css">
 
-  <!-- Animaciones suaves -->
+  <!-- Archivo de animaciones -->
   <link rel="stylesheet" href="./css/animations.css">
 
   <!-- Fuente Poppins -->
@@ -18,7 +18,7 @@
 <body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50">
 
   <!-- 🌙 Navbar -->
-  <nav class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10 fade-section">
+  <nav class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10 fade-in">
     <h1 class="text-2xl font-semibold tracking-wide">ReviewStar ⭐</h1>
     <div class="flex items-center gap-3">
       <a href="./login.html" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition">Iniciar sesión</a>
@@ -27,7 +27,7 @@
   </nav>
 
   <!-- 🌟 Hero principal -->
-  <header class="text-center py-20 px-6 fade-section">
+  <header class="text-center py-20 px-6 fade-up">
     <h2 class="text-5xl font-extrabold mb-3 animate-shine">
       Tu universo de reseñas, en un solo lugar.
     </h2>
@@ -45,18 +45,27 @@
         -webkit-text-fill-color: transparent;
         background-size: 300% 300%;
         animation: shine 6s ease-in-out infinite;
+        padding-right: 4px;
       }
       @keyframes shine {
-        0% { background-position: 100% 0%; }
-        50% { background-position: 0% 100%; }
-        100% { background-position: 100% 0%; }
+        0% {
+          background-position: 100% 0%;
+        }
+        50% {
+          background-position: 0% 100%;
+        }
+        100% {
+          background-position: 100% 0%;
+        }
       }
     </style>
-    <p class="text-gray-200 text-lg max-w-2xl mx-auto">
-      ReviewStar te permite compartir y descubrir reseñas sobre <span class="text-blue-400 font-semibold">películas</span>,
-      <span class="text-purple-400 font-semibold">videojuegos</span>, <span class="text-pink-400 font-semibold">libros</span> y mucho más.
+    <p class="text-gray-200 text-lg max-w-2xl mx-auto fade-in">
+      ReviewStar te permite compartir y descubrir reseñas sobre 
+      <span class="text-blue-400 font-semibold">películas</span>,
+      <span class="text-purple-400 font-semibold">videojuegos</span>, 
+      <span class="text-pink-400 font-semibold">libros</span> y mucho más.
     </p>
-    <div class="mt-8">
+    <div class="mt-8 fade-up">
       <a href="./register.html" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg text-lg font-semibold shadow-lg transition">
         ¡Empieza ahora!
       </a>
@@ -64,7 +73,7 @@
   </header>
 
   <!--  Sección: Qué es ReviewStar -->
-  <section class="py-16 px-6 bg-black/20 backdrop-blur-sm text-center fade-section">
+  <section class="py-16 px-6 bg-black/20 backdrop-blur-sm text-center fade-up">
     <h3 class="text-3xl font-bold mb-4">¿Qué es <span class="text-blue-400">ReviewStar</span>?</h3>
     <p class="max-w-3xl mx-auto text-gray-300 leading-relaxed">
       Es una plataforma creada por y para los apasionados de la cultura. 
@@ -74,18 +83,18 @@
   </section>
 
   <!--  Sección: Por qué elegirnos -->
-  <section class="py-16 px-6 text-center fade-section">
+  <section class="py-16 px-6 text-center fade-up">
     <h3 class="text-3xl font-bold mb-8">¿Por qué elegir <span class="text-blue-400">ReviewStar</span>?</h3>
     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition">
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
         <h4 class="text-xl font-semibold mb-2">💬 Comunidad Activa</h4>
         <p class="text-gray-300 text-sm">Miles de usuarios compartiendo opiniones sinceras sobre sus experiencias favoritas.</p>
       </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition">
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
         <h4 class="text-xl font-semibold mb-2">🎯 Recomendaciones Personalizadas</h4>
         <p class="text-gray-300 text-sm">Recibe sugerencias basadas en tus gustos y reseñas previas.</p>
       </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition">
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
         <h4 class="text-xl font-semibold mb-2">🌐 Plataforma Multitemática</h4>
         <p class="text-gray-300 text-sm">Desde películas hasta gadgets tecnológicos, ¡todo tiene su espacio en ReviewStar!</p>
       </div>
@@ -93,29 +102,29 @@
   </section>
 
   <!--  Sección futura: Reseñas destacadas -->
-  <section class="py-16 px-6 bg-black/20 backdrop-blur-sm text-center fade-section">
+  <section class="py-16 px-6 bg-black/20 backdrop-blur-sm text-center fade-up">
     <h3 class="text-3xl font-bold mb-4">⭐ Reseñas destacadas</h3>
     <p class="text-gray-300 mb-10">Muy pronto podrás ver aquí las mejores reseñas de nuestra comunidad.</p>
     <div id="reseñas" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto opacity-50">
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg border border-white/10">Espacio reservado</div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg border border-white/10">Espacio reservado</div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg border border-white/10">Espacio reservado</div>
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg border border-white/10 scale-in">Espacio reservado</div>
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg border border-white/10 scale-in">Espacio reservado</div>
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg border border-white/10 scale-in">Espacio reservado</div>
     </div>
   </section>
 
   <!--  Cómo funciona -->
-  <section class="py-16 px-6 text-center bg-black/20 backdrop-blur-sm border-t border-white/10 border-b border-white/10 fade-section">
+  <section class="py-16 px-6 text-center bg-black/20 backdrop-blur-sm border-t border-white/10 border-b border-white/10 fade-up">
     <h3 class="text-3xl font-bold mb-8">¿Cómo funciona ReviewStar?</h3>
     <div class="grid gap-8 sm:grid-cols-3 max-w-6xl mx-auto">
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition">
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
         <h4 class="text-xl font-semibold mb-3">📝 Crea una cuenta</h4>
         <p class="text-gray-300 text-sm">Regístrate y accede a tu propio perfil para comenzar a publicar reseñas.</p>
       </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition">
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
         <h4 class="text-xl font-semibold mb-3">⭐ Escribe tus reseñas</h4>
         <p class="text-gray-300 text-sm">Comparte tu opinión sobre cualquier tema: películas, juegos, libros, productos y más.</p>
       </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition">
+      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
         <h4 class="text-xl font-semibold mb-3">💬 Interactúa con otros</h4>
         <p class="text-gray-300 text-sm">Comenta, califica y guarda tus reseñas favoritas en tu perfil.</p>
       </div>
@@ -123,7 +132,7 @@
   </section>
 
   <!--  Nuestra comunidad -->
-  <section class="py-16 px-6 text-center fade-section">
+  <section class="py-16 px-6 text-center fade-up">
     <h3 class="text-3xl font-bold mb-8">Una comunidad que crece cada día 🌍</h3>
     <p class="max-w-3xl mx-auto text-gray-300 mb-10">
       Miles de usuarios ya confían en <span class="text-blue-400 font-semibold">ReviewStar</span> 
@@ -131,14 +140,23 @@
       Tú también puedes ser parte de esta comunidad.
     </p>
     <div class="flex justify-center gap-6 flex-wrap">
-      <div class="p-6 bg-white/10 rounded-xl w-64">🎮 Gamers</div>
-      <div class="p-6 bg-white/10 rounded-xl w-64">🎬 Cinéfilos</div>
-      <div class="p-6 bg-white/10 rounded-xl w-64">📚 Lectores</div>
+      <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
+        <h4 class="font-bold text-lg">🎮 Gamers</h4>
+        <p class="text-gray-400 text-sm">Los mejores títulos recomendados por verdaderos jugadores.</p>
+      </div>
+      <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
+        <h4 class="font-bold text-lg">🎬 Cinéfilos</h4>
+        <p class="text-gray-400 text-sm">Reseñas honestas de películas y series populares.</p>
+      </div>
+      <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
+        <h4 class="font-bold text-lg">📚 Lectores</h4>
+        <p class="text-gray-400 text-sm">Descubre los libros que están marcando tendencia.</p>
+      </div>
     </div>
   </section>
 
   <!--  Call to action final -->
-  <section class="text-center py-16 fade-section">
+  <section class="text-center py-16 fade-up">
     <h3 class="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
       ¿Listo para compartir tu opinión?
     </h3>
@@ -147,27 +165,11 @@
     </a>
   </section>
 
-  <footer class="text-center py-4 text-gray-400 bg-black/30 backdrop-blur-sm border-t border-white/10 fade-section">
+  <footer class="text-center py-4 text-gray-400 bg-black/30 backdrop-blur-sm border-t border-white/10 fade-in">
     © 2025 ReviewStar - Comparte tu opinión ⭐
   </footer>
 
   <!-- Scripts -->
   <script type="module" src="./js/main.js"></script>
-
-  <!-- Script para activar animaciones al hacer scroll -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            obs.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.2 });
-
-      document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
-    });
-  </script>
 </body>
 </html>
