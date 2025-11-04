@@ -16,7 +16,8 @@ export function renderStars(rating) {
 
 // Crea el HTML de una tarjeta de reseña (frontend generic)
 export function createReviewCard(review, options = {}) {
-  // review: { _id, titulo, descripcion, imagenURL, calificacion, autor }
+  // review can come from backend (title, description, image, rating, user)
+  // or from frontend shapes (titulo, descripcion, imagenURL, calificacion, autor)
   // options: { controls: true, prefix: '' }
   const prefix = options.prefix || '';
   const controlsHtml = options.controls ? `
@@ -24,22 +25,27 @@ export function createReviewCard(review, options = {}) {
       <button class="text-sm btn-edit px-2 py-1 bg-white/10 rounded" data-id="${review._id}">✏️</button>
       <button class="text-sm btn-delete px-2 py-1 bg-red-600/80 rounded" data-id="${review._id}">🗑️</button>
     </div>` : '';
+  const title = review.titulo || review.title || '';
+  const description = review.descripcion || review.description || '';
+  const image = review.imagenURL || review.image || review.imagen || '';
+  const rating = review.calificacion || review.rating || 0;
+  const author = review.autor || review.user || review.usuario || null;
 
-  const imgHtml = review.imagenURL ? `<img src="${review.imagenURL}" alt="${escapeHtml(review.titulo)}" class="w-full h-40 object-cover rounded-md mb-3">` : '';
+  const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-40 object-cover rounded-md mb-3">` : '';
 
-  const short = review.descripcion.length > 140 ? review.descripcion.slice(0, 140) + '...' : review.descripcion;
+  const short = (description || '').length > 140 ? (description || '').slice(0, 140) + '...' : (description || '');
 
   return `
     <article class="bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition" data-id="${review._id}">
       ${controlsHtml}
       ${imgHtml}
-      <h3 class="font-semibold text-lg mb-1">${escapeHtml(review.titulo)}</h3>
+      <h3 class="font-semibold text-lg mb-1">${escapeHtml(title)}</h3>
       <p class="text-sm text-gray-300 mb-3">${escapeHtml(short)}</p>
       <div class="flex items-center justify-between">
-        <div class="text-xs text-gray-400">por ${review.autor?.nombre || 'Anónimo'}</div>
+        <div class="text-xs text-gray-400">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
         <div class="flex items-center gap-2">
-          ${renderStars(review.calificacion || review.rating || 0)}
-          <span class="text-yellow-400 font-semibold ml-2">${review.calificacion || review.rating || 0}/10</span>
+          ${renderStars(rating)}
+          <span class="text-yellow-400 font-semibold ml-2">${rating}/10</span>
         </div>
       </div>
     </article>

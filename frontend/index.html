@@ -17,14 +17,32 @@
 
 <body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50">
 
-  <!-- 🌙 Navbar -->
-  <nav class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10 fade-in">
-    <h1 class="text-2xl font-semibold tracking-wide">ReviewStar ⭐</h1>
-    <div class="flex items-center gap-3">
-      <a href="./login.html" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition">Iniciar sesión</a>
-      <a href="./register.html" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition">Registrarse</a>
+<nav class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10 fade-in">
+  <h1 class="text-2xl font-semibold tracking-wide">ReviewStar ⭐</h1>
+
+  <!-- Reemplaza tu div de botones antiguo por este -->
+  <div id="userArea" class="flex items-center gap-3">
+    <a href="./login.html" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded transition" id="loginBtn">
+      Iniciar sesión
+    </a>
+    <a href="./register.html" class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 rounded transition" id="registerBtn">
+      Registrarse
+    </a>
+
+    <!-- Usuario logueado (oculto por defecto) -->
+    <div id="userMenu" class="hidden relative">
+      <img id="userAvatar" src="https://www.w3schools.com/howto/img_avatar.png" alt="avatar" class="w-10 h-10 rounded-full cursor-pointer">
+      <div id="dropdown" class="hidden absolute right-0 mt-2 w-40 bg-black/80 backdrop-blur-sm rounded shadow-lg z-50">
+        <p id="usernameDisplay" class="px-4 py-2 text-white font-semibold border-b border-white/10"></p>
+        <a href="./profile.html" class="block px-4 py-2 text-gray-300 hover:bg-white/10">Mi perfil</a>
+        <a href="./dashboard.html" class="block px-4 py-2 text-gray-300 hover:bg-white/10">Mis reseñas</a>
+        <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-400 hover:bg-white/10">Cerrar sesión</button>
+      </div>
     </div>
-  </nav>
+  </div>
+</nav>
+
+
 
   <!-- 🌟 Hero principal -->
   <header class="text-center py-20 px-6 fade-up">
@@ -33,13 +51,7 @@
     </h2>
     <style>
       .animate-shine {
-        background: linear-gradient(
-          -60deg,
-          #22d3ee 0%,
-          #3b82f6 30%,
-          #a855f7 60%,
-          #22d3ee 100%
-        );
+        background: linear-gradient(-60deg,#22d3ee 0%,#3b82f6 30%,#a855f7 60%,#22d3ee 100%);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -48,15 +60,9 @@
         padding-right: 4px;
       }
       @keyframes shine {
-        0% {
-          background-position: 100% 0%;
-        }
-        50% {
-          background-position: 0% 100%;
-        }
-        100% {
-          background-position: 100% 0%;
-        }
+        0% { background-position: 100% 0%; }
+        50% { background-position: 0% 100%; }
+        100% { background-position: 100% 0%; }
       }
     </style>
     <p class="text-gray-200 text-lg max-w-2xl mx-auto fade-in">
