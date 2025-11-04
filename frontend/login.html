@@ -1,39 +1,74 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Iniciar sesión - ReviewStar</title>
-  <link href="./css/output.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:to-black min-h-screen flex items-center justify-center text-white font-[Poppins]">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión - ReviewStar</title>
+<link href="./css/output.css" rel="stylesheet">
+<link href="./css/animations.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  .brand {
+    background: linear-gradient(to right,#3b82f6,#22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 700;
+  }
 
-  <div class="bg-gray-800 p-8 rounded-xl shadow-xl w-full max-w-sm">
-    <h2 class="text-2xl font-semibold mb-6 text-center">Iniciar sesión</h2>
-    <form id="loginForm" class="space-y-4">
-      <div>
-        <label for="email" class="block mb-1">Correo electrónico</label>
-        <input id="email" type="email" required class="w-full p-2 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-      <div>
-        <label for="contrasenia" class="block mb-1">Contraseña</label>
-        <input id="contrasenia" type="password" required class="w-full p-2 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-      <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded mt-4">Entrar</button>
-      <p class="text-center mt-4 text-gray-400">
-        ¿No tienes cuenta?
-        <a href="./register.html" class="text-blue-400 hover:underline">Regístrate aquí</a>
-      </p>
-    </form>
+  /* Animación rebote para el cuadro */
+  @keyframes bounceFade {
+    0% { opacity: 0; transform: translateY(-20px) scale(0.95); }
+    60% { opacity: 1; transform: translateY(10px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  .bounce-fade { animation: bounceFade 0.8s ease forwards; }
+</style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen flex items-center justify-center text-white font-[Poppins]">
+
+<main class="bg-black/20 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full max-w-sm bounce-fade">
+  <div class="text-center mb-6">
+    <a href="./index.html" class="text-2xl brand">ReviewStar ⭐</a>
   </div>
 
-  <script type="module">
-    import { handleLogin } from './js/auth.js';
-    document.getElementById('loginForm').addEventListener('submit', e => {
-      e.preventDefault();
-      handleLogin(e.target);
+  <h2 class="text-xl font-semibold mb-4 text-center fade-up">Iniciar sesión</h2>
+
+  <form id="loginForm" class="space-y-4 fade-up">
+    <div class="fade-up">
+      <label for="email" class="block mb-1 text-sm text-gray-300">Correo electrónico</label>
+      <input id="email" type="email" required
+        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+    </div>
+
+    <div class="fade-up">
+      <label for="contrasenia" class="block mb-1 text-sm text-gray-300">Contraseña</label>
+      <input id="contrasenia" type="password" required
+        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+    </div>
+
+    <button type="submit"
+      class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition button-click">
+      Entrar
+    </button>
+
+    <p class="text-center text-sm text-gray-400 mt-3 fade-up">
+      ¿No tienes cuenta?
+      <a href="./register.html" class="text-blue-400 hover:underline">Regístrate</a>
+    </p>
+  </form>
+</main>
+
+<script type="module">
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) entry.target.classList.add('visible');
+      else entry.target.classList.remove('visible');
     });
-  </script>
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
 </body>
 </html>

@@ -1,56 +1,94 @@
-/* animations.css */
+/* ------------------- Animaciones generales ------------------- */
 
-/* --- Animaciones suaves --- */
+/* Fade Up */
 @keyframes fadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeUp {
+  animation: fadeUp 0.8s ease forwards;
 }
 
+/* Fade In */
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.animate-fadeIn {
+  animation: fadeIn 1s ease forwards;
 }
 
+/* Scale In */
 @keyframes scaleIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-scaleIn {
+  animation: scaleIn 0.8s ease forwards;
 }
 
-/* --- Clases para aplicar --- */
-.fade-up {
+/* ------------------- Login/Register ------------------- */
+
+/* Shake en errores */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+.shake {
+  animation: shake 0.4s;
+}
+
+/* Pulse al click */
+@keyframes pulse-click {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.button-click:active {
+  animation: pulse-click 0.2s;
+}
+
+/* Toasts */
+@keyframes toastIn {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes toastOut {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+.toast-show {
+  animation: toastIn 0.4s forwards;
+}
+.toast-hide {
+  animation: toastOut 0.4s forwards;
+}
+
+/* ------------------- Index especiales ------------------- */
+
+/* Shine para hero text */
+@keyframes shine {
+  0% { background-position: 100% 0%; }
+  50% { background-position: 0% 100%; }
+  100% { background-position: 100% 0%; }
+}
+.animate-shine {
+  background: linear-gradient(-60deg,#22d3ee 0%,#3b82f6 30%,#a855f7 60%,#22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 300% 300%;
+  animation: shine 6s ease-in-out infinite;
+  padding-right: 4px;
+}
+
+/* ------------------- Clases de visibilidad inicial ------------------- */
+.fade-up, .fade-in, .scale-in {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
 }
-
-.fade-in {
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-.scale-in {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.8s ease;
-}
-
 .visible {
   opacity: 1 !important;
   transform: none !important;
+  transition: all 0.8s ease;
 }

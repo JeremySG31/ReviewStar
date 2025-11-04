@@ -1,7 +1,17 @@
-// Manejo simple de login/registro (frontend) usando utils/api.js
-// Se espera que tus páginas login.html y register.html llamen a estas funciones.
-
 import { apiLogin, apiRegister } from './utils/api.js';
+
+// Mostrar toast
+function showToast(msg, color='rgba(0,0,0,0.7)') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.backgroundColor = color;
+  toast.classList.remove('toast-hide');
+  toast.classList.add('toast-show');
+  setTimeout(() => {
+    toast.classList.remove('toast-show');
+    toast.classList.add('toast-hide');
+  }, 3000);
+}
 
 export async function handleLogin(formEl) {
   const email = formEl.querySelector('#email').value.trim();
@@ -10,16 +20,18 @@ export async function handleLogin(formEl) {
     const res = await apiLogin({ email, contrasenia });
     if (res.token) {
       localStorage.setItem('token', res.token);
-      // opcional: guardar info usuario en localStorage si backend la devuelve
       if (res.usuario) localStorage.setItem('usuario', JSON.stringify(res.usuario));
-      // redirige a dashboard o index
-      window.location.href = '/dashboard.html';
+      const main = formEl.closest('main');
+      main.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      setTimeout(() => window.location.href = '/dashboard.html', 500);
     } else {
-      alert(res.message || 'Error al iniciar sesión');
+      formEl.classList.add('shake');
+      showToast(res.message || 'Usuario o contraseña incorrectos', 'rgba(255,0,0,0.7)');
+      setTimeout(() => formEl.classList.remove('shake'), 400);
     }
   } catch (err) {
     console.error(err);
-    alert('Error de red. Intenta de nuevo.');
+    showToast('Error de red. Intenta de nuevo.', 'rgba(255,0,0,0.7)');
   }
 }
 
@@ -30,13 +42,15 @@ export async function handleRegister(formEl) {
   try {
     const res = await apiRegister({ nombre, email, contrasenia });
     if (res.ok) {
-      alert('Registro exitoso. Inicia sesión.');
-      window.location.href = '/login.html';
+      showToast('Registro exitoso. Redirigiendo...', 'rgba(0,200,0,0.7)');
+      setTimeout(() => window.location.href = '/login.html', 1500);
     } else {
-      alert(res.message || 'Error en registro.');
+      formEl.classList.add('shake');
+      showToast(res.message || 'Error en registro.', 'rgba(255,0,0,0.7)');
+      setTimeout(() => formEl.classList.remove('shake'), 400);
     }
   } catch (err) {
     console.error(err);
-    alert('Error de red. Intenta de nuevo.');
+    showToast('Error de red. Intenta de nuevo.', 'rgba(255,0,0,0.7)');
   }
 }
