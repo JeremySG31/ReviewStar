@@ -8,11 +8,11 @@ export function validateRegistrationFields(nombre, email, password) {
     errors.push({ field: 'nombre', message: 'Por favor ingresa un usuario.' });
   }
   
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.push({ field: 'email', message: 'Ingresa un correo válido.' });
   }
   
-  const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&]).{8,}$/;
+  const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&]).{8,}$/; // Igual al backend
   if (!pwdRegex.test(password)) {
     errors.push({
       field: 'password',

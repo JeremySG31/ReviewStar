@@ -16,18 +16,16 @@
     color: transparent;
     font-weight: 700;
   }
-
   @keyframes bounceFade {
     0% { opacity: 0; transform: translateY(-20px) scale(0.95); }
     60% { opacity: 1; transform: translateY(10px) scale(1.02); }
     100% { transform: translateY(0) scale(1); }
   }
   .bounce-fade { animation: bounceFade 0.8s ease forwards; }
-  /* Ocultar iconos nativos de mostrar/ocultar contraseña en distintos navegadores */
   input[type="password"] {
     -webkit-appearance: none;
     appearance: none;
-    padding-right: 2.5rem; /* espacio para el ojo emoji */
+    padding-right: 2.5rem;
   }
   input[type="password"]::-ms-reveal,
   input[type="password"]::-ms-clear {
@@ -54,19 +52,24 @@
     <div class="fade-up">
       <label for="email" class="block mb-1 text-sm text-gray-300">Correo electrónico</label>
       <input id="email" type="email" required
-        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+      <p id="emailError" class="text-sm text-red-400 mt-1 hidden"></p>
     </div>
 
     <div class="fade-up relative">
       <label for="password" class="block mb-1 text-sm text-gray-300">Contraseña</label>
       <input id="password" type="password" autocomplete="current-password" required
-        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
       <span id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-white">👁️</span>
+      <p id="passwordError" class="text-sm text-red-400 mt-1 hidden"></p>
     </div>
+
+    <!-- Mensaje de error general -->
+    <p id="formError" class="text-sm text-red-400 mt-1 hidden text-center"></p>
 
     <button type="submit"
       class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition button-click">
-      Entrar
+      Iniciar sesión
     </button>
 
     <p class="text-center text-sm text-gray-400 mt-3 fade-up">

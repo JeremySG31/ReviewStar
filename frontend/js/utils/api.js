@@ -133,18 +133,27 @@ export async function apiRegister(user) {
 }
 
 export async function apiLogin(credentials) {
+  console.log('iniciando login ...');
   // credentials: { email, contrasenia }
   const body = {
     email: credentials.email,
     password: credentials.contrasenia || credentials.password
   };
+  
   const resp = await safeFetch(`${API_BASE}/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
     body: JSON.stringify(body)
   });
 
-  if (resp.ok && resp.data) return { ok: true, ...resp.data };
+  if (resp.ok && resp.data) {
+    console.log('Login exitoso');
+    return { ok: true, ...resp.data };
+  }
+  console.log('Error en login:', resp.data);
   return { ok: false, message: resp.data?.message || 'Error en login' };
 }
 
