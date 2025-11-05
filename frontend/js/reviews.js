@@ -43,6 +43,7 @@ export async function initDashboard() {
   if (!container) return;
 
   // Cargar reseñas del usuario
+  await loadProfileData();
   await refreshMyReviews(container);
 
   // Botón nueva reseña
@@ -79,11 +80,40 @@ export async function initDashboard() {
   });
 }
 
+// Carga los datos del perfil (nombre, email) en la cabecera del dashboard
+async function loadProfileData() {
+  const profileNameEl = document.getElementById('profileName');
+  const profileEmailEl = document.getElementById('profileEmail');
+
+  if (profileNameEl && profileEmailEl) {
+    try {
+      const user = JSON.parse(localStorage.getItem('usuario') || 'null');
+      if (user) {
+        profileNameEl.textContent = user.nombre || 'Usuario';
+        profileEmailEl.textContent = user.email || 'email@desconocido.com';
+      }
+    } catch (error) {
+      console.error('Error al cargar datos del perfil:', error);
+      profileNameEl.textContent = 'Error al cargar';
+      profileEmailEl.textContent = 'Intente recargar la página';
+    }
+  }
+}
+
 // Refresca reseñas del usuario logueado
 async function refreshMyReviews(container) {
   try {
     const reviews = await apiGetMyReviews();
     renderList(container, reviews, true);
+
+    // Actualizar estadísticas
+    const totalReviewsEl = document.getElementById('totalReviews');
+    const avgRatingEl = document.getElementById('avgRating');
+    if (totalReviewsEl && avgRatingEl) {
+      totalReviewsEl.textContent = reviews.length;
+      const avg = reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) : 0;
+      avgRatingEl.textContent = avg.toFixed(1);
+    }
   } catch (err) {
     console.error(err);
     container.innerHTML = `

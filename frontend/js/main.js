@@ -16,36 +16,6 @@ function initScrollAnimations(once = false){
   animatedElements.forEach(el => observer.observe(el));
 }
 
-function initUserMenu(){
-  const nav = document.querySelector('nav');
-  const user = JSON.parse(localStorage.getItem('user'));
-  if(user){
-    nav.querySelectorAll('a').forEach(a => a.remove()); // quitamos login/register
-
-    // URL por defecto del avatar
-    const defaultAvatar = 'https://i.ibb.co/2NwYqJ1/default-avatar.png';
-
-    const menu = document.createElement('div');
-    menu.className = 'flex items-center gap-2 relative';
-    menu.innerHTML = `
-      <img src="${user.avatar || defaultAvatar}" alt="Avatar" class="w-8 h-8 rounded-full border border-white/20">
-      <span class="text-white font-medium">${user.name}</span>
-      <div class="absolute right-0 mt-10 bg-black/80 backdrop-blur-sm rounded-md p-2 hidden group-hover:block">
-        <a href="./dashboard.html" class="block px-4 py-2 hover:bg-white/10 rounded">Mis reseñas</a>
-        <a href="#" id="logoutBtn" class="block px-4 py-2 hover:bg-white/10 rounded">Cerrar sesión</a>
-      </div>
-    `;
-    menu.classList.add('group', 'cursor-pointer');
-    nav.appendChild(menu);
-
-    const logoutBtn = menu.querySelector('#logoutBtn');
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('user');
-      location.reload();
-    });
-  }
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
   initScrollAnimations(false);
 
@@ -55,40 +25,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   const dashboardEl = document.getElementById('misReseñas');
   if(dashboardEl) await initDashboard();
 
-  initUserMenu();
+  // --- LÓGICA DE LA BARRA DE NAVEGACIÓN ---
+  // Se mueve aquí para garantizar que el DOM esté completamente cargado.
+  const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const userMenu = document.getElementById('userMenu');
+  const usernameDisplay = document.getElementById('usernameDisplay');
+  const logoutBtn = document.getElementById('logoutBtn');
+  // Seleccionamos los botones de registro del cuerpo de la página ("Call to Action")
+  const ctaHeaderRegister = document.getElementById('cta-header-register');
+  const ctaFooterRegister = document.getElementById('cta-footer-register');
+
+  // La clave correcta guardada en el login es 'usuario'
+  const userData = localStorage.getItem('usuario');
+
+  if(userData && loginBtn && registerBtn && userMenu){
+    const user = JSON.parse(userData);
+
+    // Ocultar los botones de registro del cuerpo de la página
+    if (ctaHeaderRegister) ctaHeaderRegister.style.display = 'none';
+    if (ctaFooterRegister) ctaFooterRegister.style.display = 'none';
+
+    // Ocultar botones de login/register usando la clase 'hidden' de Tailwind
+    loginBtn.classList.add('hidden');
+    registerBtn.classList.add('hidden');
+
+    // Mostrar menú de usuario y configurar datos
+    if (userMenu) { // El userMenu solo existe en index.html
+      userMenu.classList.remove('hidden');
+    }
+    usernameDisplay.textContent = user.nombre || 'Usuario';
+
+    // Evento para cerrar sesión
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('token');
+      window.location.reload();
+    });
+  } else if (loginBtn && registerBtn) {
+    // Si no hay sesión, asegurarse de que los botones de login/registro estén visibles
+    loginBtn.classList.remove('hidden');
+    registerBtn.classList.remove('hidden');
+  }
 });
-
-// Mostrar avatar si el usuario está logueado
-const userArea = document.getElementById('userArea');
-const loginBtn = document.getElementById('loginBtn');
-const registerBtn = document.getElementById('registerBtn');
-const userMenu = document.getElementById('userMenu');
-const userAvatar = document.getElementById('userAvatar');
-const dropdown = document.getElementById('dropdown');
-const usernameDisplay = document.getElementById('usernameDisplay');
-const logoutBtn = document.getElementById('logoutBtn');
-
-const userData = localStorage.getItem('user');
-if(userData){
-  const user = JSON.parse(userData);
-
-  // Ocultar botones de login/register
-  loginBtn.classList.add('hidden');
-  registerBtn.classList.add('hidden');
-
-  // Mostrar menú de usuario
-  userMenu.classList.remove('hidden');
-  userAvatar.src = user.avatar || 'https://www.w3schools.com/howto/img_avatar.png';
-  usernameDisplay.textContent = user.name || 'Usuario';
-
-  // Toggle dropdown
-  userAvatar.addEventListener('click', () => {
-    dropdown.classList.toggle('hidden');
-  });
-
-  // Logout
-  logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('user');
-    window.location.reload();
-  });
-}
