@@ -2,7 +2,7 @@ import Review from '../models/Review.js';
 import cloudinary from '../config/cloudinary.js';
 
 export const createReview = async (req, res) => {
-  const { title, description, rating } = req.body;
+  const { title, description, rating, category } = req.body;
   try {
     let imageUrl = '';
     if (req.files?.image) {
@@ -15,6 +15,7 @@ export const createReview = async (req, res) => {
       title,
       description,
       rating,
+      category,
       image: imageUrl
     });
     res.status(201).json(review);
@@ -34,7 +35,7 @@ export const getReviews = async (req, res) => {
 
 export const updateReview = async (req, res) => {
   const { id } = req.params;
-  const { title, description, rating } = req.body;
+  const { title, description, rating, category } = req.body;
 
   try {
     const review = await Review.findById(id);
@@ -45,6 +46,12 @@ export const updateReview = async (req, res) => {
     review.title = title || review.title;
     review.description = description || review.description;
     review.rating = rating || review.rating;
+    review.category = category || review.category;
+
+    if (req.files?.image) {
+      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath);
+      review.image = result.secure_url;
+    }
 
     await review.save();
     res.json(review);

@@ -156,8 +156,12 @@ async function openModal(editId) {
     if (item) {
       form.querySelector('#titulo').value = item.titulo || item.title || '';
       form.querySelector('#contenido').value = item.descripcion || item.description || '';
-      // El input de archivo no se puede pre-rellenar por seguridad, solo se limpia.
+      form.querySelector('#category').value = item.category || '';
       form.querySelector('#reviewImage').value = '';
+      const fileUploadLabel = document.getElementById('fileUploadLabel');
+      if (fileUploadLabel) {
+        fileUploadLabel.textContent = 'Elegir archivo';
+      }
 
       const ratingInput = form.querySelector('#ratingInput');
       const currentRating = item.calificacion || item.rating || 0;
@@ -170,6 +174,10 @@ async function openModal(editId) {
   } else {
     const titleEl = document.getElementById('modalTitulo');
     if (titleEl) titleEl.textContent = 'Nueva reseña';
+    const fileUploadLabel = document.getElementById('fileUploadLabel');
+    if (fileUploadLabel) {
+      fileUploadLabel.textContent = 'Elegir archivo';
+    }
     updateStars(0); // Resetea las estrellas para una nueva reseña
   }
 
@@ -182,11 +190,13 @@ async function openModal(editId) {
     const starIndex = Array.from(starsContainer.children).indexOf(e.target);
     if (starIndex === -1) return;
 
+    // Muestra una vista previa de la calificación al pasar el ratón
     const hoverValue = starIndex + (e.clientX - rect.left > rect.width / 2 ? 1 : 0.5);
     updateStars(hoverValue, true);
   };
 
   starsContainer.onmouseleave = () => {
+    // Al salir, revierte a la calificación guardada en el input
     updateStars(ratingInput.value);
   };
 
@@ -198,7 +208,29 @@ async function openModal(editId) {
     const clickValue = starIndex + (e.clientX - rect.left > rect.width / 2 ? 1 : 0.5);
     ratingInput.value = clickValue;
     updateStars(clickValue);
+
+    // Añadir animación a las estrellas clickeadas
+    const stars = starsContainer.children;
+    for (let i = 0; i <= starIndex; i++) {
+      stars[i].classList.remove('star-clicked'); // Prevenir re-trigger si se clickea rápido
+      // Forzar reflow para reiniciar la animación
+      void stars[i].offsetWidth; 
+      stars[i].classList.add('star-clicked');
+    }
+    // Limpiar la clase de animación después de que termine
+    setTimeout(() => Array.from(stars).forEach(s => s.classList.remove('star-clicked')), 400);
   };
+
+  // Lógica para reemplazar el texto del botón con el nombre del archivo
+  const fileInput = document.getElementById('reviewImage');
+  const fileUploadLabel = document.getElementById('fileUploadLabel');
+  if (fileInput && fileUploadLabel) {
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileUploadLabel.textContent = fileInput.files[0].name;
+      }
+    });
+  }
 
   modal.classList.remove('hidden');
 }
@@ -244,6 +276,7 @@ function updateStars(rating, isHover = false) {
 async function submitReviewForm(form, container, modal) {
   const titulo = form.querySelector('#titulo')?.value.trim();
   const descripcion = form.querySelector('#contenido')?.value.trim();
+  const category = form.querySelector('#category')?.value;
   const imageFile = form.querySelector('#reviewImage')?.files[0];
   const calificacionRaw = form.querySelector('#ratingInput')?.value;
   const calificacion = calificacionRaw ? parseFloat(calificacionRaw) : 0;
@@ -252,12 +285,13 @@ async function submitReviewForm(form, container, modal) {
   const formData = new FormData();
   formData.append('title', titulo);
   formData.append('description', descripcion);
+  formData.append('category', category);
   formData.append('rating', calificacion);
   if (imageFile) {
     formData.append('image', imageFile); // El backend espera el campo 'image'
   }
 
-  const valid = validateReviewPayload({ titulo, descripcion, calificacion });
+  const valid = validateReviewPayload({ titulo, descripcion, calificacion, category });
   if (!valid.ok) {
     alert(valid.msg);
     return;

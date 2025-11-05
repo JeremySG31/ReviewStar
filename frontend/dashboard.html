@@ -82,10 +82,24 @@
           <textarea id="contenido" rows="4" required class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"></textarea>
         </div>
         <div>
-          <label for="reviewImage" class="block mb-1">Subir archivo</label>
-          <div class="border border-gray-600 rounded-md p-1">
-            <input id="reviewImage" type="file" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition cursor-pointer">
-          </div>
+          <label for="category" class="block mb-1">Categoría</label>
+          <select id="category" required class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+            <option value="" class="bg-gray-800 text-white">-- Elige una categoría --</option>
+            <option value="Películas" class="bg-gray-800 text-white">Películas</option>
+            <option value="Series" class="bg-gray-800 text-white">Series</option>
+            <option value="Videojuegos" class="bg-gray-800 text-white">Videojuegos</option>
+            <option value="Libros" class="bg-gray-800 text-white">Libros</option>
+            <option value="Tecnología" class="bg-gray-800 text-white">Tecnología</option>
+            <option value="Otro" class="bg-gray-800 text-white">Otro</option>
+          </select>
+        </div>
+        <div>
+          <label for="reviewImage" class="block mb-1">Subir imagen (opcional)</label>
+          <label id="fileUploadLabel" for="reviewImage" class="inline-block cursor-pointer px-4 py-2 border border-gray-600 bg-gray-800/40 text-gray-300 hover:bg-gray-700 rounded-md font-semibold transition text-sm truncate max-w-full">
+            Elegir archivo
+          </label>
+          <!-- El input real está oculto, la label actúa como el botón -->
+          <input id="reviewImage" type="file" accept="image/*" class="hidden">
         </div>
         <div>
           <label class="block mb-1">Calificación</label>

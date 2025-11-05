@@ -29,11 +29,15 @@ export function createReviewCard(review, options = {}) {
   const description = review.descripcion || review.description || '';
   const image = review.imagenURL || review.image || review.imagen || '';
   const rating = review.calificacion || review.rating || 0;
+  const category = review.category || 'Sin categoría';
   const author = review.autor || review.user || review.usuario || null;
 
   const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-40 object-cover rounded-md mb-3">` : '';
 
   const short = (description || '').length > 140 ? (description || '').slice(0, 140) + '...' : (description || '');
+
+  // Renderiza la categoría con un estilo de "píldora"
+  const categoryHtml = `<span class="absolute top-2 left-2 bg-blue-600/80 text-white text-xs font-semibold px-2 py-1 rounded-full">${escapeHtml(category)}</span>`;
 
   return `
     <article class="bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition" data-id="${review._id}">
@@ -42,7 +46,7 @@ export function createReviewCard(review, options = {}) {
       <h3 class="font-semibold text-lg mb-1">${escapeHtml(title)}</h3>
       <p class="text-sm text-gray-300 mb-3">${escapeHtml(short)}</p>
       <div class="flex items-center justify-between">
-        <div class="text-xs text-gray-400">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
+        <div class="text-xs text-gray-400 mt-2">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
         <div class="flex items-center gap-2">
           ${renderStars(rating)}
           <span class="text-yellow-400 font-semibold ml-2">${rating}/10</span>

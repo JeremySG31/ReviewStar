@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (userMenu) { // El userMenu solo existe en index.html
       userMenu.classList.remove('hidden');
     }
-    usernameDisplay.textContent = user.nombre || 'Usuario';
+    if (usernameDisplay) usernameDisplay.textContent = user.nombre || 'Usuario';
 
     // Evento para cerrar sesión
     logoutBtn.addEventListener('click', () => {
