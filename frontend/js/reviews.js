@@ -146,6 +146,7 @@ async function openModal(editId) {
   editingId = null;
   const modal = document.getElementById(MODAL_ID);
   const form = document.getElementById(FORM_ID);
+  const submitBtn = document.getElementById('submitReviewBtn');
   if (!form || !modal) return;
 
   form.reset();
@@ -170,10 +171,12 @@ async function openModal(editId) {
       editingId = editId;
       const titleEl = document.getElementById('modalTitulo');
       if (titleEl) titleEl.textContent = 'Editar reseña';
+      if (submitBtn) submitBtn.textContent = 'Guardar Cambios';
     }
   } else {
     const titleEl = document.getElementById('modalTitulo');
     if (titleEl) titleEl.textContent = 'Nueva reseña';
+    if (submitBtn) submitBtn.textContent = 'Crear';
     const fileUploadLabel = document.getElementById('fileUploadLabel');
     if (fileUploadLabel) {
       fileUploadLabel.textContent = 'Elegir archivo';
