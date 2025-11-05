@@ -61,8 +61,8 @@ export function isValidURL(value) {
 }
 
 export function validateReviewPayload(payload) {
-  const { titulo, categoria, descripcion, calificacion, imagenURL } = payload;
-  if (!titulo || !categoria || !descripcion) {
+  const { titulo, category, descripcion, calificacion, imagenURL } = payload;
+  if (!titulo || !category || !descripcion) {
     return { ok: false, msg: 'Completa título, categoría y descripción.' };
   }
   if (typeof calificacion !== 'number' || isNaN(calificacion)) {
