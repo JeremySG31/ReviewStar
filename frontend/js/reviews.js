@@ -156,9 +156,13 @@ async function openModal(editId) {
     if (item) {
       form.querySelector('#titulo').value = item.titulo || item.title || '';
       form.querySelector('#contenido').value = item.descripcion || item.description || '';
-      form.querySelector('#imagenUrl').value = item.imagenURL || item.image || '';
+      // El input de archivo no se puede pre-rellenar por seguridad, solo se limpia.
+      form.querySelector('#reviewImage').value = '';
+
       const ratingInput = form.querySelector('#ratingInput');
-      if (ratingInput) ratingInput.value = item.calificacion || item.rating || '';
+      const currentRating = item.calificacion || item.rating || 0;
+      if (ratingInput) ratingInput.value = currentRating;
+      updateStars(currentRating); // Actualiza visualmente las estrellas
       editingId = editId;
       const titleEl = document.getElementById('modalTitulo');
       if (titleEl) titleEl.textContent = 'Editar reseña';
@@ -166,7 +170,35 @@ async function openModal(editId) {
   } else {
     const titleEl = document.getElementById('modalTitulo');
     if (titleEl) titleEl.textContent = 'Nueva reseña';
+    updateStars(0); // Resetea las estrellas para una nueva reseña
   }
+
+  // Lógica para el sistema de calificación por estrellas
+  const starsContainer = document.getElementById('ratingStars');
+  const ratingInput = document.getElementById('ratingInput');
+
+  starsContainer.onmousemove = e => {
+    const rect = e.target.getBoundingClientRect();
+    const starIndex = Array.from(starsContainer.children).indexOf(e.target);
+    if (starIndex === -1) return;
+
+    const hoverValue = starIndex + (e.clientX - rect.left > rect.width / 2 ? 1 : 0.5);
+    updateStars(hoverValue, true);
+  };
+
+  starsContainer.onmouseleave = () => {
+    updateStars(ratingInput.value);
+  };
+
+  starsContainer.onclick = e => {
+    const rect = e.target.getBoundingClientRect();
+    const starIndex = Array.from(starsContainer.children).indexOf(e.target);
+    if (starIndex === -1) return;
+
+    const clickValue = starIndex + (e.clientX - rect.left > rect.width / 2 ? 1 : 0.5);
+    ratingInput.value = clickValue;
+    updateStars(clickValue);
+  };
 
   modal.classList.remove('hidden');
 }
@@ -178,17 +210,54 @@ function closeModal(modal) {
   editingId = null;
 }
 
+// Actualiza la apariencia de las estrellas
+function updateStars(rating, isHover = false) {
+  const stars = document.querySelectorAll('#ratingStars .star');
+  const ratingDisplay = document.getElementById('ratingValueDisplay');
+
+  if (ratingDisplay) {
+    ratingDisplay.textContent = `${parseFloat(rating).toFixed(1)} / 5.0`;
+  }
+
+  const ratingValue = parseFloat(rating);
+
+  stars.forEach((star, index) => {
+    star.classList.remove('text-yellow-400', 'text-yellow-300');
+    star.style.background = '';
+    star.style.webkitBackgroundClip = '';
+    star.style.webkitTextFillColor = '';
+
+    if (ratingValue > index + 0.5) {
+      star.classList.add('text-yellow-400'); // Estrella completa
+    } else if (ratingValue > index) {
+      // Media estrella usando un gradiente
+      star.style.background = 'linear-gradient(to right, #FBBF24 50%, #6B7280 50%)';
+      star.style.webkitBackgroundClip = 'text';
+      star.style.webkitTextFillColor = 'transparent';
+    } else {
+      star.classList.add(isHover ? 'text-gray-400' : 'text-gray-500');
+    }
+  });
+}
+
 // Envía formulario (crear o editar)
 async function submitReviewForm(form, container, modal) {
   const titulo = form.querySelector('#titulo')?.value.trim();
   const descripcion = form.querySelector('#contenido')?.value.trim();
-  const imagenURL = form.querySelector('#imagenUrl')?.value.trim();
+  const imageFile = form.querySelector('#reviewImage')?.files[0];
   const calificacionRaw = form.querySelector('#ratingInput')?.value;
-  const calificacion = calificacionRaw ? Number(calificacionRaw) : 0;
+  const calificacion = calificacionRaw ? parseFloat(calificacionRaw) : 0;
 
-  const payload = { titulo, descripcion, imagenURL, calificacion };
+  // Usamos FormData para poder enviar el archivo de imagen al backend
+  const formData = new FormData();
+  formData.append('title', titulo);
+  formData.append('description', descripcion);
+  formData.append('rating', calificacion);
+  if (imageFile) {
+    formData.append('image', imageFile); // El backend espera el campo 'image'
+  }
 
-  const valid = validateReviewPayload(payload);
+  const valid = validateReviewPayload({ titulo, descripcion, calificacion });
   if (!valid.ok) {
     alert(valid.msg);
     return;
@@ -196,9 +265,11 @@ async function submitReviewForm(form, container, modal) {
 
   try {
     if (editingId) {
-      await apiUpdateReview(editingId, payload);
+      // La API de update también debe aceptar FormData si se quiere cambiar la imagen
+      await apiUpdateReview(editingId, formData);
     } else {
-      await apiCreateReview(payload);
+      // La API de create ya está lista para FormData
+      await apiCreateReview({ formData });
     }
     await refreshMyReviews(container);
     closeModal(modal);

@@ -78,16 +78,10 @@ export async function apiCreateReview(payload) {
 }
 
 export async function apiUpdateReview(id, payload) {
-  const body = {
-    title: payload.titulo || payload.title || '',
-    description: payload.descripcion || payload.description || '',
-    rating: payload.calificacion || payload.rating || 0
-  };
-  const resp = await safeFetch(`${API_BASE}/reviews/update/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify(body)
-  });
+  // Asumimos que el payload es FormData para la actualización también.
+  // El backend debe estar preparado para recibir FormData en el endpoint de update.
+  const headers = { ...getAuthHeaders() };
+  const resp = await safeFetch(`${API_BASE}/reviews/update/${id}`, { method: 'PUT', headers, body: payload });
   return resp.data;
 }
 
