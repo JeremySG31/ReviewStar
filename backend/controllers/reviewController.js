@@ -16,7 +16,9 @@ export const createReview = async (req, res) => {
       description,
       rating,
       category,
-      image: imageUrl
+      image: imageUrl,
+      comments: [],
+      likes: 0
     });
     res.status(201).json(review);
   } catch (error) {
@@ -72,5 +74,36 @@ export const deleteReview = async (req, res) => {
     res.json({ message: 'Reseña eliminada' });
   } catch (error) {
     res.status(500).json({ message: 'Error eliminando reseña', error });
+  }
+};
+
+export const addCommentToReview = async (req, res) => {
+  const { id } = req.params;
+  const { comment } = req.body;
+
+  try {
+    const review = await Review.findById(id);
+    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+    review.comments.push(comment);
+    await review.save();
+    res.json(review);
+  } catch (error) {
+    res.status(500).json({ message: 'Error añadiendo comentario', error });
+  }
+};
+
+export const likeReview = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const review = await Review.findById(id);
+    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+    review.likes += 1;
+    await review.save();
+    res.json(review);
+  } catch (error) {
+    res.status(500).json({ message: 'Error dando like a la reseña', error });
   }
 };

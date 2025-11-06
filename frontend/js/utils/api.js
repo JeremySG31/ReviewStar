@@ -47,10 +47,8 @@ export async function apiGetReviews() {
 
 // Obtiene reseñas del usuario actualmente logueado (filtrado en frontend ya que no hay ruta específica)
 export async function apiGetMyReviews() {
-  const all = await apiGetReviews();
-  const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
-  if (!usuario) return [];
-  return all.filter((r) => r.user && (r.user._id === usuario.id || r.user.id === usuario.id || r.user === usuario.id));
+  const resp = await safeFetch(`${API_BASE}/reviews/my`, { headers: { ...getAuthHeaders() } });
+  return resp.data || [];
 }
 
 // payload: { titulo, descripcion, imagenURL, calificacion }
@@ -155,4 +153,21 @@ export async function apiLogin(credentials) {
 export async function apiGetProfile() {
   const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
   return usuario;
+}
+
+export async function apiAddComment(id, comment) {
+  const resp = await safeFetch(`${API_BASE}/reviews/${id}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ comment })
+  });
+  return resp.data;
+}
+
+export async function apiLikeReview(id) {
+  const resp = await safeFetch(`${API_BASE}/reviews/${id}/like`, {
+    method: 'PUT',
+    headers: { ...getAuthHeaders() }
+  });
+  return resp.data;
 }

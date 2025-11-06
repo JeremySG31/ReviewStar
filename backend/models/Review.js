@@ -6,7 +6,9 @@ const reviewSchema = new mongoose.Schema({
   description: { type: String, required: true },
   image: { type: String }, // URL de Cloudinary
   rating: { type: Number, min: 0, max: 5, required: true },
-  category: { type: String, required: true, trim: true }
+  category: { type: String, required: true, trim: true },
+  comments: [{ type: String }],
+  likes: { type: Number, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model('Review', reviewSchema);

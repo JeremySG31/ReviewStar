@@ -18,6 +18,7 @@ const MODAL_ID = 'modalReseña';         // modal para crear/editar en dashboard
 const FORM_ID = 'reseñaForm';
 
 let editingId = null; // id actual en edición (si aplica)
+let allReviewsCache = []; // Caché para guardar todas las reseñas y filtrar en el frontend
 
 // Inicializa reseñas públicas en index.html
 export async function initPublicReviews() {
@@ -44,7 +45,16 @@ export async function initDashboard() {
 
   // Cargar reseñas del usuario
   await loadProfileData();
-  await refreshMyReviews(container);
+  allReviewsCache = await apiGetMyReviews();
+  renderList(container, allReviewsCache, true);
+
+  // Lógica del filtro de categoría para el dashboard
+  const categoryFilter = document.getElementById('categoryFilter');
+  if (categoryFilter) {
+    categoryFilter.addEventListener('change', (e) => {
+      filterAndRenderReviews(container, allReviewsCache, e.target.value, true);
+    });
+  }
 
   // Botón nueva reseña
   const nuevaBtn = document.getElementById('nuevaReseñaBtn');
@@ -66,6 +76,8 @@ export async function initDashboard() {
   container.addEventListener('click', async (e) => {
     const editBtn = e.target.closest('.btn-edit');
     const delBtn = e.target.closest('.btn-delete');
+    const likeBtn = e.target.closest('.btn-like');
+    const commentBtn = e.target.closest('.btn-comment');
 
     if (editBtn) {
       const id = editBtn.dataset.id;
@@ -74,6 +86,17 @@ export async function initDashboard() {
       const id = delBtn.dataset.id;
       if (confirm('¿Eliminar reseña?')) {
         await apiDeleteReview(id);
+        await refreshMyReviews(container);
+      }
+    } else if (likeBtn) {
+      const id = likeBtn.dataset.id;
+      await apiLikeReview(id);
+      await refreshMyReviews(container);
+    } else if (commentBtn) {
+      const id = commentBtn.dataset.id;
+      const comment = prompt('Escribe tu comentario:');
+      if (comment) {
+        await apiAddComment(id, comment);
         await refreshMyReviews(container);
       }
     }
@@ -103,15 +126,17 @@ async function loadProfileData() {
 // Refresca reseñas del usuario logueado
 async function refreshMyReviews(container) {
   try {
-    const reviews = await apiGetMyReviews();
-    renderList(container, reviews, true);
+    allReviewsCache = await apiGetMyReviews();
+    const categoryFilter = document.getElementById('categoryFilter');
+    const currentFilter = categoryFilter ? categoryFilter.value : 'all';
+    filterAndRenderReviews(container, allReviewsCache, currentFilter, true);
 
     // Actualizar estadísticas
     const totalReviewsEl = document.getElementById('totalReviews');
     const avgRatingEl = document.getElementById('avgRating');
     if (totalReviewsEl && avgRatingEl) {
-      totalReviewsEl.textContent = reviews.length;
-      const avg = reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) : 0;
+      totalReviewsEl.textContent = allReviewsCache.length;
+      const avg = allReviewsCache.length > 0 ? (allReviewsCache.reduce((sum, r) => sum + r.rating, 0) / allReviewsCache.length) : 0;
       avgRatingEl.textContent = avg.toFixed(1);
     }
   } catch (err) {
@@ -120,6 +145,16 @@ async function refreshMyReviews(container) {
       <div class="text-center text-red-400">
         No se pudieron cargar tus reseñas.
       </div>`;
+  }
+}
+
+// Filtra y renderiza las reseñas según la categoría seleccionada
+function filterAndRenderReviews(container, reviews, category, controls) {
+  if (category === 'all') {
+    renderList(container, reviews, controls);
+  } else {
+    const filteredReviews = reviews.filter(review => review.category === category);
+    renderList(container, filteredReviews, controls);
   }
 }
 

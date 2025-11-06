@@ -2,11 +2,11 @@
 
 // Renderiza estrellas (calificación de 1..10). Devuelve HTML string.
 export function renderStars(rating) {
-  // rating puede ser entero (1-10)
+  // rating puede ser entero (1-5)
   const full = Math.floor(rating);
   const half = rating % 1 >= 0.5 ? 1 : 0;
   let out = '';
-  for (let i = 1; i <= 10; i++) {
+  for (let i = 1; i <= 5; i++) {
     if (i <= full) out += '<span class="star-view">★</span>';
     else if (half && i === full + 1) out += '<span class="star-view"><span class="half-star">★</span><span class="empty-star">★</span></span>';
     else out += '<span class="star-view">☆</span>';
@@ -31,6 +31,8 @@ export function createReviewCard(review, options = {}) {
   const rating = review.calificacion || review.rating || 0;
   const category = review.category || 'Sin categoría';
   const author = review.autor || review.user || review.usuario || null;
+  const likes = review.likes || 0;
+  const comments = review.comments || [];
 
   const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-40 object-cover rounded-md mb-3">` : '';
 
@@ -49,8 +51,12 @@ export function createReviewCard(review, options = {}) {
         <div class="text-xs text-gray-400 mt-2">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
         <div class="flex items-center gap-2">
           ${renderStars(rating)}
-          <span class="text-yellow-400 font-semibold ml-2">${rating}/10</span>
+          <span class="text-yellow-400 font-semibold ml-2">${rating.toFixed(1)}/5.0</span>
         </div>
+      </div>
+      <div class="flex items-center justify-end gap-4 mt-4">
+        <button class="text-sm btn-like px-2 py-1 bg-white/10 rounded" data-id="${review._id}">👍 ${likes}</button>
+        <button class="text-sm btn-comment px-2 py-1 bg-white/10 rounded" data-id="${review._id}">💬 ${comments.length}</button>
       </div>
     </article>
   `;
