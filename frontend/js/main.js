@@ -39,32 +39,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   // La clave correcta guardada en el login es 'usuario'
   const userData = localStorage.getItem('usuario');
 
-  if(userData && loginBtn && registerBtn && userMenu){
+  if (userData) {
     const user = JSON.parse(userData);
 
-    // Ocultar los botones de registro del cuerpo de la página
+    // Si estamos en una página con botones de login/registro, los ocultamos.
+    if (loginBtn) loginBtn.classList.add('hidden');
+    if (registerBtn) registerBtn.classList.add('hidden');
     if (ctaHeaderRegister) ctaHeaderRegister.style.display = 'none';
     if (ctaFooterRegister) ctaFooterRegister.style.display = 'none';
 
-    // Ocultar botones de login/register usando la clase 'hidden' de Tailwind
-    loginBtn.classList.add('hidden');
-    registerBtn.classList.add('hidden');
-
-    // Mostrar menú de usuario y configurar datos
-    if (userMenu) { // El userMenu solo existe en index.html
+    // Si existe el menú de usuario (en index.html), lo mostramos.
+    if (userMenu) {
       userMenu.classList.remove('hidden');
     }
+
+    // Actualizamos el nombre de usuario donde se encuentre.
     if (usernameDisplay) usernameDisplay.textContent = user.nombre || 'Usuario';
 
-    // Evento para cerrar sesión
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('usuario');
-      localStorage.removeItem('token');
-      window.location.reload();
-    });
-  } else if (loginBtn && registerBtn) {
-    // Si no hay sesión, asegurarse de que los botones de login/registro estén visibles
-    loginBtn.classList.remove('hidden');
-    registerBtn.classList.remove('hidden');
+    // Añadimos el evento de logout SIEMPRE que el botón exista.
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('token');
+        // Redirigimos al inicio para una mejor experiencia de usuario.
+        window.location.href = './index.html';
+      });
+    }
   }
 });

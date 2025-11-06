@@ -14,24 +14,12 @@ function getAuthHeaders() {
 }
 
 async function safeFetch(url, options = {}) {
-  console.log('Iniciando petición a:', url, 'con opciones:', options);
-  
   try {
     const res = await fetch(url, options);
-    console.log('Respuesta recibida:', { 
-      status: res.status, 
-      ok: res.ok,
-      headers: Object.fromEntries(res.headers.entries())
-    });
-
     let data;
     try {
       data = await res.json();
-      console.log('Datos de respuesta:', data);
-    } catch (e) {
-      console.error('Error al parsear JSON:', e);
-      data = null;
-    }
+    } catch (e) { data = null; }
     return { ok: res.ok, status: res.status, data };
   } catch (error) {
     console.error('Error en fetch:', error);
@@ -125,7 +113,6 @@ export async function apiRegister(user) {
 }
 
 export async function apiLogin(credentials) {
-  console.log('iniciando login ...');
   // credentials: { email, contrasenia }
   const body = {
     email: credentials.email,
@@ -142,10 +129,8 @@ export async function apiLogin(credentials) {
   });
 
   if (resp.ok && resp.data) {
-    console.log('Login exitoso');
     return { ok: true, ...resp.data };
   }
-  console.log('Error en login:', resp.data);
   return { ok: false, message: resp.data?.message || 'Error en login' };
 }
 

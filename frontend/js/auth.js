@@ -33,7 +33,6 @@ export async function handleLogin({
     }
 
     if (!result.ok || !result.token) {
-      console.log('Error de autenticación');
       form.classList.add('shake');
 
       if (inputElements.email) {
@@ -107,8 +106,6 @@ export async function handleLogin({
 
     return result;
   } catch (err) {
-    console.error('Error de red:', err);
-
     if (inputElements.email) {
       inputElements.email.disabled = false;
       inputElements.email.classList.remove('border-red-500');
