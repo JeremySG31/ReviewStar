@@ -13,7 +13,7 @@ import { validateReviewPayload } from './utils/validation.js';
 
 // Selectores esperados en los HTML
 const PUBLIC_LIST_ID = 'reseñas';       // en index.html
-const DASHBOARD_LIST_ID = 'misReseñas'; // en dashboard.html
+const DASHBOARD_LIST_ID = 'misReseñas'; // en profile.html
 const MODAL_ID = 'modalReseña';         // modal para crear/editar en dashboard
 const FORM_ID = 'reseñaForm';
 

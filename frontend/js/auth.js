@@ -102,7 +102,7 @@ export async function handleLogin({
     }, 1000);
 
     setTimeout(() => {
-      window.location.href = './dashboard.html';
+      window.location.href = './profile.html';
     }, 1500);
 
     return result;
