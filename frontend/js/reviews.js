@@ -56,9 +56,13 @@ export async function initDashboard() {
     });
   }
 
-  // Botón nueva reseña
+  // Botón nueva reseña (Navbar)
   const nuevaBtn = document.getElementById('nuevaReseñaBtn');
   if (nuevaBtn) nuevaBtn.addEventListener('click', () => openModal());
+
+  // Botón nueva reseña (FAB Flotante)
+  const fabBtn = document.getElementById('fabNuevaReseña');
+  if (fabBtn) fabBtn.addEventListener('click', () => openModal());
 
   // Formulario de reseña
   const form = document.getElementById(FORM_ID);
@@ -252,7 +256,7 @@ async function openModal(editId) {
     for (let i = 0; i <= starIndex; i++) {
       stars[i].classList.remove('star-clicked'); // Prevenir re-trigger si se clickea rápido
       // Forzar reflow para reiniciar la animación
-      void stars[i].offsetWidth; 
+      void stars[i].offsetWidth;
       stars[i].classList.add('star-clicked');
     }
     // Limpiar la clase de animación después de que termine

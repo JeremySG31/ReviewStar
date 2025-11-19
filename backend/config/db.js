@@ -43,6 +43,13 @@ const connectDB = async () => {
 
   } catch (error) {
     console.error('❌ Error fatal al conectar MongoDB:', error);
+    
+    // Sugerencia específica para errores de conexión comunes
+    if (error.name === 'MongooseServerSelectionError') {
+      console.log('\n💡 TIP: Si usas MongoDB Atlas, verifica que tu IP actual esté permitida en "Network Access".');
+      console.log('   Puedes permitir acceso desde cualquier lugar (0.0.0.0/0) para desarrollo.\n');
+    }
+
     process.exit(1);
   }
 };

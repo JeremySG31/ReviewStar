@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,16 +17,54 @@
       color: transparent;
       font-weight: 700;
     }
+
+    /* Animaciones para el botón Nueva Reseña */
+    #fabNuevaReseña {
+      transition: all 0.3s ease;
+    }
+
+    #fabNuevaReseña:hover {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
+    }
+
+    #fabNuevaReseña svg {
+      transition: transform 0.3s ease;
+    }
+
+    #fabNuevaReseña:hover svg {
+      transform: rotate(90deg);
+    }
+
+    /* Animación de pulso sutil */
+    @keyframes pulse-subtle {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      50% {
+        box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3), 0 4px 6px -2px rgba(139, 92, 246, 0.2);
+      }
+    }
+
+    #fabNuevaReseña {
+      animation: pulse-subtle 3s ease-in-out infinite;
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50">
+
+<body
+  class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50">
 
   <!-- Navbar -->
   <nav class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10">
     <a href="./index.html" class="text-2xl brand">ReviewStar ⭐</a>
     <div id="userArea" class="flex items-center gap-3">
-      <button id="nuevaReseñaBtn" class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 rounded-md font-semibold transition">+ Nueva Reseña</button>
-      <button id="logoutBtn" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition text-sm">Cerrar sesión</button>
+      <button id="logoutBtn"
+        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition text-sm">Cerrar
+        sesión</button>
     </div>
   </nav>
 
@@ -34,7 +73,7 @@
     <header class="bg-black/30 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8">
       <!-- Imagen de portada (placeholder) -->
       <div class="h-40 bg-gradient-to-r from-blue-700 to-purple-700"></div>
-      
+
       <div class="p-6">
         <div class="flex flex-col items-center -mt-20">
           <!-- Info de Usuario y Estadísticas -->
@@ -60,17 +99,37 @@
     <section class="py-16 px-6 bg-black/20 backdrop-blur-sm rounded-xl">
       <div class="max-w-6xl mx-auto">
         <h2 class="text-3xl font-bold mb-8 text-center">Mis Reseñas</h2>
-        <div class="flex justify-end mb-4">
-          <select id="categoryFilter" class="px-4 py-2 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
-            <option value="all" class="bg-gray-800 text-white">Todas las categorías</option>
-            <option value="Películas" class="bg-gray-800 text-white">Películas</option>
-            <option value="Series" class="bg-gray-800 text-white">Series</option>
-            <option value="Videojuegos" class="bg-gray-800 text-white">Videojuegos</option>
-            <option value="Libros" class="bg-gray-800 text-white">Libros</option>
-            <option value="Tecnología" class="bg-gray-800 text-white">Tecnología</option>
-            <option value="Otro" class="bg-gray-800 text-white">Otro</option>
-          </select>
+
+        <!-- Barra de acciones: Botón Nueva Reseña + Filtro -->
+        <div class="flex justify-end items-center gap-3 mb-6">
+          <button id="fabNuevaReseña"
+            class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded font-semibold shadow-lg flex items-center gap-1.5 text-xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nueva Reseña
+          </button>
+
+          <div class="relative group w-64">
+            <select id="categoryFilter"
+              class="appearance-none w-full px-5 py-3 rounded-xl bg-gray-900/60 backdrop-blur-md border border-gray-700 text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all cursor-pointer hover:bg-gray-800 hover:border-gray-600 shadow-lg">
+              <option value="all" class="bg-gray-900">✨ Todas las categorías</option>
+              <option value="Películas" class="bg-gray-900">🎬 Películas</option>
+              <option value="Series" class="bg-gray-900">📺 Series</option>
+              <option value="Videojuegos" class="bg-gray-900">🎮 Videojuegos</option>
+              <option value="Libros" class="bg-gray-900">📚 Libros</option>
+              <option value="Tecnología" class="bg-gray-900">💻 Tecnología</option>
+              <option value="Otro" class="bg-gray-900">🔮 Otro</option>
+            </select>
+            <div
+              class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400 group-hover:text-blue-400 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
         </div>
+
         <div id="misReseñas" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <!-- Las tarjetas de reseña se insertarán aquí dinámicamente -->
         </div>
@@ -79,21 +138,25 @@
   </main>
 
   <!-- Modal -->
-  <div id="modalReseña" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+  <div id="modalReseña" style="z-index: 110;"
+    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
     <div class="bg-gray-900/80 border border-white/10 rounded-xl p-6 w-full max-w-lg relative">
       <h3 id="modalTitulo" class="text-xl font-semibold mb-4">Nueva reseña</h3>
       <form id="reseñaForm" class="space-y-4">
         <div>
           <label class="block mb-1">Título</label>
-          <input id="titulo" type="text" required class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+          <input id="titulo" type="text" required
+            class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
         </div>
         <div>
           <label class="block mb-1">Descripción</label>
-          <textarea id="contenido" rows="4" required class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"></textarea>
+          <textarea id="contenido" rows="4" required
+            class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"></textarea>
         </div>
         <div>
           <label for="category" class="block mb-1">Categoría</label>
-          <select id="category" required class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+          <select id="category" required
+            class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
             <option value="" class="bg-gray-800 text-white">-- Elige una categoría --</option>
             <option value="Películas" class="bg-gray-800 text-white">Películas</option>
             <option value="Series" class="bg-gray-800 text-white">Series</option>
@@ -105,7 +168,8 @@
         </div>
         <div>
           <label for="reviewImage" class="block mb-1">Subir imagen (opcional)</label>
-          <label id="fileUploadLabel" for="reviewImage" class="inline-block cursor-pointer px-4 py-2 border border-gray-600 bg-gray-800/40 text-gray-300 hover:bg-gray-700 rounded-md font-semibold transition text-sm truncate max-w-full">
+          <label id="fileUploadLabel" for="reviewImage"
+            class="inline-block cursor-pointer px-4 py-2 border border-gray-600 bg-gray-800/40 text-gray-300 hover:bg-gray-700 rounded-md font-semibold transition text-sm truncate max-w-full">
             Elegir archivo
           </label>
           <!-- El input real está oculto, la label actúa como el botón -->
@@ -114,14 +178,18 @@
         <div>
           <label class="block mb-1">Calificación</label>
           <div id="ratingStars" class="flex text-3xl cursor-pointer text-gray-500">
-            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
+            <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star"
+              data-value="3">★</span><span class="star" data-value="4">★</span><span class="star"
+              data-value="5">★</span>
           </div>
           <span id="ratingValueDisplay" class="text-sm text-gray-400 mt-1 block">0.0 / 5.0</span>
           <input id="ratingInput" type="hidden" value="0">
         </div>
         <div class="flex justify-end gap-4 pt-2">
-          <button type="button" id="cancelarBtn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-semibold transition">Cancelar</button>
-          <button id="submitReviewBtn" type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition">Guardar</button>
+          <button type="button" id="cancelarBtn"
+            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-semibold transition">Cancelar</button>
+          <button id="submitReviewBtn" type="submit"
+            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition">Guardar</button>
         </div>
       </form>
     </div>
@@ -130,4 +198,5 @@
   <!-- Scripts -->
   <script type="module" src="./js/main.js"></script>
 </body>
+
 </html>

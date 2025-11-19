@@ -1,97 +1,137 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registrarse - ReviewStar</title>
-<link href="./css/output.css" rel="stylesheet">
-<link href="./css/animations.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  .brand {
-    background: linear-gradient(to right,#3b82f6,#22d3ee);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    font-weight: 700;
-  }
-  @keyframes bounceFade {
-    0% { opacity: 0; transform: translateY(-20px) scale(0.95); }
-    60% { opacity: 1; transform: translateY(10px) scale(1.02); }
-    100% { transform: translateY(0) scale(1); }
-  }
-  .bounce-fade { animation: bounceFade 0.8s ease forwards; }
-  /* Ocultar iconos nativos de mostrar/ocultar contraseña en distintos navegadores
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrarse - ReviewStar</title>
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="./css/animations.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    .brand {
+      background: linear-gradient(to right, #3b82f6, #22d3ee);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      font-weight: 700;
+    }
+
+    @keyframes bounceFade {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(10px) scale(1.02);
+      }
+
+      100% {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .bounce-fade {
+      animation: bounceFade 0.8s ease forwards;
+    }
+
+    /* Ocultar iconos nativos de mostrar/ocultar contraseña en distintos navegadores
      - ::-ms-reveal / ::-ms-clear para Edge/IE
      - varios ::-webkit- pseudo-elementos para Chromium/Safari (si existen)
      También forzamos appearance: none para evitar controles nativos en algunos motores. */
-  input[type="password"] {
-    -webkit-appearance: none;
-    appearance: none;
-    padding-right: 2.5rem; /* espacio para el ojo emoji */
-  }
-  input[type="password"]::-ms-reveal,
-  input[type="password"]::-ms-clear {
-    display: none;
-  }
-  input[type="password"]::-webkit-clear-button,
-  input[type="password"]::-webkit-credentials-auto-fill-button,
-  input[type="password"]::-webkit-textfield-decoration-container,
-  input[type="password"]::-webkit-textfield-decoration {
-    display: none !important;
-  }
-</style>
+    input[type="password"] {
+      -webkit-appearance: none;
+      appearance: none;
+      padding-right: 2.5rem;
+      /* espacio para el ojo emoji */
+    }
+
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+      display: none;
+    }
+
+    input[type="password"]::-webkit-clear-button,
+    input[type="password"]::-webkit-credentials-auto-fill-button,
+    input[type="password"]::-webkit-textfield-decoration-container,
+    input[type="password"]::-webkit-textfield-decoration {
+      display: none !important;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen flex items-center justify-center text-white font-[Poppins]">
 
-<main class="bg-black/20 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full max-w-sm bounce-fade">
-  <div class="text-center mb-6">
-    <a href="./index.html" class="text-2xl brand">ReviewStar ⭐</a>
-  </div>
+<body
+  class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen flex items-center justify-center text-white font-[Poppins]">
 
-  <h2 class="text-xl font-semibold mb-4 text-center fade-up">Registrarse</h2>
-
-  <form id="registerForm" class="space-y-4 fade-up">
-    <div class="fade-up">
-      <!-- Se muestra "Usuario" en lugar de "Nombre" según solicitud -->
-      <label for="nombre" class="block mb-1 text-sm text-gray-300">Usuario</label>
-      <!-- id cambiado a 'nombre' para coincidir con el campo esperado por el backend (nombre) -->
-      <input id="nombre" type="text" required
-        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
-      <p id="nombreError" class="text-sm text-red-400 mt-1 hidden"></p>
-    </div>
-    <div class="fade-up">
-      <label for="email" class="block mb-1 text-sm text-gray-300">Correo electrónico</label>
-      <input id="email" type="email" required
-        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
-      <p id="emailError" class="text-sm text-red-400 mt-1 hidden"></p>
-    </div>
-    <div class="fade-up relative">
-      <label for="password" class="block mb-1 text-sm text-gray-300">Contraseña</label>
-      <!-- autocomplete se ajusta para mejorar compatibilidad y evitar UI nativa en algunos navegadores -->
-      <input id="password" type="password" autocomplete="new-password" required
-        class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
-      <span id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-white">👁️</span>
-      <p id="passwordError" class="text-sm text-red-400 mt-1 hidden"></p>
+  <main class="bg-black/20 backdrop-blur-sm p-6 rounded-xl shadow-lg w-full max-w-sm bounce-fade">
+    <div class="text-center mb-6">
+      <a href="./index.html" class="text-2xl brand">ReviewStar ⭐</a>
     </div>
 
-    <!-- Mensaje de error general (se muestra arriba del botón, no encima de los campos) -->
-    <p id="formError" class="text-sm text-red-400 mt-1 hidden text-center"></p>
+    <h2 class="text-xl font-semibold mb-4 text-center fade-up">Registrarse</h2>
 
-    <button type="submit"
-      class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition button-click">
-      Registrarse
-    </button>
+    <form id="registerForm" class="space-y-4 fade-up">
+      <div class="fade-up">
+        <!-- Se muestra "Usuario" en lugar de "Nombre" según solicitud -->
+        <label for="nombre" class="block mb-1 text-sm text-gray-300">Usuario</label>
+        <!-- id cambiado a 'nombre' para coincidir con el campo esperado por el backend (nombre) -->
+        <input id="nombre" type="text" required
+          class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+        <p id="nombreError" class="text-sm text-red-400 mt-1 hidden"></p>
+      </div>
+      <div class="fade-up">
+        <label for="email" class="block mb-1 text-sm text-gray-300">Correo electrónico</label>
+        <input id="email" type="email" required
+          class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+        <p id="emailError" class="text-sm text-red-400 mt-1 hidden"></p>
+      </div>
+      <div class="fade-up relative">
+        <label for="password" class="block mb-1 text-sm text-gray-300">Contraseña</label>
+        <!-- autocomplete se ajusta para mejorar compatibilidad y evitar UI nativa en algunos navegadores -->
+        <input id="password" type="password" autocomplete="new-password" required
+          class="w-full p-2.5 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+        <span id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-white">👁️</span>
+        <p id="passwordError" class="text-sm text-red-400 mt-1 hidden"></p>
+      </div>
+
+      <!-- Mensaje de error general (se muestra arriba del botón, no encima de los campos) -->
+      <p id="formError" class="text-sm text-red-400 mt-1 hidden text-center"></p>
+
+      <button type="submit"
+        class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition button-click">
+        Registrarse
+      </button>
 
 
-    <p class="text-center text-sm text-gray-400 mt-3 fade-up">
-      ¿Ya tienes cuenta?
-      <a href="./login.html" class="text-blue-400 hover:underline">Inicia sesión</a>
-    </p>
-  </form>
-</main>
+      <p class="text-center text-sm text-gray-400 mt-3 fade-up">
+        ¿Ya tienes cuenta?
+        <a href="./login.html" class="text-blue-400 hover:underline">Inicia sesión</a>
+      </p>
 
+      <div class="relative flex py-2 items-center fade-up">
+        <div class="flex-grow border-t border-gray-600"></div>
+        <span class="flex-shrink-0 mx-4 text-gray-400 text-sm">O regístrate con</span>
+        <div class="flex-grow border-t border-gray-600"></div>
+      </div>
+
+      <!-- Botón de Google (Configurado dinámicamente por google-init.js) -->
+      <div id="g_id_onload" data-context="signup" data-ux_mode="popup" data-callback="handleGoogleCredentialResponse"
+        data-auto_prompt="false">
+      </div>
+
+      <div class="g_id_signin flex justify-center" data-type="standard" data-shape="rectangular"
+        data-theme="filled_black" data-text="signup_with" data-size="large" data-logo_alignment="left">
+      </div>
+
+    </form>
+  </main>
+
+  <script type="module" src="./js/google-init.js"></script>
   <script type="module" src="./js/register.js"></script>
+  <script type="module" src="./js/auth.js"></script>
 </body>
+
 </html>

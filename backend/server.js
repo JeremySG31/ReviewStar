@@ -43,12 +43,19 @@ app.get('/api/test', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/reviews', reviewRoutes);
 
+// Endpoint público de configuración (para frontend)
+app.get('/api/config', (req, res) => {
+  res.json({
+    googleClientId: process.env.GOOGLE_CLIENT_ID || ''
+  });
+});
+
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    message: process.env.NODE_ENV === 'production' 
+    message: process.env.NODE_ENV === 'production'
       ? 'Error interno del servidor'
       : err.message
   });

@@ -183,3 +183,35 @@ export async function handleRegister({
     }
   }
 }
+
+/**
+ * Maneja la respuesta de Google Identity Services
+ */
+import { apiGoogleLogin } from './utils/api.js';
+
+export async function handleGoogleCredentialResponse(response) {
+  try {
+    const result = await apiGoogleLogin(response.credential);
+
+    if (result.ok && result.token) {
+      localStorage.setItem('token', result.token);
+      if (result.usuario) {
+        localStorage.setItem('usuario', JSON.stringify(result.usuario));
+      }
+
+      showToast('¡Inicio de sesión con Google exitoso!', 'rgba(0,128,0,0.7)');
+
+      setTimeout(() => {
+        window.location.href = './profile.html';
+      }, 1500);
+    } else {
+      showToast(result.message || 'Error al iniciar sesión con Google', 'rgba(255,0,0,0.7)');
+    }
+  } catch (error) {
+    console.error('Error Google Login:', error);
+    showToast('Error de conexión con Google', 'rgba(255,0,0,0.7)');
+  }
+}
+
+// Exponer globalmente para que el callback de Google lo encuentre
+window.handleGoogleCredentialResponse = handleGoogleCredentialResponse;

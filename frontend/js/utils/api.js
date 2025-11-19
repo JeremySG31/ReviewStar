@@ -33,7 +33,7 @@ export async function apiGetReviews() {
   return resp.data || [];
 }
 
-// Obtiene reseñas del usuario actualmente logueado (filtrado en frontend ya que no hay ruta específica)
+// Obtiene reseñas del usuario actualmente logueado
 export async function apiGetMyReviews() {
   const resp = await safeFetch(`${API_BASE}/reviews/my`, { headers: { ...getAuthHeaders() } });
   return resp.data || [];
@@ -49,9 +49,12 @@ export async function apiCreateReview(payload) {
 
   // Si se proporciona un archivo (input type=file), frontend puede pasar FormData
   if (payload.formData instanceof FormData) {
-    // FormData should already contain 'title','description','rating' and optional file 'image'
-    const headers = { ...getAuthHeaders() };
-    const resp = await safeFetch(`${API_BASE}/reviews/create`, { method: 'POST', headers, body: payload.formData });
+    const headers = getAuthHeaders(); // No incluir Content-Type, el navegador lo añade automáticamente
+    const resp = await safeFetch(`${API_BASE}/reviews/create`, {
+      method: 'POST',
+      headers,
+      body: payload.formData // Pasar FormData directamente
+    });
     return resp.data;
   }
 
@@ -64,8 +67,6 @@ export async function apiCreateReview(payload) {
 }
 
 export async function apiUpdateReview(id, payload) {
-  // Asumimos que el payload es FormData para la actualización también.
-  // El backend debe estar preparado para recibir FormData en el endpoint de update.
   const headers = { ...getAuthHeaders() };
   const resp = await safeFetch(`${API_BASE}/reviews/update/${id}`, { method: 'PUT', headers, body: payload });
   return resp.data;
@@ -81,65 +82,45 @@ export async function apiDeleteReview(id) {
 
 /* Auth */
 export async function apiRegister(user) {
-  console.log('Iniciando registro con datos:', { 
-    nombre: user.nombre, 
-    email: user.email,
-    hasPassword: !!user.password 
-  });
-  
-  // user: { nombre, email, contrasenia }
   const body = {
     nombre: user.nombre,
     email: user.email,
     password: user.contrasenia || user.password
   };
 
-  const url = `${API_BASE}/auth/register`;
-  console.log('URL de registro:', url);
-  console.log('Datos a enviar:', body);
-  
-  const resp = await safeFetch(url, {
+  const resp = await safeFetch(`${API_BASE}/auth/register`, {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(body)
   });
 
-  // On success backend returns token and usuario
   if (resp.ok && resp.data) return { ok: true, ...resp.data };
   return { ok: false, message: resp.data?.message || 'Error en registro' };
 }
 
 export async function apiLogin(credentials) {
-  // credentials: { email, contrasenia }
   const body = {
     email: credentials.email,
     password: credentials.contrasenia || credentials.password
   };
-  
+
   const resp = await safeFetch(`${API_BASE}/auth/login`, {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(body)
   });
 
-  if (resp.ok && resp.data) {
-    return { ok: true, ...resp.data };
-  }
+  if (resp.ok && resp.data) return { ok: true, ...resp.data };
   return { ok: false, message: resp.data?.message || 'Error en login' };
 }
 
-/* Perfil (no hay endpoint en backend, usamos localStorage) */
+/* Perfil */
 export async function apiGetProfile() {
   const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
   return usuario;
 }
 
+/* Interactions */
 export async function apiAddComment(id, comment) {
   const resp = await safeFetch(`${API_BASE}/reviews/${id}/comments`, {
     method: 'POST',
@@ -155,4 +136,36 @@ export async function apiLikeReview(id) {
     headers: { ...getAuthHeaders() }
   });
   return resp.data;
+}
+
+/* Password Recovery */
+export async function apiForgotPassword(email) {
+  const resp = await safeFetch(`${API_BASE}/auth/forgotpassword`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  if (resp.ok) return { ok: true, ...resp.data };
+  return { ok: false, message: resp.data?.message || 'Error' };
+}
+
+export async function apiResetPassword(token, password) {
+  const resp = await safeFetch(`${API_BASE}/auth/resetpassword/${token}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password })
+  });
+  if (resp.ok) return { ok: true, ...resp.data };
+  return { ok: false, message: resp.data?.message || 'Error' };
+}
+
+/* Google Auth */
+export async function apiGoogleLogin(token) {
+  const resp = await safeFetch(`${API_BASE}/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token })
+  });
+  if (resp.ok && resp.data) return { ok: true, ...resp.data };
+  return { ok: false, message: resp.data?.message || 'Error en Google Login' };
 }

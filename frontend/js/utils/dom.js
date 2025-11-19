@@ -34,7 +34,7 @@ export function createReviewCard(review, options = {}) {
   const likes = review.likes || 0;
   const comments = review.comments || [];
 
-  const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-40 object-cover rounded-md mb-3">` : '';
+  const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-40 object-cover rounded-md mb-3" onerror="this.closest('article').remove()">` : '';
 
   const short = (description || '').length > 140 ? (description || '').slice(0, 140) + '...' : (description || '');
 
@@ -64,6 +64,6 @@ export function createReviewCard(review, options = {}) {
 
 export function escapeHtml(str = '') {
   return String(str).replace(/[&<>"'`=\/]/g, s => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
   }[s]));
 }

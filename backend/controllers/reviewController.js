@@ -6,7 +6,12 @@ export const createReview = async (req, res) => {
   try {
     let imageUrl = '';
     if (req.files?.image) {
-      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath);
+      // Sanitizar nombre de categoría para usar como carpeta (ej. "Video Juegos" -> "Video_Juegos")
+      const folderName = category ? `Home/categoria/${category.trim().replace(/\s+/g, '_')}` : 'Home/categoria/General';
+
+      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
+        folder: folderName
+      });
       imageUrl = result.secure_url;
     }
 
@@ -35,6 +40,16 @@ export const getReviews = async (req, res) => {
   }
 };
 
+// Obtener solo las reseñas del usuario autenticado
+export const getMyReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ user: req.user._id }).populate('user', 'nombre email').sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: 'Error obteniendo tus reseñas', error });
+  }
+};
+
 export const updateReview = async (req, res) => {
   const { id } = req.params;
   const { title, description, rating, category } = req.body;
@@ -51,7 +66,13 @@ export const updateReview = async (req, res) => {
     review.category = category || review.category;
 
     if (req.files?.image) {
-      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath);
+      // Usar la categoría nueva o la existente si no se cambió
+      const catForFolder = category || review.category;
+      const folderName = catForFolder ? `Home/categoria/${catForFolder.trim().replace(/\s+/g, '_')}` : 'Home/categoria/General';
+
+      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
+        folder: folderName
+      });
       review.image = result.secure_url;
     }
 
