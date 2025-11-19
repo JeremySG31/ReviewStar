@@ -42,7 +42,7 @@ export function createReviewCard(review, options = {}) {
   const categoryHtml = `<span class="absolute top-2 left-2 bg-blue-600/80 text-white text-xs font-semibold px-2 py-1 rounded-full">${escapeHtml(category)}</span>`;
 
   return `
-    <article class="bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition" data-id="${review._id}">
+    <article class="review-card bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition" data-id="${review._id}">
       ${controlsHtml}
       ${imgHtml}
       <h3 class="font-semibold text-lg mb-1">${escapeHtml(title)}</h3>
@@ -55,8 +55,8 @@ export function createReviewCard(review, options = {}) {
         </div>
       </div>
       <div class="flex items-center justify-end gap-4 mt-4">
-        <button class="text-sm btn-like px-2 py-1 bg-white/10 rounded" data-id="${review._id}">👍 ${likes}</button>
-        <button class="text-sm btn-comment px-2 py-1 bg-white/10 rounded" data-id="${review._id}">💬 ${comments.length}</button>
+        <button class="text-sm btn-like px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition" data-id="${review._id}">❤️ ${likes}</button>
+        <button class="text-sm btn-comment px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition" data-id="${review._id}">💬 ${comments.length}</button>
       </div>
     </article>
   `;

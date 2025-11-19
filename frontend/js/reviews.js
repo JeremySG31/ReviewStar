@@ -94,15 +94,15 @@ export async function initDashboard() {
       }
     } else if (likeBtn) {
       const id = likeBtn.dataset.id;
+      // Agregar animación de like
+      likeBtn.classList.add('like-animation');
+      setTimeout(() => likeBtn.classList.remove('like-animation'), 600);
+
       await apiLikeReview(id);
       await refreshMyReviews(container);
     } else if (commentBtn) {
       const id = commentBtn.dataset.id;
-      const comment = prompt('Escribe tu comentario:');
-      if (comment) {
-        await apiAddComment(id, comment);
-        await refreshMyReviews(container);
-      }
+      openCommentsModal(id);
     }
   });
 }
@@ -137,11 +137,11 @@ async function refreshMyReviews(container) {
 
     // Actualizar estadísticas
     const totalReviewsEl = document.getElementById('totalReviews');
-    const avgRatingEl = document.getElementById('avgRating');
-    if (totalReviewsEl && avgRatingEl) {
+    const totalLikesEl = document.getElementById('totalLikes');
+    if (totalReviewsEl && totalLikesEl) {
       totalReviewsEl.textContent = allReviewsCache.length;
-      const avg = allReviewsCache.length > 0 ? (allReviewsCache.reduce((sum, r) => sum + r.rating, 0) / allReviewsCache.length) : 0;
-      avgRatingEl.textContent = avg.toFixed(1);
+      const totalLikes = allReviewsCache.reduce((sum, r) => sum + (r.likes || 0), 0);
+      totalLikesEl.textContent = totalLikes;
     }
   } catch (err) {
     console.error(err);
@@ -353,4 +353,91 @@ async function submitReviewForm(form, container, modal) {
     console.error(err);
     alert('Error al guardar la reseña');
   }
+}
+
+// Abre el modal de comentarios
+async function openCommentsModal(reviewId) {
+  const modal = document.getElementById('modalComentarios');
+  const reviewContent = document.getElementById('comentariosReviewContent');
+  const listaComentarios = document.getElementById('listaComentarios');
+  const form = document.getElementById('nuevoComentarioForm');
+  const cerrarBtn = document.getElementById('cerrarComentariosBtn');
+
+  if (!modal || !reviewContent || !listaComentarios) return;
+
+  // Obtener la reseña completa
+  const review = allReviewsCache.find(r => r._id === reviewId);
+  if (!review) return;
+
+  // Renderizar la reseña completa en la parte superior
+  reviewContent.innerHTML = createReviewCard(review, { controls: false });
+
+  // Renderizar comentarios existentes
+  renderComments(review.comments || []);
+
+  // Configurar formulario de nuevo comentario
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const textarea = document.getElementById('nuevoComentarioTexto');
+    const comment = textarea.value.trim();
+
+    if (comment) {
+      try {
+        await apiAddComment(reviewId, comment);
+        textarea.value = '';
+
+        // Refrescar reseñas y reabrir modal
+        await refreshMyReviews(document.getElementById(DASHBOARD_LIST_ID));
+        const updatedReview = allReviewsCache.find(r => r._id === reviewId);
+        if (updatedReview) {
+          renderComments(updatedReview.comments || []);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error al agregar comentario');
+      }
+    }
+  };
+
+  // Botón cerrar
+  cerrarBtn.onclick = () => closeCommentsModal();
+
+  // Cerrar al hacer clic fuera del modal
+  modal.onclick = (e) => {
+    if (e.target === modal) closeCommentsModal();
+  };
+
+  modal.classList.remove('hidden');
+}
+
+// Cierra el modal de comentarios
+function closeCommentsModal() {
+  const modal = document.getElementById('modalComentarios');
+  if (modal) modal.classList.add('hidden');
+}
+
+// Renderiza la lista de comentarios
+function renderComments(comments) {
+  const listaComentarios = document.getElementById('listaComentarios');
+  if (!listaComentarios) return;
+
+  const commentsHtml = comments.length > 0
+    ? comments.map(c => `
+        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+          <p class="text-gray-200">${escapeHtml(c)}</p>
+        </div>
+      `).join('')
+    : '<p class="text-gray-400 text-center">No hay comentarios aún. ¡Sé el primero en comentar!</p>';
+
+  listaComentarios.innerHTML = `
+    <h4 class="font-semibold text-lg mb-3">Todos los comentarios (${comments.length})</h4>
+    ${commentsHtml}
+  `;
+}
+
+// Función helper para escapar HTML
+function escapeHtml(str = '') {
+  return String(str).replace(/[&<>"'`=\/]/g, s => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+  }[s]));
 }

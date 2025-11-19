@@ -86,8 +86,8 @@
                 <p class="text-sm text-gray-400">Reseñas</p>
               </div>
               <div class="text-center">
-                <p class="text-2xl font-bold text-yellow-400" id="avgRating">0.0</p>
-                <p class="text-sm text-gray-400">Rating</p>
+                <p class="text-2xl font-bold text-red-400" id="totalLikes">0</p>
+                <p class="text-sm text-gray-400">Likes</p>
               </div>
             </div>
           </div>
@@ -195,6 +195,24 @@
     </div>
   </div>
 
+
+  <!-- Modal de Comentarios -->
+  <div id="modalComentarios" style="z-index: 120;" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+    <div class="modal-show bg-gray-900/90 border border-white/10 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+      <button id="cerrarComentariosBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl transition">&times;</button>
+      <h3 class="text-2xl font-bold mb-6">💬 Comentarios</h3>
+      <div id="comentariosReviewContent" class="bg-gray-800/50 rounded-xl p-4 mb-6 border border-gray-700"></div>
+      <form id="nuevoComentarioForm" class="mb-6">
+        <label class="block mb-2 font-semibold">✍️ Agregar comentario</label>
+        <textarea id="nuevoComentarioTexto" rows="3" required class="w-full p-3 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Escribe tu comentario aquí..."></textarea>
+        <button type="submit" class="mt-3 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition">Publicar Comentario</button>
+      </form>
+      <div id="listaComentarios" class="space-y-4">
+        <h4 class="font-semibold text-lg mb-3">Todos los comentarios</h4>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script type="module" src="./js/main.js"></script>
 </body>
