@@ -178,7 +178,7 @@ export async function handleRegister({
     if (errorElements.form) {
       showFormError(
         errorElements.form,
-        'Error de red: no se pudo contactar al servidor. Asegúrate de que el backend esté corriendo en http://localhost:5000'
+        'Error de red: no se pudo contactar al servidor. Asegúrate de que el backend esté corriendo.'
       );
     }
   }
