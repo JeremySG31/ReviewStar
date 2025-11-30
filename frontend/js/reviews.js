@@ -139,9 +139,18 @@ async function refreshMyReviews(container) {
     const totalReviewsEl = document.getElementById('totalReviews');
     const totalLikesEl = document.getElementById('totalLikes');
     if (totalReviewsEl && totalLikesEl) {
-      totalReviewsEl.textContent = allReviewsCache.length;
-      const totalLikes = allReviewsCache.reduce((sum, r) => sum + (r.likes || 0), 0);
-      totalLikesEl.textContent = totalLikes;
+      // Intentar usar los datos del usuario persistido si están disponibles
+      const user = JSON.parse(localStorage.getItem('usuario') || 'null');
+
+      if (user && typeof user.totalReviews === 'number') {
+        totalReviewsEl.textContent = user.totalReviews;
+        totalLikesEl.textContent = user.totalLikes;
+      } else {
+        // Fallback: Calcular desde el array (solo si no hay datos persistidos)
+        totalReviewsEl.textContent = allReviewsCache.length;
+        const totalLikes = allReviewsCache.reduce((sum, r) => sum + (r.likes || 0), 0);
+        totalLikesEl.textContent = totalLikes;
+      }
     }
   } catch (err) {
     console.error(err);
@@ -370,7 +379,17 @@ async function openCommentsModal(reviewId) {
   if (!review) return;
 
   // Renderizar la reseña completa en la parte superior
-  reviewContent.innerHTML = createReviewCard(review, { controls: false });
+  // Renderiza la cabecera del modal (SOLO TÍTULO, sin imagen)
+  reviewContent.innerHTML = `
+    <div class="border-b border-gray-700 pb-4 mb-4">
+      <h3 class="text-xl font-bold text-white mb-2">${escapeHtml(review.title)}</h3>
+      <p class="text-gray-400 text-sm">${escapeHtml(review.description)}</p>
+      <div class="flex items-center gap-2 mt-2">
+        <span class="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded-full">${escapeHtml(review.category)}</span>
+        <span class="text-xs text-gray-500">por ${escapeHtml(review.user?.nombre || 'Anónimo')}</span>
+      </div>
+    </div>
+  `;
 
   // Renderizar comentarios existentes
   renderComments(review.comments || []);

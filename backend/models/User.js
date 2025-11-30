@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: false }, // Opcional si usa Google
   googleId: { type: String, unique: true, sparse: true }, // ID de Google
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  totalReviews: { type: Number, default: 0 },
+  totalLikes: { type: Number, default: 0 },
   resetPasswordToken: String,
   resetPasswordExpire: Date
 }, { timestamps: true });

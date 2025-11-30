@@ -41,7 +41,9 @@ export const register = async (req, res) => {
       usuario: {
         id: user._id,
         nombre: user.nombre,
-        email: user.email
+        email: user.email,
+        totalReviews: user.totalReviews,
+        totalLikes: user.totalLikes
       }
     });
   } catch (error) {
@@ -64,7 +66,13 @@ export const login = async (req, res) => {
 
     res.json({
       token: generateToken(user._id),
-      usuario: { id: user._id, nombre: user.nombre, email: user.email }
+      usuario: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        totalReviews: user.totalReviews,
+        totalLikes: user.totalLikes
+      }
     });
   } catch (error) {
     res.status(500).json({ message: 'Error en login', error });
@@ -193,7 +201,14 @@ export const googleLogin = async (req, res) => {
 
     res.json({
       token: generateToken(user._id),
-      usuario: { id: user._id, nombre: user.nombre, email: user.email }
+      token: generateToken(user._id),
+      usuario: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        totalReviews: user.totalReviews,
+        totalLikes: user.totalLikes
+      }
     });
 
   } catch (error) {

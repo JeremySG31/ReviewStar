@@ -1,4 +1,5 @@
 import Review from '../models/Review.js';
+import User from '../models/User.js';
 import cloudinary from '../config/cloudinary.js';
 
 export const createReview = async (req, res) => {
@@ -25,6 +26,10 @@ export const createReview = async (req, res) => {
       comments: [],
       likes: 0
     });
+
+    // Incrementar contador de reseñas del usuario
+    await User.findByIdAndUpdate(req.user._id, { $inc: { totalReviews: 1 } });
+
     res.status(201).json(review);
   } catch (error) {
     res.status(500).json({ message: 'Error creando reseña', error });
@@ -92,6 +97,15 @@ export const deleteReview = async (req, res) => {
       return res.status(403).json({ message: 'No autorizado' });
 
     await review.remove();
+
+    // Decrementar contador de reseñas y restar likes del total del usuario
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: {
+        totalReviews: -1,
+        totalLikes: -review.likes
+      }
+    });
+
     res.json({ message: 'Reseña eliminada' });
   } catch (error) {
     res.status(500).json({ message: 'Error eliminando reseña', error });
@@ -123,8 +137,38 @@ export const likeReview = async (req, res) => {
 
     review.likes += 1;
     await review.save();
+
+    // Incrementar totalLikes del dueño de la reseña
+    await User.findByIdAndUpdate(review.user, { $inc: { totalLikes: 1 } });
+
     res.json(review);
   } catch (error) {
     res.status(500).json({ message: 'Error dando like a la reseña', error });
+  }
+};
+
+// Endpoint de migración para sincronizar métricas
+export const syncMetrics = async (req, res) => {
+  try {
+    const users = await User.find();
+    let updatedCount = 0;
+
+    for (const user of users) {
+      const reviews = await Review.find({ user: user._id });
+      const totalReviews = reviews.length;
+      const totalLikes = reviews.reduce((acc, curr) => acc + (curr.likes || 0), 0);
+
+      user.totalReviews = totalReviews;
+      user.totalLikes = totalLikes;
+      await user.save();
+      updatedCount++;
+    }
+
+    res.json({
+      message: 'Métricas sincronizadas correctamente',
+      usersUpdated: updatedCount
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error sincronizando métricas', error });
   }
 };
