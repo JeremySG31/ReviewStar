@@ -34,7 +34,7 @@ export function createReviewCard(review, options = {}) {
   const likes = review.likes || 0;
   const comments = review.comments || [];
 
-  const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-32 object-cover rounded-md mb-3" onerror="this.closest('article').remove()">` : '';
+  const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-48 object-contain rounded-md mb-3 bg-gray-900" onerror="this.closest('article').remove()">` : '';
 
   const short = (description || '').length > 140 ? (description || '').slice(0, 140) + '...' : (description || '');
 

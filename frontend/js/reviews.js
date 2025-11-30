@@ -375,29 +375,49 @@ async function openCommentsModal(reviewId) {
   // Renderizar comentarios existentes
   renderComments(review.comments || []);
 
-  // Configurar formulario de nuevo comentario
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const textarea = document.getElementById('nuevoComentarioTexto');
-    const comment = textarea.value.trim();
+  // Verificar autenticación
+  const token = localStorage.getItem('token');
+  const loginContainer = document.getElementById('loginParaComentar');
 
-    if (comment) {
-      try {
-        await apiAddComment(reviewId, comment);
-        textarea.value = '';
+  if (token) {
+    // Usuario logueado: Mostrar formulario, ocultar login
+    if (form) form.classList.remove('hidden');
+    if (loginContainer) loginContainer.classList.add('hidden');
 
-        // Refrescar reseñas y reabrir modal
-        await refreshMyReviews(document.getElementById(DASHBOARD_LIST_ID));
-        const updatedReview = allReviewsCache.find(r => r._id === reviewId);
-        if (updatedReview) {
-          renderComments(updatedReview.comments || []);
+    // Configurar envío de formulario
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const textarea = document.getElementById('nuevoComentarioTexto');
+      const comment = textarea.value.trim();
+
+      if (comment) {
+        try {
+          await apiAddComment(reviewId, comment);
+          textarea.value = '';
+
+          // Refrescar reseñas (intentar refrescar ambas listas si existen)
+          const dashboardList = document.getElementById(DASHBOARD_LIST_ID);
+          const publicList = document.getElementById(PUBLIC_LIST_ID);
+
+          if (dashboardList) await refreshMyReviews(dashboardList);
+          if (publicList) await refreshPublicReviews(publicList);
+
+          // Actualizar modal
+          const updatedReview = allReviewsCache.find(r => r._id === reviewId);
+          if (updatedReview) {
+            renderComments(updatedReview.comments || []);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error al agregar comentario');
         }
-      } catch (err) {
-        console.error(err);
-        alert('Error al agregar comentario');
       }
-    }
-  };
+    };
+  } else {
+    // Usuario NO logueado: Ocultar formulario, mostrar login
+    if (form) form.classList.add('hidden');
+    if (loginContainer) loginContainer.classList.remove('hidden');
+  }
 
   // Botón cerrar
   cerrarBtn.onclick = () => closeCommentsModal();
@@ -416,22 +436,39 @@ function closeCommentsModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// Renderiza la lista de comentarios
+// Renderiza la lista de comentarios con estilo de hilo
 function renderComments(comments) {
   const listaComentarios = document.getElementById('listaComentarios');
   if (!listaComentarios) return;
 
   const commentsHtml = comments.length > 0
     ? comments.map(c => `
-        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
-          <p class="text-gray-200">${escapeHtml(c)}</p>
+        <div class="flex gap-3 animate-fadeIn">
+          <div class="flex-shrink-0 mt-1">
+             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
+               💬
+             </div>
+          </div>
+          <div class="flex-grow bg-gray-800/40 rounded-2xl rounded-tl-none p-3 border border-gray-700/50 shadow-sm">
+            <p class="text-gray-200 text-sm leading-relaxed">${escapeHtml(c)}</p>
+          </div>
         </div>
       `).join('')
-    : '<p class="text-gray-400 text-center">No hay comentarios aún. ¡Sé el primero en comentar!</p>';
+    : `
+      <div class="text-center py-8 opacity-60">
+        <div class="text-4xl mb-2">💭</div>
+        <p class="text-gray-400">No hay comentarios aún.</p>
+        <p class="text-sm text-gray-500">¡Sé el primero en compartir tu opinión!</p>
+      </div>
+    `;
 
   listaComentarios.innerHTML = `
-    <h4 class="font-semibold text-lg mb-3">Todos los comentarios (${comments.length})</h4>
-    ${commentsHtml}
+    <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
+      <h4 class="font-semibold text-lg">Comentarios <span class="text-sm text-gray-400 font-normal">(${comments.length})</span></h4>
+    </div>
+    <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+      ${commentsHtml}
+    </div>
   `;
 }
 
