@@ -12,8 +12,31 @@ async function initFeed() {
         return;
     }
 
+    await loadUserName();
     await loadFeed();
     setupEventListeners();
+}
+
+// Cargar nombre del usuario
+async function loadUserName() {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`${API_URL}/users/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const user = await response.json();
+            const userNameLink = document.getElementById('userNameLink');
+            if (userNameLink && user.nombre) {
+                userNameLink.textContent = user.nombre;
+            }
+        }
+    } catch (error) {
+        console.error('Error cargando nombre de usuario:', error);
+    }
 }
 
 // Cargar todas las reseñas
