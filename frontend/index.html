@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,121 +16,138 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50 flex flex-col">
+<body
+  class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50 flex flex-col">
 
-<nav class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10 fade-in">
-  <h1 class="text-2xl font-semibold tracking-wide">ReviewStar ⭐</h1>
+  <nav
+    class="flex justify-between items-center px-6 py-4 bg-black/30 backdrop-blur-sm border-b border-white/10 fade-in">
+    <h1 class="text-2xl font-semibold tracking-wide">ReviewStar ⭐</h1>
 
-  <!-- Reemplaza tu div de botones antiguo por este -->
-  <div id="userArea" class="flex items-center gap-3">
-    <a href="./login.html" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded transition" id="loginBtn">
-      Iniciar sesión
-    </a>
-    <a href="./register.html" class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 rounded transition" id="registerBtn">
-      Registrarse
-    </a>
+    <!-- Reemplaza tu div de botones antiguo por este -->
+    <div id="userArea" class="flex items-center gap-3">
+      <a href="./login.html"
+        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded transition"
+        id="loginBtn">
+        Iniciar sesión
+      </a>
+      <a href="./register.html"
+        class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 rounded transition"
+        id="registerBtn">
+        Registrarse
+      </a>
 
-    <!-- Usuario logueado (oculto por defecto) -->
-    <div id="userMenu" class="hidden flex items-center gap-4">
-      <a href="./profile.html" id="usernameDisplay" class="font-semibold text-white hover:text-blue-400 transition">Usuario</a>
-      <button id="logoutBtn" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition text-sm">Cerrar sesión</button>
+      <!-- Usuario logueado (oculto por defecto) -->
+      <div id="userMenu" class="hidden flex items-center gap-4">
+        <a href="./feed.html" class="font-semibold text-cyan-400 hover:text-cyan-300 transition">🌟 Explorar Feed</a>
+        <a href="./profile.html" id="usernameDisplay"
+          class="font-semibold text-white hover:text-blue-400 transition">Usuario</a>
+        <button id="logoutBtn"
+          class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition text-sm">Cerrar
+          sesión</button>
+      </div>
     </div>
+  </nav>
+  <div class="flex-grow">
+
+
+
+    <!-- 🌟 Hero principal -->
+    <header class="text-center py-20 px-6 fade-up">
+      <h2 class="text-5xl font-extrabold mb-3 animate-shine">
+        Tu universo de reseñas, en un solo lugar
+      </h2>
+      <p class="max-w-3xl mx-auto text-gray-300 leading-relaxed">
+        Es una plataforma creada por y para los apasionados de la cultura.
+        Aquí podrás <span class="font-semibold text-white">publicar tus reseñas</span>, descubrir nuevas obras
+        y <span class="font-semibold text-white">conectar con una comunidad</span> que comparte tus mismos gustos.
+      </p>
+
+      <!--  Sección: Por qué elegirnos -->
+      <section class="py-16 px-6 text-center fade-up">
+        <h3 class="text-3xl font-bold mb-8">¿Por qué elegir <span class="text-blue-400">ReviewStar</span>?</h3>
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
+            <h4 class="text-xl font-semibold mb-2">💬 Comunidad Activa</h4>
+            <p class="text-gray-300 text-sm">Miles de usuarios compartiendo opiniones sinceras sobre sus experiencias
+              favoritas.</p>
+          </div>
+          <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
+            <h4 class="text-xl font-semibold mb-2">🎯 Recomendaciones Personalizadas</h4>
+            <p class="text-gray-300 text-sm">Recibe sugerencias basadas en tus gustos y reseñas previas.</p>
+          </div>
+          <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
+            <h4 class="text-xl font-semibold mb-2">🌐 Plataforma Multitemática</h4>
+            <p class="text-gray-300 text-sm">Desde películas hasta gadgets tecnológicos, ¡todo tiene su espacio en
+              ReviewStar!</p>
+          </div>
+        </div>
+      </section>
+
+      <!--  Sección futura: Reseñas destacadas -->
+      <section class="py-16 px-6 bg-black/20 backdrop-blur-sm text-center fade-up">
+        <h3 class="text-3xl font-bold mb-8">⭐ Reseñas Recientes</h3>
+        <!-- El contenido de las reseñas se cargará aquí dinámicamente -->
+        <div id="reseñas" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"></div>
+      </section>
+
+      <!--  Cómo funciona -->
+      <section
+        class="py-16 px-6 text-center bg-black/20 backdrop-blur-sm border-t border-white/10 border-b border-white/10 fade-up">
+        <h3 class="text-3xl font-bold mb-8">¿Cómo funciona ReviewStar?</h3>
+        <div class="grid gap-8 sm:grid-cols-3 max-w-6xl mx-auto">
+          <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
+            <h4 class="text-xl font-semibold mb-3">📝 Crea una cuenta</h4>
+            <p class="text-gray-300 text-sm">Regístrate y accede a tu propio perfil para comenzar a publicar reseñas.
+            </p>
+          </div>
+          <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
+            <h4 class="text-xl font-semibold mb-3">⭐ Escribe tus reseñas</h4>
+            <p class="text-gray-300 text-sm">Comparte tu opinión sobre cualquier tema: películas, juegos, libros,
+              productos y más.</p>
+          </div>
+          <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
+            <h4 class="text-xl font-semibold mb-3">💬 Interactúa con otros</h4>
+            <p class="text-gray-300 text-sm">Comenta, califica y guarda tus reseñas favoritas en tu perfil.</p>
+          </div>
+        </div>
+      </section>
+
+      <!--  Nuestra comunidad -->
+      <section class="py-16 px-6 text-center fade-up">
+        <h3 class="text-3xl font-bold mb-8">Una comunidad que crece cada día 🌍</h3>
+        <p class="max-w-3xl mx-auto text-gray-300 mb-10">
+          Miles de usuarios ya confían en <span class="text-blue-400 font-semibold">ReviewStar</span>
+          para compartir sus opiniones y descubrir nuevas experiencias.
+          Tú también puedes ser parte de esta comunidad.
+        </p>
+        <div class="flex justify-center gap-6 flex-wrap">
+          <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
+            <h4 class="font-bold text-lg">🎮 Gamers</h4>
+            <p class="text-gray-400 text-sm">Los mejores títulos recomendados por verdaderos jugadores.</p>
+          </div>
+          <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
+            <h4 class="font-bold text-lg">🎬 Cinéfilos</h4>
+            <p class="text-gray-400 text-sm">Reseñas honestas de películas y series populares.</p>
+          </div>
+          <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
+            <h4 class="font-bold text-lg">📚 Lectores</h4>
+            <p class="text-gray-400 text-sm">Descubre los libros que están marcando tendencia.</p>
+          </div>
+        </div>
+      </section>
+
+      <!--  Call to action final -->
+      <section class="text-center py-16 fade-up">
+        <h3
+          class="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+          ¿Listo para compartir tu opinión?
+        </h3>
+        <a id="cta-footer-register" href="./register.html"
+          class="inline-block mt-4 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg text-lg font-semibold shadow-lg transition">
+          Crea tu cuenta hoy
+        </a>
+      </section>
   </div>
-</nav>
-<div class="flex-grow">
-
-
-
-  <!-- 🌟 Hero principal -->
-  <header class="text-center py-20 px-6 fade-up">
-    <h2 class="text-5xl font-extrabold mb-3 animate-shine">
-      Tu universo de reseñas, en un solo lugar
-    </h2>
-    <p class="max-w-3xl mx-auto text-gray-300 leading-relaxed">
-      Es una plataforma creada por y para los apasionados de la cultura. 
-      Aquí podrás <span class="font-semibold text-white">publicar tus reseñas</span>, descubrir nuevas obras 
-      y <span class="font-semibold text-white">conectar con una comunidad</span> que comparte tus mismos gustos.
-    </p>
-
-  <!--  Sección: Por qué elegirnos -->
-  <section class="py-16 px-6 text-center fade-up">
-    <h3 class="text-3xl font-bold mb-8">¿Por qué elegir <span class="text-blue-400">ReviewStar</span>?</h3>
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
-        <h4 class="text-xl font-semibold mb-2">💬 Comunidad Activa</h4>
-        <p class="text-gray-300 text-sm">Miles de usuarios compartiendo opiniones sinceras sobre sus experiencias favoritas.</p>
-      </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
-        <h4 class="text-xl font-semibold mb-2">🎯 Recomendaciones Personalizadas</h4>
-        <p class="text-gray-300 text-sm">Recibe sugerencias basadas en tus gustos y reseñas previas.</p>
-      </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
-        <h4 class="text-xl font-semibold mb-2">🌐 Plataforma Multitemática</h4>
-        <p class="text-gray-300 text-sm">Desde películas hasta gadgets tecnológicos, ¡todo tiene su espacio en ReviewStar!</p>
-      </div>
-    </div>
-  </section>
-
-  <!--  Sección futura: Reseñas destacadas -->
-  <section class="py-16 px-6 bg-black/20 backdrop-blur-sm text-center fade-up">
-    <h3 class="text-3xl font-bold mb-8">⭐ Reseñas Recientes</h3>
-    <!-- El contenido de las reseñas se cargará aquí dinámicamente -->
-    <div id="reseñas" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"></div>
-  </section>
-
-  <!--  Cómo funciona -->
-  <section class="py-16 px-6 text-center bg-black/20 backdrop-blur-sm border-t border-white/10 border-b border-white/10 fade-up">
-    <h3 class="text-3xl font-bold mb-8">¿Cómo funciona ReviewStar?</h3>
-    <div class="grid gap-8 sm:grid-cols-3 max-w-6xl mx-auto">
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
-        <h4 class="text-xl font-semibold mb-3">📝 Crea una cuenta</h4>
-        <p class="text-gray-300 text-sm">Regístrate y accede a tu propio perfil para comenzar a publicar reseñas.</p>
-      </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
-        <h4 class="text-xl font-semibold mb-3">⭐ Escribe tus reseñas</h4>
-        <p class="text-gray-300 text-sm">Comparte tu opinión sobre cualquier tema: películas, juegos, libros, productos y más.</p>
-      </div>
-      <div class="p-6 bg-white/10 rounded-xl shadow-lg hover:scale-[1.03] transition scale-in">
-        <h4 class="text-xl font-semibold mb-3">💬 Interactúa con otros</h4>
-        <p class="text-gray-300 text-sm">Comenta, califica y guarda tus reseñas favoritas en tu perfil.</p>
-      </div>
-    </div>
-  </section>
-
-  <!--  Nuestra comunidad -->
-  <section class="py-16 px-6 text-center fade-up">
-    <h3 class="text-3xl font-bold mb-8">Una comunidad que crece cada día 🌍</h3>
-    <p class="max-w-3xl mx-auto text-gray-300 mb-10">
-      Miles de usuarios ya confían en <span class="text-blue-400 font-semibold">ReviewStar</span> 
-      para compartir sus opiniones y descubrir nuevas experiencias.  
-      Tú también puedes ser parte de esta comunidad.
-    </p>
-    <div class="flex justify-center gap-6 flex-wrap">
-      <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
-        <h4 class="font-bold text-lg">🎮 Gamers</h4>
-        <p class="text-gray-400 text-sm">Los mejores títulos recomendados por verdaderos jugadores.</p>
-      </div>
-      <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
-        <h4 class="font-bold text-lg">🎬 Cinéfilos</h4>
-        <p class="text-gray-400 text-sm">Reseñas honestas de películas y series populares.</p>
-      </div>
-      <div class="p-6 bg-white/10 rounded-xl w-64 scale-in">
-        <h4 class="font-bold text-lg">📚 Lectores</h4>
-        <p class="text-gray-400 text-sm">Descubre los libros que están marcando tendencia.</p>
-      </div>
-    </div>
-  </section>
-
-  <!--  Call to action final -->
-  <section class="text-center py-16 fade-up">
-    <h3 class="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-      ¿Listo para compartir tu opinión?
-    </h3>
-    <a id="cta-footer-register" href="./register.html" class="inline-block mt-4 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg text-lg font-semibold shadow-lg transition">
-      Crea tu cuenta hoy
-    </a>
-  </section>
-</div>
   </section>
 
   <footer class="text-center py-4 text-gray-400 bg-black/30 backdrop-blur-sm border-t border-white/10 fade-in">
@@ -137,22 +155,31 @@
   </footer>
 
   <!-- Modal de Comentarios -->
-  <div id="modalComentarios" style="z-index: 120;" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-    <div class="modal-show bg-gray-900/90 border border-white/10 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
-      <button id="cerrarComentariosBtn" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl transition">&times;</button>
+  <div id="modalComentarios" style="z-index: 120;"
+    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+    <div
+      class="modal-show bg-gray-900/90 border border-white/10 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative">
+      <button id="cerrarComentariosBtn"
+        class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl transition">&times;</button>
       <h3 class="text-2xl font-bold mb-6">💬 Comentarios</h3>
       <div id="comentariosReviewContent" class="bg-gray-800/50 rounded-xl p-4 mb-6 border border-gray-700"></div>
-      
+
       <!-- Contenedor dinámico: Formulario o Botón de Login -->
       <div id="comentarioActionContainer" class="mb-6">
         <form id="nuevoComentarioForm">
           <label class="block mb-2 font-semibold">✍️ Agregar comentario</label>
-          <textarea id="nuevoComentarioTexto" rows="3" required class="w-full p-3 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Escribe tu comentario aquí..."></textarea>
-          <button type="submit" class="mt-3 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition">Publicar Comentario</button>
+          <textarea id="nuevoComentarioTexto" rows="3" required
+            class="w-full p-3 rounded-md bg-gray-800/40 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            placeholder="Escribe tu comentario aquí..."></textarea>
+          <button type="submit"
+            class="mt-3 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-md font-semibold transition">Publicar
+            Comentario</button>
         </form>
         <div id="loginParaComentar" class="hidden text-center p-4 bg-blue-900/20 rounded-xl border border-blue-500/30">
           <p class="mb-3 text-gray-300">Inicia sesión para unirte a la conversación</p>
-          <a href="./login.html" class="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-full font-semibold transition">Iniciar Sesión</a>
+          <a href="./login.html"
+            class="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-full font-semibold transition">Iniciar
+            Sesión</a>
         </div>
       </div>
 
@@ -165,4 +192,5 @@
   <!-- Scripts -->
   <script type="module" src="./js/main.js"></script>
 </body>
+
 </html>

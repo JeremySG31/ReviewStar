@@ -112,6 +112,19 @@ export const deleteReview = async (req, res) => {
   }
 };
 
+export const getCommentsForReview = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const review = await Review.findById(id).populate('comments.usuario', 'nombre email');
+    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+    res.json(review.comments);
+  } catch (error) {
+    res.status(500).json({ message: 'Error obteniendo comentarios', error });
+  }
+};
+
 export const addCommentToReview = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body;

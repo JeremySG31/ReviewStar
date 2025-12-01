@@ -8,7 +8,7 @@ import {
   apiGetMyReviews
 } from './utils/api.js';
 
-import { createReviewCard } from './utils/dom.js';
+import { createReviewCard, showToast } from './utils/dom.js';
 import { validateReviewPayload } from './utils/validation.js';
 
 // Selectores esperados en los HTML
@@ -25,6 +25,21 @@ export async function initPublicReviews() {
   const container = document.getElementById(PUBLIC_LIST_ID);
   if (!container) return;
 
+  // Función para recargar
+  const refresh = async () => {
+    try {
+      const reviews = await apiGetReviews();
+      renderList(container, reviews, true); // Pass true to show controls if we wanted, but for public we usually just want like/comment. 
+      // Actually renderList 3rd arg is 'controls'. In dashboard it's true (edit/delete). 
+      // In public it should be false (no edit/delete), but we still want like/comment buttons.
+      // createReviewCard checks 'options.controls' for edit/delete buttons.
+      // Like/Comment buttons are ALWAYS rendered in createReviewCard (lines 57-60 of dom.js).
+      // So renderList(container, reviews, false) is correct for public.
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   try {
     const reviews = await apiGetReviews();
     renderList(container, reviews, false);
@@ -35,6 +50,38 @@ export async function initPublicReviews() {
         No se pudieron cargar las reseñas.
       </div>`;
   }
+
+  // Delegación de eventos para Like / Comentar en el index
+  container.addEventListener('click', async (e) => {
+    const likeBtn = e.target.closest('.btn-like');
+    const commentBtn = e.target.closest('.btn-comment');
+
+    if (likeBtn) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showToast('Debes iniciar sesión para dar like.', 'error');
+        return;
+      }
+
+      const id = likeBtn.dataset.id;
+      // Animación visual
+      likeBtn.classList.add('like-animation');
+      setTimeout(() => likeBtn.classList.remove('like-animation'), 600);
+
+      try {
+        await import('./utils/api.js').then(m => m.apiLikeReview(id));
+        showToast('¡Te gusta esta reseña!', 'success');
+        // Recargar la lista para actualizar contadores
+        await refresh();
+      } catch (err) {
+        console.error(err);
+        showToast('Error al dar like', 'error');
+      }
+    } else if (commentBtn) {
+      const id = commentBtn.dataset.id;
+      openCommentsModal(id);
+    }
+  });
 }
 
 // Inicializa el dashboard del usuario (CRUD)

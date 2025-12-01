@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed - ReviewStar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/animations.css">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-gray-900/50 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
+    <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold flex items-center gap-2">
+        <span class="text-cyan-400">ReviewStar</span>
+        <span class="text-yellow-400">⭐</span>
+      </a>
+      <div class="flex items-center gap-6">
+        <a href="index.html" class="hover:text-cyan-400 transition">Inicio</a>
+        <a href="feed.html" class="text-cyan-400 font-semibold">Explorar Feed</a>
+        <a href="profile.html" class="hover:text-cyan-400 transition">Mi Perfil</a>
+        <button id="btnCerrarSesion" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="container mx-auto px-6 py-12">
+    <!-- Filtros -->
+    <div class="flex justify-center gap-4 mb-8">
+      <select id="filterCategory"
+        class="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        <option value="">Todas las categorías</option>
+        <option value="Libro">📚 Libro</option>
+        <option value="Película">🎬 Película</option>
+        <option value="Serie">📺 Serie</option>
+        <option value="Videojuego">🎮 Videojuego</option>
+        <option value="Música">🎵 Música</option>
+        <option value="Otro">🔖 Otro</option>
+      </select>
+      <select id="filterSort"
+        class="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        <option value="recent">Más recientes</option>
+        <option value="likes">Más populares</option>
+        <option value="rating">Mejor valoradas</option>
+      </select>
+    </div>
+
+    <!-- Feed de reseñas -->
+    <div id="feedContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Las reseñas se cargarán aquí dinámicamente -->
+    </div>
+
+    <!-- Loading -->
+    <div id="loadingFeed" class="text-center py-12 hidden">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+      <p class="mt-4 text-gray-400">Cargando reseñas...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyFeed" class="text-center py-12 hidden">
+      <p class="text-2xl text-gray-400">📭 No hay reseñas disponibles</p>
+    </div>
+  </section>
+
+  <!-- Modal de Comentarios -->
+  <div id="modalComentarios"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold">💬 Comentarios</h3>
+        <button id="btnCerrarModal" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+      </div>
+
+      <!-- Formulario de comentario -->
+      <div id="formComentario" class="mb-6">
+        <textarea id="inputComentario"
+          class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          rows="3" placeholder="Escribe tu comentario..."></textarea>
+        <button id="btnEnviarComentario" class="mt-2 bg-cyan-600 hover:bg-cyan-700 px-6 py-2 rounded-lg transition">
+          Enviar comentario
+        </button>
+      </div>
+
+      <!-- Lista de comentarios -->
+      <div id="listaComentarios" class="space-y-4">
+        <!-- Los comentarios se cargarán aquí -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/feed.js"></script>
+</body>
+
+</html>
