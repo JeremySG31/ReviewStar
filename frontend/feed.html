@@ -5,20 +5,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feed - ReviewStar</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./css/animations.css">
-  <link rel="stylesheet" href="./css/styles.css">
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    .brand {
+      background: linear-gradient(to right, #3b82f6, #22d3ee);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      font-weight: 700;
+    }
+  </style>
 </head>
 
-<body class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white min-h-screen">
+<body
+  class="bg-gradient-to-br from-indigo-900 via-blue-800 to-sky-700 dark:from-gray-900 dark:via-slate-800 dark:to-black min-h-screen text-white font-[Poppins] selection:bg-blue-500/50">
 
   <!-- Navbar -->
-  <nav class="bg-gray-900/50 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
+  <nav class="bg-black/30 backdrop-blur-sm border-b border-white/10 sticky top-0 z-40">
     <div class="container mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold flex items-center gap-2">
-        <span class="text-cyan-400">ReviewStar</span>
-        <span class="text-yellow-400">⭐</span>
-      </a>
+      <a href="index.html" class="text-2xl brand">ReviewStar ⭐</a>
       <div class="flex items-center gap-6">
         <a href="index.html" class="hover:text-cyan-400 transition">Inicio</a>
         <a href="feed.html" class="text-cyan-400 font-semibold">Explorar Feed</a>

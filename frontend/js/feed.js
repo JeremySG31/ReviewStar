@@ -1,4 +1,4 @@
-import { API_URL } from './config.js';
+import { API_BASE } from './utils/api.js';
 import { createReviewCard, showToast, escapeHtml } from './utils/dom.js';
 
 let currentReviewId = null;
@@ -19,9 +19,33 @@ async function initFeed() {
 
 // Cargar nombre del usuario
 async function loadUserName() {
+    const userNameLink = document.getElementById('userNameLink');
+    if (!userNameLink) {
+        console.error('Elemento userNameLink no encontrado');
+        return;
+    }
+
+    // 1. Intentar cargar desde localStorage primero (más rápido)
+    const localUser = localStorage.getItem('usuario');
+    if (localUser) {
+        try {
+            const user = JSON.parse(localUser);
+            if (user.nombre) {
+                userNameLink.textContent = user.nombre;
+            } else {
+                userNameLink.textContent = 'Usuario';
+            }
+        } catch (e) {
+            console.error('Error parsing local user data', e);
+        }
+    }
+
+    // 2. Actualizar desde la API para asegurar datos frescos
     const token = localStorage.getItem('token');
+    if (!token) return;
+
     try {
-        const response = await fetch(`${API_URL}/users/me`, {
+        const response = await fetch(`${API_BASE}/users/me`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -29,9 +53,10 @@ async function loadUserName() {
 
         if (response.ok) {
             const user = await response.json();
-            const userNameLink = document.getElementById('userNameLink');
-            if (userNameLink && user.nombre) {
+            if (user.nombre) {
                 userNameLink.textContent = user.nombre;
+                // Actualizar localStorage con datos frescos si es necesario
+                localStorage.setItem('usuario', JSON.stringify(user));
             }
         }
     } catch (error) {
@@ -50,11 +75,11 @@ async function loadFeed() {
     emptyEl.classList.add('hidden');
 
     try {
-        const response = await fetch(`${API_URL}/reviews/all`);
+        const response = await fetch(`${API_BASE}/reviews/all`);
         if (!response.ok) throw new Error('Error al cargar reseñas');
 
         allReviews = await response.json();
-        console.log('Reseñas cargadas:', allReviews);
+        console.log('Reseñas cargadas (Total):', allReviews.length);
         loadingEl.classList.add('hidden');
 
         if (allReviews.length === 0) {
@@ -161,7 +186,7 @@ async function handleLike(reviewId) {
     }
 
     try {
-        const response = await fetch(`${API_URL}/reviews/${reviewId}/like`, {
+        const response = await fetch(`${API_BASE}/reviews/${reviewId}/like`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -193,7 +218,7 @@ async function loadComments(reviewId) {
     listaEl.innerHTML = '<p class="text-gray-400">Cargando comentarios...</p>';
 
     try {
-        const response = await fetch(`${API_URL}/reviews/${reviewId}/comments`);
+        const response = await fetch(`${API_BASE}/reviews/${reviewId}/comments`);
         if (!response.ok) throw new Error('Error al cargar comentarios');
 
         const comments = await response.json();
@@ -235,7 +260,7 @@ async function sendComment() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/reviews/${currentReviewId}/comments`, {
+        const response = await fetch(`${API_BASE}/reviews/${currentReviewId}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
