@@ -216,3 +216,39 @@ export const googleLogin = async (req, res) => {
     res.status(400).json({ message: 'Token de Google inválido', error: error.message });
   }
 };
+
+// Obtener perfil del usuario con métricas actualizadas
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Importar Review para calcular métricas en tiempo real
+    const Review = (await import('../models/Review.js')).default;
+
+    // Calcular métricas reales desde las reseñas
+    const reviews = await Review.find({ user: user._id });
+    const totalReviews = reviews.length;
+    const totalLikes = reviews.reduce((acc, review) => acc + (review.likes || 0), 0);
+
+    // Actualizar el usuario si las métricas no coinciden
+    if (user.totalReviews !== totalReviews || user.totalLikes !== totalLikes) {
+      user.totalReviews = totalReviews;
+      user.totalLikes = totalLikes;
+      await user.save();
+    }
+
+    res.json({
+      id: user._id,
+      nombre: user.nombre,
+      email: user.email,
+      totalReviews: user.totalReviews,
+      totalLikes: user.totalLikes
+    });
+  } catch (error) {
+    console.error('Error obteniendo perfil:', error);
+    res.status(500).json({ message: 'Error obteniendo perfil del usuario', error: error.message });
+  }
+};

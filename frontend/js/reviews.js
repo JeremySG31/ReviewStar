@@ -158,13 +158,42 @@ export async function initDashboard() {
 async function loadProfileData() {
   const profileNameEl = document.getElementById('profileName');
   const profileEmailEl = document.getElementById('profileEmail');
+  const totalReviewsEl = document.getElementById('totalReviews');
+  const totalLikesEl = document.getElementById('totalLikes');
 
   if (profileNameEl && profileEmailEl) {
     try {
-      const user = JSON.parse(localStorage.getItem('usuario') || 'null');
-      if (user) {
-        profileNameEl.textContent = user.nombre || 'Usuario';
-        profileEmailEl.textContent = user.email || 'email@desconocido.com';
+      // 1. Cargar datos locales primero (para mostrar algo rápido)
+      const localUser = JSON.parse(localStorage.getItem('usuario') || 'null');
+      if (localUser) {
+        profileNameEl.textContent = localUser.nombre || 'Usuario';
+        profileEmailEl.textContent = localUser.email || 'email@desconocido.com';
+      }
+
+      // 2. Obtener datos actualizados desde el backend
+      const token = localStorage.getItem('token');
+      if (token) {
+        const { API_BASE } = await import('./utils/api.js');
+        const response = await fetch(`${API_BASE}/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+
+          // Actualizar UI con datos frescos
+          profileNameEl.textContent = userData.nombre || 'Usuario';
+          profileEmailEl.textContent = userData.email || 'email@desconocido.com';
+
+          // Actualizar métricas
+          if (totalReviewsEl) totalReviewsEl.textContent = userData.totalReviews || 0;
+          if (totalLikesEl) totalLikesEl.textContent = userData.totalLikes || 0;
+
+          // Actualizar localStorage con datos frescos
+          localStorage.setItem('usuario', JSON.stringify(userData));
+        }
       }
     } catch (error) {
       console.error('Error al cargar datos del perfil:', error);
