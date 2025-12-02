@@ -8,7 +8,8 @@ const reviewSchema = new mongoose.Schema({
   rating: { type: Number, min: 0, max: 5, required: true },
   category: { type: String, required: true, trim: true },
   comments: [{ type: String }],
-  likes: { type: Number, default: 0 }
+  likes: { type: Number, default: 0 },
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Array de usuarios que dieron like
 }, { timestamps: true });
 
 export default mongoose.model('Review', reviewSchema);

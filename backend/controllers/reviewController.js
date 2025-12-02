@@ -7,9 +7,7 @@ export const createReview = async (req, res) => {
   try {
     let imageUrl = '';
     if (req.files?.image) {
-      // Sanitizar nombre de categoría para usar como carpeta (ej. "Video Juegos" -> "Video_Juegos")
       const folderName = category ? `Home/categoria/${category.trim().replace(/\s+/g, '_')}` : 'Home/categoria/General';
-
       const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
         folder: folderName
       });
@@ -27,9 +25,7 @@ export const createReview = async (req, res) => {
       likes: 0
     });
 
-    // Incrementar contador de reseñas del usuario
     await User.findByIdAndUpdate(req.user._id, { $inc: { totalReviews: 1 } });
-
     res.status(201).json(review);
   } catch (error) {
     res.status(500).json({ message: 'Error creando reseña', error });
@@ -45,7 +41,6 @@ export const getReviews = async (req, res) => {
   }
 };
 
-// Obtener solo las reseñas del usuario autenticado
 export const getMyReviews = async (req, res) => {
   try {
     const reviews = await Review.find({ user: req.user._id }).populate('user', 'nombre email').sort({ createdAt: -1 });
@@ -71,10 +66,8 @@ export const updateReview = async (req, res) => {
     review.category = category || review.category;
 
     if (req.files?.image) {
-      // Usar la categoría nueva o la existente si no se cambió
       const catForFolder = category || review.category;
       const folderName = catForFolder ? `Home/categoria/${catForFolder.trim().replace(/\s+/g, '_')}` : 'Home/categoria/General';
-
       const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
         folder: folderName
       });
@@ -98,7 +91,6 @@ export const deleteReview = async (req, res) => {
 
     await review.remove();
 
-    // Decrementar contador de reseñas y restar likes del total del usuario
     await User.findByIdAndUpdate(req.user._id, {
       $inc: {
         totalReviews: -1,
@@ -148,19 +140,31 @@ export const likeReview = async (req, res) => {
     const review = await Review.findById(id);
     if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
 
-    review.likes += 1;
-    await review.save();
+    const userId = req.user._id;
+    const hasLiked = review.likedBy.includes(userId);
 
-    // Incrementar totalLikes del dueño de la reseña
-    await User.findByIdAndUpdate(review.user, { $inc: { totalLikes: 1 } });
+    if (hasLiked) {
+      // Si ya dio like, quitarlo (toggle)
+      review.likes -= 1;
+      review.likedBy = review.likedBy.filter(id => id.toString() !== userId.toString());
+      await review.save();
 
-    res.json(review);
+      await User.findByIdAndUpdate(review.user, { $inc: { totalLikes: -1 } });
+      res.json({ message: 'Like removido', review });
+    } else {
+      // Si no ha dado like, agregarlo
+      review.likes += 1;
+      review.likedBy.push(userId);
+      await review.save();
+
+      await User.findByIdAndUpdate(review.user, { $inc: { totalLikes: 1 } });
+      res.json({ message: 'Like agregado', review });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Error dando like a la reseña', error });
   }
 };
 
-// Endpoint de migración para sincronizar métricas
 export const syncMetrics = async (req, res) => {
   try {
     const users = await User.find();
