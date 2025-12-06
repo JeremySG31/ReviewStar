@@ -128,7 +128,7 @@ export const deleteReview = async (req, res) => {
     }
 };
 
-// @desc    Dar like a una reseña
+// @desc    Dar o quitar like a una reseña
 // @route   PUT /api/reviews/:id/like
 // @access  Private
 export const likeReview = async (req, res) => {
@@ -136,11 +136,31 @@ export const likeReview = async (req, res) => {
         const review = await Review.findById(req.params.id);
         if (!review) return res.status(404).json({ message: 'No encontrado' });
 
-        review.likes = (review.likes || 0) + 1;
+        // Verificar si el usuario ya dio like
+        // Asegurarse de que likedBy sea un array
+        if (!review.likedBy) review.likedBy = [];
+
+        const alreadyLiked = review.likedBy.some(id => id.toString() === req.user._id.toString());
+
+        if (alreadyLiked) {
+            // Quitar like
+            review.likedBy = review.likedBy.filter(
+                id => id.toString() !== req.user._id.toString()
+            );
+            // Sincronizar contador
+            review.likes = review.likedBy.length;
+        } else {
+            // Dar like
+            review.likedBy.push(req.user._id);
+            // Sincronizar contador
+            review.likes = review.likedBy.length;
+        }
+
         await review.save();
 
         res.json(review);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -252,8 +272,6 @@ export const reactToComment = async (req, res) => {
         const { reviewId, commentId } = req.params;
         const { reaction } = req.body;
 
-        // console.log('Reaccionando:', reaction, 'Usuario:', req.user._id);
-
         const validReactions = ['👍', '❤️', '😂'];
         if (!validReactions.includes(reaction)) {
             return res.status(400).json({ message: 'Reacción inválida' });
@@ -278,7 +296,7 @@ export const reactToComment = async (req, res) => {
         const userId = req.user._id.toString();
         const currentList = comment.reactions[reaction];
 
-        // Verificar si ya tiene like
+        // Verificar si ya tiene reacción
         const hasReacted = currentList.some(id => id.toString() === userId);
 
         if (hasReacted) {

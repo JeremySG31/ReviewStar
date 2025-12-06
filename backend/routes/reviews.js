@@ -10,7 +10,7 @@ router.put('/update/:id', protect, updateReview);
 router.delete('/delete/:id', protect, deleteReview);
 router.get('/:id/comments', getCommentsForReview);
 router.post('/:id/comments', protect, addCommentToReview);
-router.post('/:id/like', protect, likeReview);
+router.put('/:id/like', protect, likeReview);
 router.get('/sync-metrics', protect, syncMetrics);
 
 // Comentarios - Eliminar, editar y reaccionar
