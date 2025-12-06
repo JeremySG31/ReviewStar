@@ -426,20 +426,55 @@ function applyFilters() {
     const category = document.getElementById('filterCategory').value;
     const sort = document.getElementById('filterSort').value;
 
+    console.log('🔄 Aplicando filtros:', { category, sort });
+
     let filtered = [...allReviews];
 
     if (category) {
         filtered = filtered.filter(r => r.category === category);
     }
 
+    // Función auxiliar para parsear valores numéricos de forma segura
+    const getNum = (val) => {
+        const n = parseFloat(val);
+        return isNaN(n) ? 0 : n;
+    };
+
     if (sort === 'likes') {
-        filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+        // Lógica mejorada de popularidad: Likes > Calificación > Comentarios
+        filtered.sort((a, b) => {
+            const likesA = getNum(a.likes);
+            const likesB = getNum(b.likes);
+
+            if (likesB !== likesA) return likesB - likesA; // Principal: Likes
+
+            const ratingA = getNum(a.calificacion || a.rating);
+            const ratingB = getNum(b.calificacion || b.rating);
+
+            if (ratingB !== ratingA) return ratingB - ratingA; // Desempate 1: Calificación
+
+            // Desempate 2: Fecha (más reciente primero)
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        });
+    } else if (sort === 'comments') {
+        // Ordenar por cantidad de comentarios
+        filtered.sort((a, b) => {
+            const countA = Array.isArray(a.comments) ? a.comments.length : 0;
+            const countB = Array.isArray(b.comments) ? b.comments.length : 0;
+            return countB - countA;
+        });
     } else if (sort === 'rating') {
-        filtered.sort((a, b) => (b.calificacion || b.rating || 0) - (a.calificacion || a.rating || 0));
+        filtered.sort((a, b) => {
+            const ratingA = getNum(a.calificacion || a.rating);
+            const ratingB = getNum(b.calificacion || b.rating);
+            return ratingB - ratingA;
+        });
     } else {
+        // Por defecto: Más recientes primero
         filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
 
+    console.log(`✅ ${filtered.length} reseñas filtradas y ordenadas`);
     renderReviews(filtered);
 }
 
