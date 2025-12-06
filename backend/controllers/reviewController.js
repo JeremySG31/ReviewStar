@@ -89,18 +89,21 @@ export const deleteReview = async (req, res) => {
     if (review.user.toString() !== req.user._id.toString())
       return res.status(403).json({ message: 'No autorizado' });
 
-    await review.remove();
+    // Eliminar la reseña de la base de datos
+    await Review.deleteOne({ _id: id });
 
+    // Actualizar métricas del usuario
     await User.findByIdAndUpdate(req.user._id, {
       $inc: {
         totalReviews: -1,
-        totalLikes: -review.likes
+        totalLikes: -(review.likes || 0)
       }
     });
 
-    res.json({ message: 'Reseña eliminada' });
+    res.json({ message: 'Reseña eliminada exitosamente', success: true });
   } catch (error) {
-    res.status(500).json({ message: 'Error eliminando reseña', error });
+    console.error('Error eliminando reseña:', error);
+    res.status(500).json({ message: 'Error eliminando reseña', error: error.message });
   }
 };
 
