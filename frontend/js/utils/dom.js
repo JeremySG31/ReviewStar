@@ -38,7 +38,7 @@ export function createReviewCard(review, options = {}) {
 
   const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-48 object-contain rounded-md mb-3 bg-gray-900" onerror="this.closest('article').remove()">` : '';
 
-  const short = (description || '').length > 140 ? (description || '').slice(0, 140) + '...' : (description || '');
+  const short = (description || '').length > 300 ? (description || '').slice(0, 300) + '...' : (description || '');
 
   // Renderiza la categoría con un estilo de "píldora"
   const categoryHtml = `<span class="absolute top-2 left-2 bg-blue-600/80 text-white text-xs font-semibold px-2 py-1 rounded-full">${escapeHtml(category)}</span>`;
@@ -55,7 +55,7 @@ export function createReviewCard(review, options = {}) {
       ${controlsHtml}
       ${imgHtml}
       <h3 class="font-semibold text-lg mb-1">${escapeHtml(title)}</h3>
-      <p class="text-sm text-gray-300 mb-3">${escapeHtml(short)}</p>
+      <p class="text-sm text-gray-300 mb-3 line-clamp-6">${escapeHtml(short)}</p>
       <div class="flex items-center justify-between">
         <div class="text-xs text-gray-400 mt-2">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
         <div class="flex items-center gap-2">

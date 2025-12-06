@@ -122,7 +122,7 @@ function createFeedCard(review) {
     const description = review.descripcion || review.description || '';
     const category = review.category || 'Sin categoría';
 
-    const short = description.length > 140 ? description.slice(0, 140) + '...' : description;
+    const short = description.length > 300 ? description.slice(0, 300) + '...' : description;
     const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-48 object-cover rounded-md mb-3" onerror="this.style.display='none'">` : '';
 
     return `
@@ -132,7 +132,7 @@ function createFeedCard(review) {
       </div>
       ${imgHtml}
       <h3 class="font-bold text-xl mb-2">${escapeHtml(title)}</h3>
-      <p class="text-sm text-gray-300 mb-4">${escapeHtml(short)}</p>
+      <p class="text-sm text-gray-300 mb-4 line-clamp-6">${escapeHtml(short)}</p>
       
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
