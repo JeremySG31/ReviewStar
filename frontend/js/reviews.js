@@ -8,7 +8,10 @@ import {
   apiGetMyReviews,
   apiGetComments,
   apiAddComment,
-  apiLikeReview
+  apiLikeReview,
+  apiDeleteComment,
+  apiEditComment,
+  apiReactToComment
 } from './utils/api.js';
 
 import { createReviewCard, showToast } from './utils/dom.js';
@@ -34,7 +37,7 @@ export async function initPublicReviews() {
       const reviews = await apiGetReviews();
       // Limitar a las 3 más recientes
       const recentReviews = reviews.slice(0, 3);
-      renderList(container, recentReviews, false); 
+      renderList(container, recentReviews, false);
     } catch (err) {
       console.error(err);
     }
@@ -458,11 +461,10 @@ async function openCommentsModal(reviewId) {
   if (!review) return;
 
   // Renderizar la reseña completa en la parte superior
-  // Renderiza la cabecera del modal (SOLO TÍTULO, sin imagen)
   reviewContent.innerHTML = `
     <div class="border-b border-gray-700 pb-4 mb-4">
       <h3 class="text-xl font-bold text-white mb-2">${escapeHtml(review.title)}</h3>
-      <p class="text-gray-400 text-sm">${escapeHtml(review.description)}</p>
+      <p class="text-gray-400 text-sm max-h-32 overflow-y-auto custom-scrollbar">${escapeHtml(review.description)}</p>
       <div class="flex items-center gap-2 mt-2">
         <span class="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded-full">${escapeHtml(review.category)}</span>
         <span class="text-xs text-gray-500">por ${escapeHtml(review.user?.nombre || 'Anónimo')}</span>
@@ -472,7 +474,7 @@ async function openCommentsModal(reviewId) {
 
   // Renderizar comentarios existentes
   const comments = await apiGetComments(reviewId);
-  renderComments(comments);
+  renderComments(comments, reviewId);
 
   // Verificar autenticación
   const token = localStorage.getItem('token');
@@ -496,9 +498,7 @@ async function openCommentsModal(reviewId) {
 
           // Actualizar comentarios
           const newComments = await apiGetComments(reviewId);
-          renderComments(newComments);
-
-          // Actualizar cache si es necesario (opcional, ya que fetched comments son la verdad)
+          renderComments(newComments, reviewId);
 
         } catch (err) {
           console.error(err);
@@ -530,27 +530,66 @@ function closeCommentsModal() {
 }
 
 // Renderiza la lista de comentarios con estilo de hilo
-function renderComments(comments) {
+function renderComments(comments, reviewId) {
   const listaComentarios = document.getElementById('listaComentarios');
   if (!listaComentarios) return;
 
+  const currentUser = JSON.parse(localStorage.getItem('usuario') || '{}');
+  const currentUserId = currentUser._id;
+
   const commentsHtml = comments.length > 0
-    ? comments.map(c => `
-        <div class="flex gap-3 animate-fadeIn">
+    ? comments.map(c => {
+      const isOwner = currentUserId && c.user?._id === currentUserId;
+      const reactions = c.reactions || { '👍': [], '❤️': [], '😂': [] };
+
+      return `
+        <div class="flex gap-3 animate-fadeIn comment-item" data-comment-id="${c._id}">
           <div class="flex-shrink-0 mt-1">
              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
                💬
              </div>
           </div>
           <div class="flex-grow bg-gray-800/40 rounded-2xl rounded-tl-none p-3 border border-gray-700/50 shadow-sm">
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-bold text-blue-300">${escapeHtml(c.user?.nombre || 'Usuario')}</span>
-              <span class="text-xs text-gray-500">${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ''}</span>
+            <div class="flex justify-between items-start mb-1">
+              <div class="flex-grow">
+                <span class="text-xs font-bold text-blue-300">${escapeHtml(c.user?.nombre || 'Usuario')}</span>
+                ${c.edited ? '<span class="text-xs text-gray-500 ml-2">(editado)</span>' : ''}
+                <span class="text-xs text-gray-500 ml-2">${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ''}</span>
+              </div>
+              ${isOwner ? `
+                <div class="flex gap-1">
+                  <button class="btn-edit-comment text-xs px-2 py-1 bg-blue-600/60 hover:bg-blue-600 rounded transition" 
+                          data-review-id="${reviewId}" data-comment-id="${c._id}">
+                    ✏️
+                  </button>
+                  <button class="btn-delete-comment text-xs px-2 py-1 bg-red-600/60 hover:bg-red-600 rounded transition" 
+                          data-review-id="${reviewId}" data-comment-id="${c._id}">
+                    🗑️
+                  </button>
+                </div>
+              ` : ''}
             </div>
-            <p class="text-gray-200 text-sm leading-relaxed">${escapeHtml(c.text || c)}</p>
+            <p class="text-gray-200 text-sm leading-relaxed mb-2 comment-text">${escapeHtml(c.text || c)}</p>
+            
+            <!-- Reacciones -->
+            <div class="flex items-center gap-2 mt-2 pt-2 border-t border-gray-700/50">
+              <button class="btn-react text-sm hover:scale-110 transition ${reactions['👍'].some(id => id.toString() === currentUserId) ? 'opacity-100' : 'opacity-50'}" 
+                      data-review-id="${reviewId}" data-comment-id="${c._id}" data-reaction="👍">
+                👍 ${reactions['👍'].length || ''}
+              </button>
+              <button class="btn-react text-sm hover:scale-110 transition ${reactions['❤️'].some(id => id.toString() === currentUserId) ? 'opacity-100' : 'opacity-50'}" 
+                      data-review-id="${reviewId}" data-comment-id="${c._id}" data-reaction="❤️">
+                ❤️ ${reactions['❤️'].length || ''}
+              </button>
+              <button class="btn-react text-sm hover:scale-110 transition ${reactions['😂'].some(id => id.toString() === currentUserId) ? 'opacity-100' : 'opacity-50'}" 
+                      data-review-id="${reviewId}" data-comment-id="${c._id}" data-reaction="😂">
+                😂 ${reactions['😂'].length || ''}
+              </button>
+            </div>
           </div>
         </div>
-      `).join('')
+      `
+    }).join('')
     : `
       <div class="text-center py-8 opacity-60">
         <div class="text-4xl mb-2">💭</div>
@@ -567,6 +606,75 @@ function renderComments(comments) {
       ${commentsHtml}
     </div>
   `;
+
+  // Event listeners
+  addCommentEventListeners(reviewId);
+}
+
+// Event listeners para comentarios
+function addCommentEventListeners(reviewId) {
+  // Eliminar
+  document.querySelectorAll('.btn-delete-comment').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation(); // Evitar propagación
+      const commentId = e.target.dataset.commentId;
+      if (!commentId) return;
+
+      if (confirm('¿Eliminar este comentario?')) {
+        try {
+          await apiDeleteComment(reviewId, commentId);
+          showToast('Comentario eliminado', 'success');
+          const newComments = await apiGetComments(reviewId);
+          renderComments(newComments, reviewId);
+        } catch (error) {
+          showToast('Error al eliminar', 'error');
+        }
+      }
+    });
+  });
+
+  // Editar
+  document.querySelectorAll('.btn-edit-comment').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation(); // Evitar propagación
+      const commentId = e.target.dataset.commentId;
+      const commentItem = e.target.closest('.comment-item');
+      if (!commentId || !commentItem) return;
+
+      const textEl = commentItem.querySelector('.comment-text');
+      const currentText = textEl.textContent;
+      const newText = prompt('Editar comentario:', currentText);
+      if (newText && newText.trim() && newText !== currentText) {
+        try {
+          await apiEditComment(reviewId, commentId, newText.trim());
+          showToast('Comentario editado', 'success');
+          const newComments = await apiGetComments(reviewId);
+          renderComments(newComments, reviewId);
+        } catch (error) {
+          showToast('Error al editar', 'error');
+        }
+      }
+    });
+  });
+
+  // Reacciones
+  document.querySelectorAll('.btn-react').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation(); // Evitar propagación a otros eventos
+      const commentId = e.target.dataset.commentId;
+      const reaction = e.target.dataset.reaction;
+      if (!commentId || !reaction) return;
+
+      try {
+        await apiReactToComment(reviewId, commentId, reaction);
+        // No mostramos toast para reacciones para que sea más fluido
+        const newComments = await apiGetComments(reviewId);
+        renderComments(newComments, reviewId);
+      } catch (error) {
+        showToast('Error al reaccionar', 'error');
+      }
+    });
+  });
 }
 
 // Función helper para escapar HTML

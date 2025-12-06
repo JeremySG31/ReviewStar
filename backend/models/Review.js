@@ -10,7 +10,14 @@ const reviewSchema = new mongoose.Schema({
   comments: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     text: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    edited: { type: Boolean, default: false },
+    editedAt: { type: Date },
+    reactions: {
+      '👍': [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+      '❤️': [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+      '😂': [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    }
   }],
   likes: { type: Number, default: 0 },
   likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Array de usuarios que dieron like

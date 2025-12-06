@@ -55,7 +55,7 @@ export function createReviewCard(review, options = {}) {
       ${controlsHtml}
       ${imgHtml}
       <h3 class="font-semibold text-lg mb-1">${escapeHtml(title)}</h3>
-      <p class="text-sm text-gray-300 mb-3 line-clamp-6">${escapeHtml(short)}</p>
+      <p class="text-sm text-gray-300 mb-3 max-h-32 overflow-y-auto custom-scrollbar pr-2">${escapeHtml(short)}</p>
       <div class="flex items-center justify-between">
         <div class="text-xs text-gray-400 mt-2">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
         <div class="flex items-center gap-2">

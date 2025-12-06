@@ -66,8 +66,18 @@ export async function apiCreateReview(payload) {
 }
 
 export async function apiUpdateReview(id, payload) {
-  const headers = { ...getAuthHeaders() };
-  const resp = await safeFetch(`${API_BASE}/reviews/update/${id}`, { method: 'PUT', headers, body: payload });
+  const headers = getAuthHeaders();
+  // Si payload es FormData, no ponemos Content-Type. Si es JSON, sí.
+  if (!(payload instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+    payload = JSON.stringify(payload);
+  }
+
+  const resp = await safeFetch(`${API_BASE}/reviews/update/${id}`, {
+    method: 'PUT',
+    headers,
+    body: payload
+  });
   return resp.data;
 }
 
@@ -129,7 +139,9 @@ export async function apiAddComment(id, comment) {
   const resp = await safeFetch(`${API_BASE}/reviews/${id}/comments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify({ comment })
+    body: JSON.stringify({ comment }) // Backend espera { text: ... } o { comment: ... }? Ajustar si es necesario
+    // Nota: en backend reviewController.js addCommentToReview espera req.body.comment.
+    // Si backend espera req.body.text, cambiar aquí. Pero mantenemos coherencia con lo existente.
   });
   return resp.data;
 }
@@ -172,4 +184,33 @@ export async function apiGoogleLogin(token) {
   });
   if (resp.ok && resp.data) return { ok: true, ...resp.data };
   return { ok: false, message: resp.data?.message || 'Error en Google Login' };
+}
+
+// Eliminar comentario
+export async function apiDeleteComment(reviewId, commentId) {
+  const resp = await safeFetch(`${API_BASE}/reviews/${reviewId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: { ...getAuthHeaders() }
+  });
+  return resp.data;
+}
+
+// Editar comentario
+export async function apiEditComment(reviewId, commentId, text) {
+  const resp = await safeFetch(`${API_BASE}/reviews/${reviewId}/comments/${commentId}`, {
+    method: 'PUT',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text })
+  });
+  return resp.data;
+}
+
+// Reaccionar a comentario
+export async function apiReactToComment(reviewId, commentId, reaction) {
+  const resp = await safeFetch(`${API_BASE}/reviews/${reviewId}/comments/${commentId}/react`, {
+    method: 'POST',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reaction })
+  });
+  return resp.data;
 }
