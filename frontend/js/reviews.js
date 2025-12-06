@@ -32,7 +32,9 @@ export async function initPublicReviews() {
   const refresh = async () => {
     try {
       const reviews = await apiGetReviews();
-      renderList(container, reviews, true); // Pass true to show controls if we wanted, but for public we usually just want like/comment. 
+      // Limitar a las 3 más recientes
+      const recentReviews = reviews.slice(0, 3);
+      renderList(container, recentReviews, false); // Pass true to show controls if we wanted, but for public we usually just want like/comment. 
       // Actually renderList 3rd arg is 'controls'. In dashboard it's true (edit/delete). 
       // In public it should be false (no edit/delete), but we still want like/comment buttons.
       // createReviewCard checks 'options.controls' for edit/delete buttons.
@@ -46,7 +48,9 @@ export async function initPublicReviews() {
   try {
     const reviews = await apiGetReviews();
     allReviewsCache = reviews;
-    renderList(container, reviews, false);
+    // Mostrar solo las 3 reseñas más recientes en index
+    const recentReviews = reviews.slice(0, 3);
+    renderList(container, recentReviews, false);
   } catch (err) {
     console.error(err);
     container.innerHTML = `
