@@ -98,10 +98,11 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // Crear URL de reseteo (apunta al frontend)
-    // Asumimos que el frontend corre en el mismo dominio/puerto si es estático, o configurar URL base
-    // Para desarrollo local con Live Server suele ser puerto 5500 o similar.
-    // Lo ideal es usar una variable de entorno FRONTEND_URL, por defecto localhost:5500
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5500';
+    // Usar variable de entorno o detectar host automáticamente
+    const frontendUrl = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
+    // Si estamos en desarrollo local y el backend es 5000 pero frontend 5500, ajustar aquí si es necesario
+    // Para producción, FRONTEND_URL debe estar seteado.
+
     const resetUrl = `${frontendUrl}/reset-password.html?token=${resetToken}`;
 
     const message = `
