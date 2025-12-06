@@ -463,7 +463,7 @@ async function openCommentsModal(reviewId) {
   // Renderizar la reseña completa en la parte superior
   reviewContent.innerHTML = `
     <div class="border-b border-gray-700 pb-4 mb-4">
-      <h3 class="text-xl font-bold text-white mb-2">${escapeHtml(review.title)}</h3>
+      <h3 class="text-xl font-bold text-white mb-2">${escapeHtml(review.title)} </h3>
       <p class="text-gray-400 text-sm max-h-24 overflow-y-auto custom-scrollbar">${escapeHtml(review.description)}</p>
       <div class="flex items-center gap-2 mt-2">
         <span class="text-xs bg-blue-900/50 text-blue-200 px-2 py-1 rounded-full">${escapeHtml(review.category)}</span>
