@@ -1,267 +1,305 @@
 import Review from '../models/Review.js';
 import User from '../models/User.js';
-import cloudinary from '../config/cloudinary.js';
+import { v2 as cloudinary } from 'cloudinary';
 
+// Configurar Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// @desc    Crear nueva reseña
+// @route   POST /api/reviews/create
+// @access  Private
 export const createReview = async (req, res) => {
-  const { title, description, rating, category } = req.body;
-  try {
-    let imageUrl = '';
-    if (req.files?.image) {
-      const folderName = category ? `Home/categoria/${category.trim().replace(/\s+/g, '_')}` : 'Home/categoria/General';
-      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
-        folder: folderName
-      });
-      imageUrl = result.secure_url;
+    try {
+        const { title, description, rating, category } = req.body;
+        let imageUrl = '';
+
+        if (req.files && req.files.image) {
+            const file = req.files.image;
+            const result = await cloudinary.uploader.upload(file.tempFilePath, {
+                folder: 'reviewstar'
+            });
+            imageUrl = result.secure_url;
+        } else if (req.body.image) {
+            imageUrl = req.body.image;
+        }
+
+        const review = await Review.create({
+            user: req.user._id,
+            title,
+            description,
+            rating,
+            category,
+            image: imageUrl
+        });
+
+        res.status(201).json(review);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al crear reseña' });
     }
-
-    const review = await Review.create({
-      user: req.user._id,
-      title,
-      description,
-      rating,
-      category,
-      image: imageUrl,
-      comments: [],
-      likes: 0
-    });
-
-    await User.findByIdAndUpdate(req.user._id, { $inc: { totalReviews: 1 } });
-    res.status(201).json(review);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creando reseña', error });
-  }
 };
 
+// @desc    Obtener todas las reseñas
+// @route   GET /api/reviews/all
+// @access  Public
 export const getReviews = async (req, res) => {
-  try {
-    const reviews = await Review.find().populate('user', 'nombre email').sort({ createdAt: -1 });
-    res.json(reviews);
-  } catch (error) {
-    res.status(500).json({ message: 'Error obteniendo reseñas', error });
-  }
+    try {
+        const reviews = await Review.find({})
+            .populate('user', 'nombre email')
+            .sort({ createdAt: -1 });
+        res.json(reviews);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener reseñas' });
+    }
 };
 
+// @desc    Obtener mis reseñas
+// @route   GET /api/reviews/my
+// @access  Private
 export const getMyReviews = async (req, res) => {
-  try {
-    const reviews = await Review.find({ user: req.user._id }).populate('user', 'nombre email').sort({ createdAt: -1 });
-    res.json(reviews);
-  } catch (error) {
-    res.status(500).json({ message: 'Error obteniendo tus reseñas', error });
-  }
+    try {
+        const reviews = await Review.find({ user: req.user._id }).sort({ createdAt: -1 });
+        res.json(reviews);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener mis reseñas' });
+    }
 };
 
+// @desc    Actualizar reseña
+// @route   PUT /api/reviews/update/:id
+// @access  Private
 export const updateReview = async (req, res) => {
-  const { id } = req.params;
-  const { title, description, rating, category } = req.body;
+    try {
+        const review = await Review.findById(req.params.id);
 
-  try {
-    const review = await Review.findById(id);
-    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
-    if (review.user.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: 'No autorizado' });
+        if (!review) {
+            return res.status(404).json({ message: 'Reseña no encontrada' });
+        }
 
-    review.title = title || review.title;
-    review.description = description || review.description;
-    review.rating = rating || review.rating;
-    review.category = category || review.category;
+        if (review.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
 
-    if (req.files?.image) {
-      const catForFolder = category || review.category;
-      const folderName = catForFolder ? `Home/categoria/${catForFolder.trim().replace(/\s+/g, '_')}` : 'Home/categoria/General';
-      const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
-        folder: folderName
-      });
-      review.image = result.secure_url;
+        const { title, description, rating, category } = req.body;
+
+        review.title = title || review.title;
+        review.description = description || review.description;
+        review.rating = rating || review.rating;
+        review.category = category || review.category;
+
+        if (req.files && req.files.image) {
+            const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
+                folder: 'reviewstar'
+            });
+            review.image = result.secure_url;
+        }
+
+        const updatedReview = await review.save();
+        res.json(updatedReview);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar' });
     }
-
-    await review.save();
-    res.json(review);
-  } catch (error) {
-    res.status(500).json({ message: 'Error actualizando reseña', error });
-  }
 };
 
+// @desc    Eliminar reseña
+// @route   DELETE /api/reviews/delete/:id
+// @access  Private
 export const deleteReview = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const review = await Review.findById(id);
-    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
-    if (review.user.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: 'No autorizado' });
+    try {
+        const review = await Review.findById(req.params.id);
 
-    // Eliminar la reseña de la base de datos
-    await Review.deleteOne({ _id: id });
+        if (!review) {
+            return res.status(404).json({ message: 'Reseña no encontrada' });
+        }
 
-    // Actualizar métricas del usuario
-    await User.findByIdAndUpdate(req.user._id, {
-      $inc: {
-        totalReviews: -1,
-        totalLikes: -(review.likes || 0)
-      }
-    });
+        if (review.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
 
-    res.json({ message: 'Reseña eliminada exitosamente', success: true });
-  } catch (error) {
-    console.error('Error eliminando reseña:', error);
-    res.status(500).json({ message: 'Error eliminando reseña', error: error.message });
-  }
-};
-
-export const getCommentsForReview = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const review = await Review.findById(id).populate('comments.user', 'nombre email');
-    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
-
-    res.json(review.comments);
-  } catch (error) {
-    res.status(500).json({ message: 'Error obteniendo comentarios', error });
-  }
-};
-
-export const addCommentToReview = async (req, res) => {
-  const { id } = req.params;
-  const { comment } = req.body;
-
-  try {
-    const review = await Review.findById(id);
-    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
-
-    review.comments.push({
-      user: req.user._id,
-      text: comment,
-      createdAt: new Date()
-    });
-    await review.save();
-    res.json(review);
-  } catch (error) {
-    res.status(500).json({ message: 'Error añadiendo comentario', error });
-  }
-};
-
-export const likeReview = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const review = await Review.findById(id);
-    if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
-
-    const userId = req.user._id;
-    const hasLiked = review.likedBy.includes(userId);
-
-    if (hasLiked) {
-      // Si ya dio like, quitarlo (toggle)
-      review.likes -= 1;
-      review.likedBy = review.likedBy.filter(id => id.toString() !== userId.toString());
-      await review.save();
-
-      await User.findByIdAndUpdate(review.user, { $inc: { totalLikes: -1 } });
-      res.json({ message: 'Like removido', review });
-    } else {
-      // Si no ha dado like, agregarlo
-      review.likes += 1;
-      review.likedBy.push(userId);
-      await review.save();
-
-      await User.findByIdAndUpdate(review.user, { $inc: { totalLikes: 1 } });
-      res.json({ message: 'Like agregado', review });
+        await review.deleteOne();
+        res.json({ message: 'Reseña eliminada' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al eliminar' });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Error dando like a la reseña', error });
-  }
+};
+
+// @desc    Dar like a una reseña
+// @route   PUT /api/reviews/:id/like
+// @access  Private
+export const likeReview = async (req, res) => {
+    try {
+        const review = await Review.findById(req.params.id);
+        if (!review) return res.status(404).json({ message: 'No encontrado' });
+
+        review.likes = (review.likes || 0) + 1;
+        await review.save();
+
+        res.json(review);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Obtener comentarios de una reseña
+// @route   GET /api/reviews/:id/comments
+// @access  Public
+export const getCommentsForReview = async (req, res) => {
+    try {
+        // IMPORTANTE: Populate user para que frontend detecte isOwner
+        const review = await Review.findById(req.params.id).populate('comments.user', 'nombre email');
+        if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+        res.json(review.comments);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener comentarios' });
+    }
+};
+
+// @desc    Agregar comentario
+// @route   POST /api/reviews/:id/comments
+// @access  Private
+export const addCommentToReview = async (req, res) => {
+    try {
+        const { comment } = req.body;
+        const review = await Review.findById(req.params.id);
+
+        if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+        const newComment = {
+            user: req.user._id,
+            text: comment,
+            createdAt: new Date(),
+            reactions: { '👍': [], '❤️': [], '😂': [] }
+        };
+
+        review.comments.push(newComment);
+        await review.save();
+
+        res.json(review.comments);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al comentar' });
+    }
+};
+
+// @desc    Eliminar comentario
+// @route   DELETE /api/reviews/:reviewId/comments/:commentId
+// @access  Private
+export const deleteComment = async (req, res) => {
+    try {
+        const { reviewId, commentId } = req.params;
+        const review = await Review.findById(reviewId);
+
+        if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+        const comment = review.comments.id(commentId);
+        if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
+
+        if (comment.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
+
+        review.comments.pull(commentId);
+        await review.save();
+
+        res.json({ message: 'Comentario eliminado' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al eliminar comentario' });
+    }
+};
+
+// @desc    Editar comentario
+// @route   PUT /api/reviews/:reviewId/comments/:commentId
+// @access  Private
+export const editComment = async (req, res) => {
+    try {
+        const { reviewId, commentId } = req.params;
+        const { text } = req.body;
+
+        const review = await Review.findById(reviewId);
+        if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+        const comment = review.comments.id(commentId);
+        if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
+
+        if (comment.user.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
+
+        comment.text = text;
+        comment.edited = true;
+        comment.editedAt = new Date();
+
+        await review.save();
+        res.json(comment);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al editar comentario' });
+    }
+};
+
+// @desc    Reaccionar a comentario
+// @route   POST /api/reviews/:reviewId/comments/:commentId/react
+// @access  Private
+export const reactToComment = async (req, res) => {
+    try {
+        const { reviewId, commentId } = req.params;
+        const { reaction } = req.body;
+
+        // console.log('Reaccionando:', reaction, 'Usuario:', req.user._id);
+
+        const validReactions = ['👍', '❤️', '😂'];
+        if (!validReactions.includes(reaction)) {
+            return res.status(400).json({ message: 'Reacción inválida' });
+        }
+
+        const review = await Review.findById(reviewId);
+        if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
+
+        const comment = review.comments.id(commentId);
+        if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
+
+        // Inicializar objeto de reacciones si falta
+        if (!comment.reactions) {
+            comment.reactions = { '👍': [], '❤️': [], '😂': [] };
+        }
+
+        // Asegurar arrays
+        if (!comment.reactions['👍']) comment.reactions['👍'] = [];
+        if (!comment.reactions['❤️']) comment.reactions['❤️'] = [];
+        if (!comment.reactions['😂']) comment.reactions['😂'] = [];
+
+        const userId = req.user._id.toString();
+        const currentList = comment.reactions[reaction];
+
+        // Verificar si ya tiene like
+        const hasReacted = currentList.some(id => id.toString() === userId);
+
+        if (hasReacted) {
+            // Quitar
+            comment.reactions[reaction] = currentList.filter(id => id.toString() !== userId);
+        } else {
+            // Agregar
+            comment.reactions[reaction].push(req.user._id);
+        }
+
+        // IMPORTANTE: Notificar cambio a Mongoose
+        review.markModified('comments');
+
+        await review.save();
+        res.json({ success: true, reactions: comment.reactions });
+    } catch (error) {
+        console.error('Error en reactToComment:', error);
+        res.status(500).json({ message: 'Error al reaccionar' });
+    }
 };
 
 export const syncMetrics = async (req, res) => {
-  try {
-    const users = await User.find();
-    let updatedCount = 0;
-
-    for (const user of users) {
-      const reviews = await Review.find({ user: user._id });
-      const totalReviews = reviews.length;
-      const totalLikes = reviews.reduce((acc, curr) => acc + (curr.likes || 0), 0);
-
-      user.totalReviews = totalReviews;
-      user.totalLikes = totalLikes;
-      await user.save();
-      updatedCount++;
-    }
-
-    res.json({
-      message: 'Métricas sincronizadas correctamente',
-      usersUpdated: updatedCount
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error sincronizando métricas', error });
-  }
-};
-
-
-// Eliminar comentario propio
-export const deleteComment = async (req, res) => {
-  const { reviewId, commentId } = req.params;
-  try {
-    const review = await Review.findById(reviewId);
-    if (!review) return res.status(404).json({ message: 'Rese�a no encontrada' });
-    const comment = review.comments.id(commentId);
-    if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
-    if (comment.user.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'No autorizado' });
-    comment.remove();
-    await review.save();
-    res.json({ message: 'Comentario eliminado', success: true });
-  } catch (error) {
-    res.status(500).json({ message: 'Error eliminando comentario' });
-  }
-};
-
-// Editar comentario
-export const editComment = async (req, res) => {
-  const { reviewId, commentId } = req.params;
-  const { text } = req.body;
-  if (!text || !text.trim()) return res.status(400).json({ message: 'Comentario vac�o' });
-  try {
-    const review = await Review.findById(reviewId);
-    if (!review) return res.status(404).json({ message: 'Rese�a no encontrada' });
-    const comment = review.comments.id(commentId);
-    if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
-    if (comment.user.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'No autorizado' });
-    comment.text = text.trim();
-    comment.edited = true;
-    comment.editedAt = new Date();
-    await review.save();
-    res.json({ message: 'Comentario editado', success: true });
-  } catch (error) {
-    res.status(500).json({ message: 'Error editando comentario' });
-  }
-};
-
-// Reaccionar a comentario
-export const reactToComment = async (req, res) => {
-  const { reviewId, commentId } = req.params;
-  const { reaction } = req.body;
-  const valid = ['', '', ''];
-  if (!valid.includes(reaction)) return res.status(400).json({ message: 'Inv�lida' });
-  try {
-    const review = await Review.findById(reviewId);
-    if (!review) return res.status(404).json({ message: 'Rese�a no encontrada' });
-    const comment = review.comments.id(commentId);
-    if (!comment) return res.status(404).json({ message: 'Comentario no encontrado' });
-    if (!comment.reactions) comment.reactions = { '': [], '': [], '': [] };
-    const userId = req.user._id.toString();
-    const arr = comment.reactions[reaction] || [];
-    const has = arr.some(id => id.toString() === userId);
-    if (has) {
-      comment.reactions[reaction] = arr.filter(id => id.toString() !== userId);
-    } else {
-      for (const k of valid) {
-        comment.reactions[k] = (comment.reactions[k] || []).filter(id => id.toString() !== userId);
-      }
-      comment.reactions[reaction].push(req.user._id);
-    }
-    await review.save();
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ message: 'Error en reacci�n' });
-  }
+    res.json({ ok: true });
 };

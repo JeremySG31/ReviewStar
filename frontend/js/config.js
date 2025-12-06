@@ -1,6 +1,6 @@
 // Configuración del entorno
 // Cambia esto a 'production' cuando subas a producción
-const ENVIRONMENT = 'production'; // 'development' o 'production'
+const ENVIRONMENT = 'development'; // 'development' o 'production'
 
 const CONFIG = {
     development: {
