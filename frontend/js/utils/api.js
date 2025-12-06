@@ -1,11 +1,8 @@
 // Funciones para comunicar el frontend con el backend (REST API).
+import { API_URL } from '../config.js';
 
-// Siempre usar el backend en localhost:5000
 export function getApiBase() {
-  // Detectar automáticamente el hostname (localhost o IP de red)
-  const hostname = window.location.hostname;
-  // El backend siempre corre en el puerto 5000
-  return `http://${hostname}:5000`;
+  return API_URL;
 }
 
 export const API_BASE = `${getApiBase()}/api`;
