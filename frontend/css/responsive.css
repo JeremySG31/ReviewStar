@@ -1,0 +1,274 @@
+/* ===== MEJORAS DE RESPONSIVE PARA MÓVILES ===== */
+
+/* Ajustes generales para móviles */
+@media (max-width: 768px) {
+  /* Reducir padding general en móviles */
+  body {
+    font-size: 14px;
+  }
+
+  /* Nav responsive */
+  nav {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem !important;
+  }
+
+  nav h1, nav a.text-2xl {
+    font-size: 1.5rem !important;
+  }
+
+  nav #userArea {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  nav #userArea a, nav #userArea button {
+    width: 100%;
+    text-align: center;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem !important;
+  }
+
+  nav #userMenu {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* Títulos más pequeños en móvil */
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  h2 {
+    font-size: 1.75rem !important;
+  }
+
+  h3 {
+    font-size: 1.5rem !important;
+  }
+
+  h4 {
+    font-size: 1.25rem !important;
+  }
+
+  /* Hero section */
+  header.text-center {
+    padding: 2rem 1rem !important;
+  }
+
+  header.text-center h2 {
+    font-size: 2rem !important;
+    line-height: 1.2;
+  }
+
+  header.text-center p {
+    font-size: 0.95rem;
+  }
+
+  /* Secciones y contenedores */
+  section {
+    padding: 2rem 1rem !important;
+  }
+
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Grids responsive */
+  .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Tarjetas de reseñas */
+  .review-card, [class*="grid"] > div {
+    margin-bottom: 1rem;
+  }
+
+  /* Modales en móvil */
+  #modalReseña > div,
+  #modalComentarios > div {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 1rem;
+    max-height: 85vh !important;
+    padding: 1.5rem !important;
+  }
+
+  /* Formularios */
+  form input,
+  form textarea,
+  form select {
+    font-size: 16px !important; /* Evita zoom en iOS */
+  }
+
+  /* Botones más grandes para tap en móvil */
+  button, .button, a.button {
+    min-height: 44px;
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Perfil header */
+  header .flex {
+    flex-direction: column !important;
+  }
+
+  header .h-40 {
+    height: 120px !important;
+  }
+
+  /* Stats en perfil */
+  header .flex.gap-6 {
+    gap: 1rem !important;
+  }
+
+  header .text-5xl {
+    font-size: 2rem !important;
+  }
+
+  header .text-2xl {
+    font-size: 1.5rem !important;
+  }
+
+  /* Barra de acciones en profile */
+  .flex.justify-end.items-center {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  #categoryFilter {
+    width: 100% !important;
+  }
+
+  /* Botón FAB */
+  #fabNuevaReseña {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Feed filters */
+  .feed-filters {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .feed-filters select {
+    width: 100% !important;
+  }
+
+  /* Cards de reseña - mejor espaciado en móvil */
+  .review-card img {
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  /* Comentarios */
+  #listaComentarios {
+    font-size: 0.9rem;
+  }
+
+  /* Rating stars más grandes para mobile */
+  #ratingStars {
+    font-size: 2.5rem !important;
+    justify-content: center;
+  }
+
+  /* Login/Register forms */
+  .login-container,
+  .register-container {
+    padding: 1.5rem !important;
+    margin: 1rem !important;
+  }
+
+  /* Footer */
+  footer {
+    font-size: 0.875rem;
+    padding: 1rem !important;
+  }
+}
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  /* Títulos aún más pequeños */
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Padding más compacto */
+  section,
+  main {
+    padding: 1.5rem 0.75rem !important;
+  }
+
+  /* Modal más compacto */
+  #modalReseña > div,
+  #modalComentarios > div {
+    padding: 1rem !important;
+  }
+
+  /* Botones de acción en cards */
+  .review-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .review-actions button {
+    width: 100%;
+  }
+}
+
+/* Landscape en móviles */
+@media (max-width: 896px) and (orientation: landscape) {
+  header.text-center {
+    padding: 1.5rem 1rem !important;
+  }
+
+  section {
+    padding: 1.5rem 1rem !important;
+  }
+
+  #modalReseña > div,
+  #modalComentarios > div {
+    max-height: 90vh !important;
+    overflow-y: auto;
+  }
+}
+
+/* Tablets  */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid.sm\\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .grid.lg\\:grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Mejoras para accesibilidad táctil */
+@media (hover: none) and (pointer: coarse) {
+  /* Aumentar área de tap para enlaces y botones */
+  a, button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Efectos hover a active para táctil */
+  button:active,
+  a:active {
+    transform: scale(0.98);
+  }
+}
