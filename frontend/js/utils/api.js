@@ -123,6 +123,11 @@ export async function apiGetProfile() {
 }
 
 /* Interactions */
+export async function apiGetComments(id) {
+  const resp = await safeFetch(`${API_BASE}/reviews/${id}/comments`);
+  return resp.data || [];
+}
+
 export async function apiAddComment(id, comment) {
   const resp = await safeFetch(`${API_BASE}/reviews/${id}/comments`, {
     method: 'POST',

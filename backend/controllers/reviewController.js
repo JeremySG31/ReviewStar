@@ -108,7 +108,7 @@ export const getCommentsForReview = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const review = await Review.findById(id).populate('comments.usuario', 'nombre email');
+    const review = await Review.findById(id).populate('comments.user', 'nombre email');
     if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
 
     res.json(review.comments);
@@ -125,7 +125,11 @@ export const addCommentToReview = async (req, res) => {
     const review = await Review.findById(id);
     if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
 
-    review.comments.push(comment);
+    review.comments.push({
+      user: req.user._id,
+      text: comment,
+      createdAt: new Date()
+    });
     await review.save();
     res.json(review);
   } catch (error) {

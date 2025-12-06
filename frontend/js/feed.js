@@ -45,7 +45,7 @@ async function loadUserName() {
     if (!token) return;
 
     try {
-        const response = await fetch(`${API_BASE}/users/me`, {
+        const response = await fetch(`${API_BASE}/auth/me`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -231,10 +231,10 @@ async function loadComments(reviewId) {
         listaEl.innerHTML = comments.map(comment => `
       <div class="bg-gray-700 rounded-lg p-4">
         <div class="flex items-center gap-2 mb-2">
-          <span class="font-semibold text-cyan-400">${escapeHtml(comment.usuario?.nombre || 'Usuario')}</span>
-          <span class="text-xs text-gray-400">${new Date(comment.fecha).toLocaleDateString()}</span>
+          <span class="font-semibold text-cyan-400">${escapeHtml(comment.user?.nombre || 'Usuario')}</span>
+          <span class="text-xs text-gray-400">${comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ''}</span>
         </div>
-        <p class="text-gray-200">${escapeHtml(comment.texto)}</p>
+        <p class="text-gray-200">${escapeHtml(comment.text || comment)}</p>
       </div>
     `).join('');
     } catch (error) {

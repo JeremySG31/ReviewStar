@@ -5,7 +5,10 @@ import {
   apiCreateReview,
   apiUpdateReview,
   apiDeleteReview,
-  apiGetMyReviews
+  apiGetMyReviews,
+  apiGetComments,
+  apiAddComment,
+  apiLikeReview
 } from './utils/api.js';
 
 import { createReviewCard, showToast } from './utils/dom.js';
@@ -42,6 +45,7 @@ export async function initPublicReviews() {
 
   try {
     const reviews = await apiGetReviews();
+    allReviewsCache = reviews;
     renderList(container, reviews, false);
   } catch (err) {
     console.error(err);
@@ -468,7 +472,8 @@ async function openCommentsModal(reviewId) {
   `;
 
   // Renderizar comentarios existentes
-  renderComments(review.comments || []);
+  const comments = await apiGetComments(reviewId);
+  renderComments(comments);
 
   // Verificar autenticación
   const token = localStorage.getItem('token');
@@ -490,18 +495,12 @@ async function openCommentsModal(reviewId) {
           await apiAddComment(reviewId, comment);
           textarea.value = '';
 
-          // Refrescar reseñas (intentar refrescar ambas listas si existen)
-          const dashboardList = document.getElementById(DASHBOARD_LIST_ID);
-          const publicList = document.getElementById(PUBLIC_LIST_ID);
+          // Actualizar comentarios
+          const newComments = await apiGetComments(reviewId);
+          renderComments(newComments);
 
-          if (dashboardList) await refreshMyReviews(dashboardList);
-          if (publicList) await refreshPublicReviews(publicList);
+          // Actualizar cache si es necesario (opcional, ya que fetched comments son la verdad)
 
-          // Actualizar modal
-          const updatedReview = allReviewsCache.find(r => r._id === reviewId);
-          if (updatedReview) {
-            renderComments(updatedReview.comments || []);
-          }
         } catch (err) {
           console.error(err);
           alert('Error al agregar comentario');
@@ -545,7 +544,11 @@ function renderComments(comments) {
              </div>
           </div>
           <div class="flex-grow bg-gray-800/40 rounded-2xl rounded-tl-none p-3 border border-gray-700/50 shadow-sm">
-            <p class="text-gray-200 text-sm leading-relaxed">${escapeHtml(c)}</p>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-bold text-blue-300">${escapeHtml(c.user?.nombre || 'Usuario')}</span>
+              <span class="text-xs text-gray-500">${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ''}</span>
+            </div>
+            <p class="text-gray-200 text-sm leading-relaxed">${escapeHtml(c.text || c)}</p>
           </div>
         </div>
       `).join('')

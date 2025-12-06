@@ -7,7 +7,11 @@ const reviewSchema = new mongoose.Schema({
   image: { type: String }, // URL de Cloudinary
   rating: { type: Number, min: 0, max: 5, required: true },
   category: { type: String, required: true, trim: true },
-  comments: [{ type: String }],
+  comments: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    text: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+  }],
   likes: { type: Number, default: 0 },
   likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // Array de usuarios que dieron like
 }, { timestamps: true });
