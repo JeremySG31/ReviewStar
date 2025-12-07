@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
 import reviewRoutes from './routes/reviews.js';
+import efemeridesRoutes from './routes/efemerides.js';
 import fileUpload from 'express-fileupload';
 
 // Cargar variables de entorno
@@ -42,6 +43,7 @@ app.get('/api/test', async (req, res) => {
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/efemerides', efemeridesRoutes);
 
 // Endpoint público de configuración (para frontend)
 app.get('/api/config', (req, res) => {
