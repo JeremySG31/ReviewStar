@@ -28,29 +28,21 @@ function renderEfemeride(data) {
     const { year, text, category, icon, url } = data;
 
     // Formatear texto si es muy largo
-    const displayText = text.length > 250 ? text.substring(0, 250) + '...' : text;
+    const displayText = text.length > 800 ? text.substring(0, 800) + '...' : text;
 
     let html = `
         <div class="animate-fadeIn">
-            <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full mb-4 border border-white/5">
+            <div class="inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full mb-6 border border-white/5">
                 <span class="text-xl">${icon || '📅'}</span>
-                <span class="font-bold text-sm tracking-wide text-cyan-300 uppercase">${category || 'Historia'}</span>
                 <span class="text-gray-400 text-sm border-l border-gray-600 pl-2 ml-1">Año ${year}</span>
             </div>
             
-            <p class="text-2xl md:text-3xl text-gray-100 leading-relaxed font-light max-w-4xl mx-auto drop-shadow-md">
+            <p class="text-xl md:text-2xl text-gray-100 leading-relaxed font-light max-w-5xl mx-auto drop-shadow-md">
                 "${displayText}"
             </p>
     `;
 
-    if (url) {
-        html += `
-            <a href="${url}" target="_blank" rel="noopener noreferrer" 
-               class="inline-block mt-6 text-sm text-cyan-400 hover:text-cyan-300 border-b border-cyan-400/30 hover:border-cyan-300 transition-all pb-0.5">
-               Saber más en Wikipedia ↗
-            </a>
-        `;
-    }
+
 
     html += `</div>`;
 

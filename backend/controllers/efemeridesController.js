@@ -74,7 +74,7 @@ export const getEfemeride = async (req, res) => {
             bestMatch = {
                 year: randomEvent.year,
                 text: randomEvent.text,
-                category: 'Historia',
+                category: 'Otros',
                 icon: '📅',
                 url: randomEvent.pages && randomEvent.pages[0] ? randomEvent.pages[0].content_urls.desktop.page : null
             };
