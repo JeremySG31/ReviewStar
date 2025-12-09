@@ -3,248 +3,146 @@
 ReviewStar es una aplicación web moderna "full-stack" diseñada para que los usuarios compartan y descubran reseñas. Construida con un backend robusto en **Node.js/Express** y un frontend responsivo en **HTML5/Tailwind CSS**, ofrece una experiencia fluida para crear, leer y gestionar reseñas.
 
 ## 🌟 Demo en Vivo
+# ⭐ ReviewStar — Documentación técnica
 
-**🔗 [Ver aplicación en vivo](https://review-star-eight.vercel.app/)**
+Este documento describe la implementación actual de ReviewStar, su arquitectura y cómo operar el proyecto localmente y en producción. 
 
-
----
-
-## 🚀 Tecnologías Utilizadas
-
-### Frontend
-*   **HTML5**: Estructura y marcado semántico.
-*   **JavaScript (ES6+)**: Lógica interactiva e integración con APIs.
-*   **Tailwind CSS (v4)**: Framework CSS "utility-first" para un desarrollo de UI rápido y moderno.
-*   **PostCSS & Autoprefixer**: Transformación de CSS y compatibilidad con navegadores.
-
-### Backend
-*   **Node.js**: Entorno de ejecución de JavaScript.
-*   **Express.js**: Framework web rápido y minimalista para Node.js.
-*   **MongoDB & Mongoose**: Base de datos NoSQL y modelado de objetos.
-*   **Cloudinary**: Gestión y optimización de imágenes en la nube.
-*   **JWT (JSON Web Tokens)**: Autenticación segura de usuarios.
-*   **Google Auth Library**: Verificación en el backend para inicio de sesión con Google.
-*   **Nodemailer**: Para el envío de correos electrónicos (ej. restablecimiento de contraseñas).
+**Demo (despliegue público):** `https://review-star-eight.vercel.app/` (frontend)
 
 ---
 
-## ✨ Características Principales
-
-*   **🔐 Sistema de Autenticación**: Registro seguro, inicio de sesión, recuperación de contraseña y soporte para Google Sign-In.
-*   **📝 Crear y Gestionar Reseñas**: Los usuarios pueden publicar reseñas detalladas con calificaciones e imágenes.
-*   **📰 Feed Interactivo**: Explora las últimas reseñas de la comunidad.
-*   **👤 Perfiles de Usuario**: Personaliza los detalles del perfil y visualiza el historial personal de reseñas.
-*   **🖼️ Subida de Imágenes**: Carga de imágenes fluida para perfiles y reseñas utilizando Cloudinary.
-*   **📱 Diseño Responsivo**: Optimizado tanto para dispositivos de escritorio como móviles.
+**Propósito de este README actualizado:**
+- **Documentar** componentes, flujos y endpoints ya implementados.
+- **Servir** como base para diagramas de arquitectura y diseño de alto nivel.
+- **Facilitar** despliegue, pruebas y evolución del sistema.
 
 ---
 
-## 🛠️ Instalación y Configuración
+**Resumen del sistema**
+- **Frontend:** Páginas HTML + Tailwind CSS, JavaScript modular (carpeta `frontend/js`).
+- **Backend:** API REST en `Node.js + Express` (carpeta `backend/`).
+- **Base de datos:** MongoDB, modelado con Mongoose (`backend/models`).
+- **Almacenamiento de imágenes:** Cloudinary (`backend/config/cloudinary.js`).
+- **Autenticación:** JWT para sesiones y verificación de tokens; soporte para Google Sign-In.
+- **Email:** `nodemailer` para recuperación de contraseñas y notificaciones (`backend/utils/sendEmail.js`).
 
-Sigue estos pasos para ejecutar el proyecto localmente.
-
-### Requisitos Previos
-*   Node.js (v18+ recomendado)
-*   MongoDB (Local o Atlas)
-*   Cuenta de Cloudinary (para subida de imágenes)
-
-### 1. Clonar el Repositorio
-```bash
-git clone https://github.com/JeremySG31/ReviewStar.git
-cd ReviewStar
-```
-
-### 2. Configuración del Backend
-Navega al directorio del backend e instala las dependencias:
-```bash
-cd backend
-npm install
-```
-
-**Configuración (.env):**
-Crea un archivo `.env` en el directorio `backend/` con las siguientes variables:
-```env
-PORT=5000
-MONGO_URI=tu_cadena_de_conexion_mongodb
-JWT_SECRET=tu_secreto_jwt_seguro
-CLIENT_URL=http://127.0.0.1:5500/frontend
-
-# Configuración de Cloudinary
-CLOUDINARY_CLOUD_NAME=tu_cloud_name
-CLOUDINARY_API_KEY=tu_api_key
-CLOUDINARY_API_SECRET=tu_api_secret
-
-# Configuración de Email (Nodemailer)
-EMAIL_SERVICE=gmail
-EMAIL_USER=tu_email@gmail.com
-EMAIL_PASS=tu_contraseña_de_aplicacion
-
-# Google Auth
-GOOGLE_CLIENT_ID=tu_google_client_id
-```
-
-Inicia el servidor:
-```bash
-npm run dev
-```
-
-### 3. Configuración del Frontend
-Navega al directorio del frontend:
-```bash
-cd ../frontend
-npm install
-```
-
-Dado que este proyecto utiliza HTML5 y Tailwind CSS, puedes servir la carpeta `frontend` utilizando extensiones como **Live Server** en VS Code o cualquier servidor de archivos estáticos.
-
-**Configuración de Entorno:**
-Edita el archivo `frontend/js/config.js` y establece el entorno:
-```javascript
-const ENVIRONMENT = 'development'; // Para desarrollo local
-```
+**Stack principal:** `Node.js`, `Express`, `MongoDB/Mongoose`, `Cloudinary`, `JWT`, `Tailwind CSS`, `Vanilla JS`.
 
 ---
 
-## 🌐 Despliegue en Producción
+**Estructura de carpetas (resumen)**
+- **`backend/`**: código del servidor
+   - `config/`: `db.js`, `cloudinary.js`, `env.js`
+   - `controllers/`: `authController.js`, `efemeridesController.js`, `reviewController.js`
+   - `middleware/`: `auth.js` (middleware JWT)
+   - `models/`: `User.js`, `Review.js`
+   - `routes/`: `auth.js`, `efemerides.js`, `reviews.js`
+   - `utils/`: `helpers.js`, `sendEmail.js`, `validation.js`
+   - `server.js`: punto de entrada
+- **`frontend/`**: interfaz de usuario (HTML/CSS/JS)
+   - `*.html`: `index.html`, `feed.html`, `login.html`, `register.html`, `profile.html`, etc.
+   - `js/`: módulos frontend (`auth.js`, `feed.js`, `reviews.js`, `config.js`)
+   - `css/`: estilos compilados y responsivos
 
-Este proyecto está configurado para un despliegue separado del frontend y backend, siguiendo las mejores prácticas modernas.
+---
 
-### 🎨 Frontend - Vercel
+**Principales características implementadas**
+- **Autenticación local**: registro, inicio de sesión, logout, middleware `auth.js` que valida el JWT.
+- **Google Sign-In**: verificación del token de Google en backend (biblioteca Google Auth).
+- **Recuperación de contraseña**: tokens de restablecimiento enviados por email (Nodemailer + `sendEmail.js`).
+- **CRUD de reseñas**: creación, lectura (feed), actualización y eliminación de reseñas.
+- **Subida de imágenes**: Cloudinary integrado para perfiles y reseñas (controladores usan `cloudinary.uploader`).
+- **Validaciones**: utilidades en `backend/utils/validation.js` y checks en controllers.
 
-**Pasos para desplegar:**
+---
 
-1. **Conecta tu repositorio** a [Vercel](https://vercel.com)
-2. **Configura el proyecto:**
-   - Framework Preset: `Other`
-   - Root Directory: `frontend`
-   - Build Command: (dejar vacío)
-   - Output Directory: `.` (punto)
+**Modelo de datos (resumen)**
+- **`User`** (en `backend/models/User.js`):
+   - **Campos típicos:** `name`, `email` (único), `password` (hash), `avatar` ({ `url`, `public_id` }), `googleId?`, `role`, `createdAt`.
+   - **Índices/constraints:** índice único en `email`.
 
-3. **Antes de desplegar**, actualiza `frontend/js/config.js`:
-   ```javascript
-   const ENVIRONMENT = 'production';
-   ```
+- **`Review`** (en `backend/models/Review.js`):
+   - **Campos típicos:** `title`, `content`, `rating` (número), `images` (array de `{url, public_id}`), `author` (ObjectId -> `User`), `createdAt`, `updatedAt`.
+   - **Relaciones:** `Review.author` referencia a `User`.
 
-4. **Despliega** y Vercel te dará una URL como `https://review-star-eight.vercel.app`
+Estos modelos sirven para crear un diagrama ER y para definir contratos de la API.
 
-### ⚙️ Backend - Render
+---
 
-**Pasos para desplegar:**
+**API — Endpoints principales (implementados / esperados)**
+Nota: las rutas reales están en `backend/routes/*.js`. A continuación se presenta un resumen semántico.
 
-1. **Crea un nuevo Web Service** en [Render](https://render.com)
-2. **Conecta tu repositorio** de GitHub
-3. **Configura el servicio:**
-   - Environment: `Node`
-   - Root Directory: `backend`
-   - Build Command: `npm install`
-   - Start Command: `npm start`
+- **Auth** (`/api/auth`)
+   - `POST /register` : registrar usuario (email + password)
+   - `POST /login` : login y obtención de JWT
+   - `POST /google-signin` : login con Google (token ID)
+   - `POST /forgot-password` : solicita envío de token de reseteo por email
+   - `POST /reset-password/:token` : restablece contraseña usando token
+   - `GET /me` : obtiene perfil del usuario autenticado (JWT required)
 
-4. **Variables de entorno:** Añade todas las variables del archivo `.env` en la sección "Environment" de Render:
-   ```
-   PORT=5000
-   MONGO_URI=tu_mongodb_atlas_uri
-   JWT_SECRET=tu_secreto_seguro
-   CLIENT_URL=https://review-star-eight.vercel.app
-   CLOUDINARY_CLOUD_NAME=...
-   CLOUDINARY_API_KEY=...
-   CLOUDINARY_API_SECRET=...
-   EMAIL_SERVICE=gmail
-   EMAIL_USER=...
-   EMAIL_PASS=...
-   GOOGLE_CLIENT_ID=...
-   ```
+- **Reviews** (`/api/reviews`)
+   - `GET /` : obtener listado/feed (paginación opcional)
+   - `POST /` : crear review (autenticación requerida)
+   - `GET /:id` : obtener review por id
+   - `PUT /:id` : actualizar (solo autor o admin)
+   - `DELETE /:id` : borrar (solo autor o admin)
 
-5. **Despliega** y obtendrás una URL como `https://tu-backend.onrender.com`
+- **Efemérides / Otros** (`/api/efemerides`)
+   - `GET /` : endpoint para efemérides (contenido informativo)
 
-6. **Actualiza la configuración del frontend:** En `frontend/js/config.js`, asegúrate de que la URL de producción apunte a tu backend de Render:
-   ```javascript
-   production: {
-     API_URL: 'https://tu-backend.onrender.com'
-   }
-   ```
+**Autorización:** middleware `auth.js` valida `Authorization: Bearer <token>`.
 
-### 📡 Monitoreo - UptimeRobot
+---
 
-Render pone los servicios gratuitos en "sleep" después de 15 minutos de inactividad. Para mantener tu backend activo:
+**Flujos críticos (alto nivel) — listo para convertir a diagramas de secuencia**
+- **Login (email/password)**
+   1. Frontend envía `POST /api/auth/login` con email+password.
+   2. Backend valida credenciales, genera JWT y devuelve datos públicos del usuario.
+   3. Frontend guarda JWT (preferible en memoria; si se usa localStorage, considerar estrategias para XSS/CSRF).
 
-1. **Crea una cuenta** en [UptimeRobot](https://uptimerobot.com)
-2. **Añade un nuevo monitor:**
-   - Monitor Type: `HTTP(s)`
-   - Friendly Name: `ReviewStar Backend`
-   - URL: `https://tu-backend.onrender.com/api/test`
-   - Monitoring Interval: `5 minutes`
+- **Registro con imagen de perfil**
+   1. El usuario sube imagen desde frontend (form-data) al backend o se sube directamente a Cloudinary desde el frontend (si está implementado).
+   2. Backend recibe, sube a Cloudinary y guarda `url` + `public_id` en `User.avatar`.
 
+- **Crear una review con imágenes**
+   1. Frontend envía `POST /api/reviews` con datos y archivos de imagen.
+   2. Backend sube imágenes a Cloudinary, crea documento `Review` referenciando `author`.
+   3. Backend devuelve la review creada.
+
+---
+
+**Configuración de entorno (variables importantes)**
+- `PORT` — puerto del backend
+- `MONGO_URI` — cadena de conexión a MongoDB
+- `JWT_SECRET` — secreto para firmar JWT
+- `CLIENT_URL` — URL del frontend (CORS / emails)
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- `EMAIL_SERVICE`, `EMAIL_USER`, `EMAIL_PASS` — para `nodemailer`
+- `GOOGLE_CLIENT_ID` — para verificación de Google Sign-In
+
+---
+
+**Ejecución local (pasos rápidos)**
+- Backend:
+   - `cd backend`
+   - crear `.env` con variables necesarias
+   - `npm install`
+   - `npm run dev` (o `npm start` según scripts)
+- Frontend:
+   - `cd frontend`
+   - `npm install` (si corresponde)
+   - servir carpeta con `Live Server` o `npx serve .`
+
+Revisar `frontend/js/config.js` y ajustar `ENVIRONMENT` y `API_URL` según entorno
+
+---
+
+**Pruebas y CI sugerido**
+- Crear colección Postman / OpenAPI (Swagger) para endpoints principales.
+- Añadir pruebas unitarias / integración para controllers y middleware (Jest + Supertest).
+- Pipeline CI: `lint`, `test`, `build`, `deploy`.
+
+---
+
+© Proyecto ReviewStar — documentación técnica generada para soporte de arquitectura y operaciones.
 3. UptimeRobot hará ping a tu backend cada 5 minutos, manteniéndolo activo y además te notificará si hay algún problema.
-
-### ✅ Checklist de Despliegue
-
-- [ ] Backend desplegado en Render con todas las variables de entorno
-- [ ] Frontend desplegado en Vercel
-- [ ] `config.js` actualizado con `ENVIRONMENT = 'production'` y URL correcta del backend
-- [ ] UptimeRobot configurado para monitorear el backend
-- [ ] CORS configurado en el backend (ya incluido con `app.use(cors())`)
-- [ ] Prueba de login y registro funcionando en producción
-- [ ] Subida de imágenes a Cloudinary funcionando
-
----
-
-
-## 📂 Estructura del Proyecto
-
-```
-ReviewStar/
-├── backend/            # Lógica del lado del servidor
-│   ├── config/         # Configuraciones de BD, Cloudinary, Env
-│   ├── controllers/    # Manejadores de peticiones (Auth, Reviews, etc.)
-│   ├── models/         # Esquemas de Mongoose (User, Review)
-│   ├── routes/         # Rutas de la API Express
-│   └── server.js       # Punto de entrada
-│
-├── frontend/           # Interfaz del lado del cliente
-│   ├── css/            # Hojas de estilo (Tailwind compilado)
-│   ├── js/             # Lógica del frontend y llamadas a API
-│   ├── *.html          # Páginas web (Login, Feed, Profile, etc.)
-│   └── package.json    # Dependencias del frontend
-│
-└── README.md           # Documentación del proyecto
-```
-
-## 🔒 Seguridad
-
-### Protección del Backend
-
-**⚠️ IMPORTANTE:** Por razones de seguridad, **NO compartas públicamente la URL de tu backend**. 
-
-**¿Por qué?**
-- Previene ataques DDoS directos
-- Evita intentos de explotación de endpoints
-- Protege tus recursos (MongoDB, Cloudinary, emails)
-- Reduce el riesgo de abuso del sistema
-
-**Recomendaciones:**
-1. ✅ Comparte solo la URL del frontend (Vercel)
-2. ✅ Mantén las variables de entorno privadas
-3. ✅ Usa rate limiting en producción (considera implementar `express-rate-limit`)
-4. ✅ Monitorea logs y actividad sospechosa en Render
-5. ✅ Mantén actualizadas las dependencias con `npm audit`
-
-### Variables Sensibles
-
-Nunca subas a GitHub:
-- Archivos `.env`
-- Claves de API (Cloudinary, Google, etc.)
-- Secretos JWT
-- Contraseñas de bases de datos
-- Tokens de acceso
-
-Los archivos `.gitignore` ya están configurados para proteger esta información.
-
----
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Siéntete libre de enviar un Pull Request.
-
-## 📄 Licencia
-
-Este proyecto es de código abierto.

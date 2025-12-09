@@ -16,25 +16,31 @@ export const createReview = async (req, res) => {
     try {
         const { title, description, rating, category } = req.body;
         let imageUrl = '';
+        let imagePublicId = '';
 
         if (req.files && req.files.image) {
             const file = req.files.image;
+            const uploadFolder = `home/${category || 'general'}`;
             const result = await cloudinary.uploader.upload(file.tempFilePath, {
-                folder: 'reviewstar'
+                folder: uploadFolder
             });
             imageUrl = result.secure_url;
+            imagePublicId = result.public_id;
         } else if (req.body.image) {
             imageUrl = req.body.image;
         }
 
-        const review = await Review.create({
+        const reviewData = {
             user: req.user._id,
             title,
             description,
             rating,
             category,
             image: imageUrl
-        });
+        };
+        if (imagePublicId) reviewData.imagePublicId = imagePublicId;
+
+        const review = await Review.create(reviewData);
 
         res.status(201).json(review);
     } catch (error) {
@@ -62,7 +68,7 @@ export const getReviews = async (req, res) => {
 // @access  Private
 export const getMyReviews = async (req, res) => {
     try {
-        const reviews = await Review.find({ user: req.user._id }).sort({ createdAt: -1 });
+        const reviews = await Review.find({ user: req.user._id }).populate('user', 'nombre email').sort({ createdAt: -1 });
         res.json(reviews);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener mis reseñas' });
@@ -92,10 +98,21 @@ export const updateReview = async (req, res) => {
         review.category = category || review.category;
 
         if (req.files && req.files.image) {
+            // Si ya existe una imagen en Cloudinary, eliminarla primero
+            if (review.imagePublicId) {
+                try {
+                    await cloudinary.uploader.destroy(review.imagePublicId);
+                } catch (err) {
+                    console.warn('No se pudo eliminar imagen previa en Cloudinary:', err.message || err);
+                }
+            }
+
+            const uploadFolder = `home/${category || review.category || 'general'}`;
             const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
-                folder: 'reviewstar'
+                folder: uploadFolder
             });
             review.image = result.secure_url;
+            review.imagePublicId = result.public_id;
         }
 
         const updatedReview = await review.save();
@@ -118,6 +135,15 @@ export const deleteReview = async (req, res) => {
 
         if (review.user.toString() !== req.user._id.toString()) {
             return res.status(401).json({ message: 'No autorizado' });
+        }
+
+        // Eliminar imagen en Cloudinary si existe
+        if (review.imagePublicId) {
+            try {
+                await cloudinary.uploader.destroy(review.imagePublicId);
+            } catch (err) {
+                console.warn('Error eliminando imagen en Cloudinary:', err.message || err);
+            }
         }
 
         await review.deleteOne();
