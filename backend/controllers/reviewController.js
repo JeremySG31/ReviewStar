@@ -109,7 +109,7 @@ export const updateReview = async (req, res) => {
             }
 
             const safeCategory = (category || review.category || 'general').toLowerCase().trim().replace(/\s+/g, '-');
-            const uploadFolder = `Home/categoria/${safeCategory}`;
+            const uploadFolder = `categoria/${safeCategory}`;
             const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
                 folder: uploadFolder
             });
