@@ -21,7 +21,7 @@ export const createReview = async (req, res) => {
         if (req.files && req.files.image) {
             const file = req.files.image;
             const safeCategory = (category || 'general').toLowerCase().trim().replace(/\s+/g, '-');
-            const uploadFolder = `home/categoria/${safeCategory}`;
+            const uploadFolder = `categoria/${safeCategory}`;
             const result = await cloudinary.uploader.upload(file.tempFilePath, {
                 folder: uploadFolder
             });
