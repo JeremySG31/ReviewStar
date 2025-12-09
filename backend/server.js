@@ -71,3 +71,8 @@ const server = app.listen(PORT, () => {
     📝 Modo: ${process.env.NODE_ENV || 'development'}
   `);
 });
+
+// Ruta para mantener vivo el backend y que UptimeRobot esté feliz
+app.get('/', (req, res) => {
+  res.status(200).send('ReviewStar backend vivo');
+});
