@@ -19,7 +19,7 @@ export const createReview = async (req, res) => {
 
         if (req.files && req.files.image) {
             const file = req.files.image;
-            const uploadFolder = `Home`;
+            const uploadFolder = `Home/categoria/${category || 'general'}`;
             const result = await cloudinary.uploader.upload(file.tempFilePath, {
                 folder: uploadFolder
             });
@@ -117,7 +117,7 @@ export const updateReview = async (req, res) => {
                 }
             }
 
-            const uploadFolder = `Home`;
+            const uploadFolder = `Home/categoria/${category || review.category || 'general'}`;
             const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
                 folder: uploadFolder
             });
