@@ -21,7 +21,7 @@ export const createReview = async (req, res) => {
         if (req.files && req.files.image) {
             const file = req.files.image;
             const safeCategory = (category || 'general').toLowerCase().trim().replace(/\s+/g, '-');
-            const uploadFolder = `categoria/${safeCategory}`;
+            const uploadFolder = `Home/categoria/${safeCategory}`
             const result = await cloudinary.uploader.upload(file.tempFilePath, {
                 folder: uploadFolder
             });
@@ -109,7 +109,7 @@ export const updateReview = async (req, res) => {
             }
 
             const safeCategory = (category || review.category || 'general').toLowerCase().trim().replace(/\s+/g, '-');
-            const uploadFolder = `categoria/${safeCategory}`;
+            const uploadFolder = `Home/categoria/${safeCategory}`;
             const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
                 folder: uploadFolder
             });
