@@ -264,20 +264,38 @@
   /* === INDEX.HTML FIXES === */
   header {
     padding: 1rem 0.75rem !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   header h2 {
     font-size: 2rem !important;
     line-height: 1.2 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   header h3 {
     font-size: 1.5rem !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   header p {
     font-size: 0.875rem !important;
     padding: 0 0.5rem !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   /* Grid de tarjetas - max-width ancho */
@@ -287,6 +305,9 @@
     grid-template-columns: 1fr !important;
     gap: 1rem !important;
     padding: 0.75rem !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   /* Tarjetas de comunidad */
@@ -294,6 +315,9 @@
     width: 100% !important;
     max-width: 100% !important;
     margin: 0.5rem auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   /* Sección de efemérides */
@@ -301,32 +325,60 @@
     width: 100% !important;
     padding: 0.75rem !important;
     margin: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   #efemerideContent {
     padding: 1rem !important;
     min-height: 250px !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   /* Max-width genérico */
   .max-w-6xl {
     width: 100% !important;
     padding: 0 0.75rem !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .max-w-3xl {
     width: 100% !important;
     padding: 0 0.75rem !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   /* Flex wrap para garantizar que los elementos se ajusten */
   .flex.justify-center.gap-6.flex-wrap {
     flex-direction: column !important;
     align-items: center !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .flex.flex-wrap {
     flex-direction: column !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Fade-up, fade-in, scale-in animations */
+  .fade-up,
+  .fade-in,
+  .scale-in {
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
   }
 
 }
