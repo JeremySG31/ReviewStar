@@ -39,7 +39,20 @@ export const createReview = async (req, res) => {
 
         const review = await Review.create(reviewData);
 
-        res.status(201).json(review);
+        // Actualizar métricas del usuario
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { $inc: { totalReviews: 1 } },
+            { new: true }
+        );
+
+        res.status(201).json({
+            review,
+            userMetrics: {
+                totalReviews: user.totalReviews,
+                totalLikes: user.totalLikes
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al crear reseña' });

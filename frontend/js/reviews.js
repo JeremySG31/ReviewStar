@@ -436,7 +436,20 @@ async function submitReviewForm(form, container, modal) {
       await apiUpdateReview(editingId, formData);
     } else {
       // La API de create ya está lista para FormData
-      await apiCreateReview({ formData });
+      const response = await apiCreateReview({ formData });
+      
+      // Actualizar métricas en el perfil si existen
+      if (response && response.userMetrics) {
+        const metricsEl = document.getElementById('totalReviewsCount');
+        if (metricsEl) {
+          metricsEl.textContent = response.userMetrics.totalReviews;
+        }
+        
+        const likesEl = document.getElementById('totalLikesCount');
+        if (likesEl) {
+          likesEl.textContent = response.userMetrics.totalLikes;
+        }
+      }
     }
     await refreshMyReviews(container);
     closeModal(modal);
