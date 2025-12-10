@@ -65,6 +65,7 @@ ReviewStar/
 - **👤 Perfiles de usuario** — personalización y historial personal
 - **📱 Diseño responsivo** — optimizado para móvil, tablet y desktop
 - **🌐 Feed en tiempo real** — explora reseñas de la comunidad
+- **📅 Efemérides** — información de eventos del día
 
 ---
 
@@ -119,6 +120,9 @@ ReviewStar/
 - `DELETE /:commentId` — eliminar comentario (requiere JWT)
 - `PUT /:commentId` — editar comentario (requiere JWT)
 - `POST /:commentId/react` — reaccionar a comentario (requiere JWT)
+
+### Efemérides (`/api/efemerides`)
+- `GET /` — obtener eventos o datos informativos del día
 
 ---
 
