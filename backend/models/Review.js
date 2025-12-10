@@ -5,7 +5,6 @@ const reviewSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String }, // URL de Cloudinary
-  imagePublicId: { type: String }, // public_id en Cloudinary (para borrar)
   rating: { type: Number, min: 0, max: 5, required: true },
   category: { type: String, required: true, trim: true },
   comments: [{

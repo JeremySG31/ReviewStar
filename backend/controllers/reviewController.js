@@ -16,17 +16,14 @@ export const createReview = async (req, res) => {
     try {
         const { title, description, rating, category } = req.body;
         let imageUrl = '';
-        let imagePublicId = '';
 
         if (req.files && req.files.image) {
             const file = req.files.image;
-            const safeCategory = (category || 'general').toLowerCase().trim().replace(/\s+/g, '-');
-            const uploadFolder = `Home/categoria/${safeCategory}`
+            const uploadFolder = `Home`;
             const result = await cloudinary.uploader.upload(file.tempFilePath, {
                 folder: uploadFolder
             });
             imageUrl = result.secure_url;
-            imagePublicId = result.public_id;
         } else if (req.body.image) {
             imageUrl = req.body.image;
         }
@@ -39,7 +36,6 @@ export const createReview = async (req, res) => {
             category,
             image: imageUrl
         };
-        if (imagePublicId) reviewData.imagePublicId = imagePublicId;
 
         const review = await Review.create(reviewData);
 
@@ -108,13 +104,11 @@ export const updateReview = async (req, res) => {
                 }
             }
 
-            const safeCategory = (category || review.category || 'general').toLowerCase().trim().replace(/\s+/g, '-');
-            const uploadFolder = `Home/categoria/${safeCategory}`;
+            const uploadFolder = `Home`;
             const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
                 folder: uploadFolder
             });
             review.image = result.secure_url;
-            review.imagePublicId = result.public_id;
         }
 
         const updatedReview = await review.save();
