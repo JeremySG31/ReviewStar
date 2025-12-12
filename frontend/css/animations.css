@@ -184,6 +184,8 @@
   background-size: 300% 300%;
   animation: shine 6s ease-in-out infinite;
   padding-right: 4px;
+  padding-bottom: 8px;
+  display: inline-block;
 }
 
 /* ------------------- Estrellas ------------------- */
@@ -295,7 +297,7 @@
 
 /* ------------------- Scrollbar Personalizado ------------------- */
 
-/* Scrollbar para descripciones de rese�as y comentarios */
+/* Scrollbar para descripciones de rese�as y comentarios */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #4B5563 #1F2937;
@@ -317,4 +319,47 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #6B7280;
+}
+
+/* ------------------- Carrusel de Reseñas ------------------- */
+
+/* Animación de fade para transiciones del carrusel */
+@keyframes carouselFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes carouselFadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+.carousel-fade-in {
+  animation: carouselFadeIn 0.3s ease forwards;
+}
+
+.carousel-fade-out {
+  animation: carouselFadeOut 0.15s ease forwards;
+}
+
+/* Indicadores del carrusel */
+.carousel-dot {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.carousel-dot:hover {
+  transform: scale(1.2);
 }

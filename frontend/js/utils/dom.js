@@ -36,7 +36,7 @@ export function createReviewCard(review, options = {}) {
   const likes = review.likes || 0;
   const comments = review.comments || [];
 
-  const imgHtml = image ? `<img src="${image}" alt="${escapeHtml(title)}" class="w-full h-48 object-contain rounded-md mb-3 bg-gray-900" onerror="this.closest('article').remove()">` : '';
+  const imgHtml = `<img src="${image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen'}" alt="${escapeHtml(title)}" class="w-full h-48 object-contain rounded-md mb-3 bg-gray-900" onerror="this.src='https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible'">`;
 
   const short = (description || '').length > 300 ? (description || '').slice(0, 300) + '...' : (description || '');
 

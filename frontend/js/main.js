@@ -1,6 +1,15 @@
 // main.js — Punto de entrada del frontend
 import { initPublicReviews, initDashboard } from './reviews.js';
 
+// --- Verificar sesión para páginas protegidas ---
+// Si estamos en profile.html y no hay sesión, redirigir al login
+const isProtectedPage = window.location.pathname.includes('profile.html');
+const hasSession = localStorage.getItem('token');
+
+if (isProtectedPage && !hasSession) {
+  window.location.replace('./login.html');
+}
+
 function initScrollAnimations(once = false){
   const animatedElements = document.querySelectorAll(".fade-up, .fade-in, .scale-in");
   const observer = new IntersectionObserver(entries => {
@@ -61,8 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('usuario');
         localStorage.removeItem('token');
-        // Redirigimos al inicio para una mejor experiencia de usuario.
-        window.location.href = './index.html';
+        // Usamos replace para que el botón "atrás" no vuelva a la sesión anterior
+        window.location.replace('./login.html');
       });
     }
   }
