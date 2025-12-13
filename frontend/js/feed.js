@@ -20,6 +20,7 @@ async function initFeed() {
     await loadUserName();
     await loadFeed();
     setupEventListeners();
+    initCommentModals();
 }
 
 async function loadUserName() {
@@ -113,7 +114,7 @@ function createFeedCard(review) {
     const shortDescription = isLongText ? description.substring(0, 200) + '...' : description;
 
     return '<article class="review-card bg-gray-800 rounded-xl p-6 relative shadow-lg hover:shadow-2xl transition" data-id="' + review._id + '">' +
-        '<div class="absolute top-3 left-3 bg-blue-600/80 text-white text-xs font-semibold px-3 py-1 rounded-full z-10">' +
+        '<div class="absolute top-3 left-3 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-lg">' +
         escapeHtml(category) +
         '</div>' +
         imgHtml +
@@ -227,12 +228,20 @@ async function loadComments(reviewId) {
 
 function renderCommentList(comments, reviewId) {
     const listaEl = document.getElementById('listaComentarios');
+    
+    // Asegurar que comments sea un array
+    const commentsList = Array.isArray(comments) ? comments : [];
 
     const currentUser = JSON.parse(localStorage.getItem('usuario') || '{}');
     const currentUserId = currentUser.id || currentUser._id;
     const htmlParts = [];
 
-    comments.forEach(c => {
+    // Header con contador de comentarios
+    let headerHtml = '<div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-600">';
+    headerHtml += '<h4 class="font-semibold text-lg text-white">Comentarios <span class="text-sm text-gray-400 font-normal">(' + commentsList.length + ')</span></h4>';
+    headerHtml += '</div>';
+
+    commentsList.forEach(c => {
         const commentUserId = (c.user && c.user._id) ? c.user._id : c.user;
         const commentUserName = (c.user && c.user.nombre) ? c.user.nombre : 'Usuario';
         const isOwner = currentUserId && commentUserId && commentUserId.toString() === currentUserId.toString();
@@ -286,33 +295,121 @@ function renderCommentList(comments, reviewId) {
         htmlParts.push(commentHtml);
     });
 
-    listaEl.innerHTML = htmlParts.join('');
+    // Siempre aplicar scroll con altura máxima para mantener consistencia
+    listaEl.innerHTML = headerHtml + '<div class="max-h-[300px] overflow-y-auto custom-scrollbar pr-2 space-y-3">' + htmlParts.join('') + '</div>';
     attachCommentListeners(reviewId);
 }
 
-function attachCommentListeners(reviewId) {
-    document.querySelectorAll('#listaComentarios .btn-delete-comment').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            const commentId = e.currentTarget.dataset.commentId;
-            if (!commentId) return;
+// Variables para modales de comentarios
+let pendingDeleteCommentId = null;
+let pendingEditCommentId = null;
+let currentEditReviewId = null;
+let currentDeleteReviewId = null;
 
-            if (confirm('¿Eliminar este comentario?')) {
+function openEditCommentModal(commentId, currentText, reviewId) {
+    const modal = document.getElementById('modalEditarComentario');
+    const input = document.getElementById('inputEditarComentario');
+    if (!modal || !input) return;
+    
+    pendingEditCommentId = commentId;
+    currentEditReviewId = reviewId;
+    input.value = currentText;
+    modal.classList.remove('hidden');
+    input.focus();
+}
+
+function closeEditCommentModal() {
+    const modal = document.getElementById('modalEditarComentario');
+    if (modal) modal.classList.add('hidden');
+    pendingEditCommentId = null;
+    currentEditReviewId = null;
+}
+
+function openDeleteCommentModal(commentId, reviewId) {
+    const modal = document.getElementById('modalEliminarComentario');
+    if (!modal) return;
+    
+    pendingDeleteCommentId = commentId;
+    currentDeleteReviewId = reviewId;
+    modal.classList.remove('hidden');
+}
+
+function closeDeleteCommentModal() {
+    const modal = document.getElementById('modalEliminarComentario');
+    if (modal) modal.classList.add('hidden');
+    pendingDeleteCommentId = null;
+    currentDeleteReviewId = null;
+}
+
+// Inicializar listeners de modales de comentarios
+function initCommentModals() {
+    // Modal Editar
+    const btnCancelarEditar = document.getElementById('btnCancelarEditar');
+    const btnConfirmarEditar = document.getElementById('btnConfirmarEditar');
+    
+    if (btnCancelarEditar) {
+        btnCancelarEditar.addEventListener('click', closeEditCommentModal);
+    }
+    
+    if (btnConfirmarEditar) {
+        btnConfirmarEditar.addEventListener('click', async () => {
+            const input = document.getElementById('inputEditarComentario');
+            const newText = input?.value?.trim();
+            
+            if (newText && pendingEditCommentId && currentEditReviewId) {
+                // Guardar reviewId antes de cerrar el modal
+                const reviewIdToReload = currentEditReviewId;
                 try {
-                    await apiDeleteComment(reviewId, commentId);
+                    await apiEditComment(currentEditReviewId, pendingEditCommentId, newText);
+                    showToast('Comentario editado', 'success');
+                    closeEditCommentModal();
+                    await loadComments(reviewIdToReload);
+                } catch (error) {
+                    showToast('Error al editar', 'error');
+                }
+            }
+        });
+    }
+    
+    // Modal Eliminar
+    const btnCancelarEliminar = document.getElementById('btnCancelarEliminar');
+    const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
+    
+    if (btnCancelarEliminar) {
+        btnCancelarEliminar.addEventListener('click', closeDeleteCommentModal);
+    }
+    
+    if (btnConfirmarEliminar) {
+        btnConfirmarEliminar.addEventListener('click', async () => {
+            if (pendingDeleteCommentId && currentDeleteReviewId) {
+                // Guardar reviewId antes de cerrar el modal
+                const reviewIdToReload = currentDeleteReviewId;
+                try {
+                    await apiDeleteComment(currentDeleteReviewId, pendingDeleteCommentId);
                     showToast('Comentario eliminado', 'success');
-                    await loadComments(reviewId);
+                    closeDeleteCommentModal();
+                    await loadComments(reviewIdToReload);
                     await loadFeed();
                 } catch (error) {
-                    console.error(error);
                     showToast('Error al eliminar', 'error');
                 }
             }
         });
+    }
+}
+
+function attachCommentListeners(reviewId) {
+    document.querySelectorAll('#listaComentarios .btn-delete-comment').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const commentId = e.currentTarget.dataset.commentId;
+            if (!commentId) return;
+            openDeleteCommentModal(commentId, reviewId);
+        });
     });
 
     document.querySelectorAll('#listaComentarios .btn-edit-comment').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const commentId = e.currentTarget.dataset.commentId;
             const commentItem = e.target.closest('.comment-item');
@@ -320,18 +417,7 @@ function attachCommentListeners(reviewId) {
 
             const textEl = commentItem.querySelector('.comment-text');
             const currentText = textEl.textContent.trim();
-            const newText = prompt('Editar comentario:', currentText);
-
-            if (newText && newText.trim() && newText !== currentText) {
-                try {
-                    await apiEditComment(reviewId, commentId, newText.trim());
-                    showToast('Comentario editado', 'success');
-                    await loadComments(reviewId);
-                } catch (error) {
-                    console.error(error);
-                    showToast('Error al editar', 'error');
-                }
-            }
+            openEditCommentModal(commentId, currentText, reviewId);
         });
     });
 

@@ -1,17 +1,30 @@
 // Funciones para renderizar estrellas, tarjetas y utilidades DOM
 
-// Renderiza estrellas (calificación de 1..10). Devuelve HTML string.
+// Renderiza estrellas (calificación de 0-5). Devuelve HTML string.
 export function renderStars(rating) {
-  // rating puede ser entero (1-5)
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5 ? 1 : 0;
+  const safeRating = Math.min(5, Math.max(0, rating || 0)); // Limitar entre 0 y 5
+  const fullStars = Math.floor(safeRating);
+  const hasHalf = safeRating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+  
   let out = '';
-  for (let i = 1; i <= 5; i++) {
-    if (i <= full) out += '<span class="star-view">★</span>';
-    else if (half && i === full + 1) out += '<span class="star-view"><span class="half-star">★</span><span class="empty-star">★</span></span>';
-    else out += '<span class="star-view">☆</span>';
+  
+  // Estrellas llenas
+  for (let i = 0; i < fullStars; i++) {
+    out += '<span class="text-yellow-400">★</span>';
   }
-  return `<span class="star-group">${out}</span>`;
+  
+  // Media estrella (si aplica)
+  if (hasHalf) {
+    out += '<span class="text-yellow-400 opacity-60">★</span>';
+  }
+  
+  // Estrellas vacías
+  for (let i = 0; i < emptyStars; i++) {
+    out += '<span class="text-gray-500">☆</span>';
+  }
+  
+  return `<span class="star-group inline-flex">${out}</span>`;
 }
 
 // Crea el HTML de una tarjeta de reseña
@@ -32,14 +45,12 @@ export function createReviewCard(review, options = {}) {
   const likes = review.likes || 0;
   const comments = review.comments || [];
 
-  const imgHtml = `<img src="${image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen'}" alt="${escapeHtml(title)}" class="w-full h-48 object-contain rounded-md mb-3 bg-gray-900" onerror="this.src='https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible'">`;
+  const imgHtml = `<img src="${image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen'}" alt="${escapeHtml(title)}" class="w-full h-48 object-cover rounded-md mb-3 bg-gray-900" onerror="this.src='https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible'">`;
 
   const short = (description || '').length > 300 ? (description || '').slice(0, 300) + '...' : (description || '');
 
-  // Renderiza la categoría con un estilo de "píldora"
-  const categoryHtml = `<span class="absolute top-2 left-2 bg-blue-600/80 text-white text-xs font-semibold px-2 py-1 rounded-full">${escapeHtml(category)}</span>`;
+  const categoryHtml = `<span class="absolute top-2 left-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">${escapeHtml(category)}</span>`;
 
-  // Botones de interacción solo si showInteractions es true
   const interactionsHtml = showInteractions ? `
     <div class="flex items-center justify-end gap-4 mt-4">
       <button class="text-sm btn-like px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition" data-id="${review._id}">❤️ ${likes}</button>
