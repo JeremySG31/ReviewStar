@@ -13,7 +13,7 @@ let allReviews = [];
 async function initFeed() {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.replace('./login.html');
         return;
     }
 
@@ -107,7 +107,7 @@ function createFeedCard(review) {
     const description = review.descripcion || review.description || '';
     const category = review.category || 'Sin categoría';
 
-    const imgHtml = image ? '<img src="' + image + '" alt="' + escapeHtml(title) + '" class="w-full h-48 object-cover rounded-md mb-3" onerror="this.style.display=\'none\'">' : '';
+    const imgHtml = '<img src="' + (image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen') + '" alt="' + escapeHtml(title) + '" class="w-full h-48 object-cover rounded-md mb-3 bg-gray-900" onerror="this.src=\'https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible\'">';
 
     const isLongText = description.length > 200;
     const shortDescription = isLongText ? description.substring(0, 200) + '...' : description;
@@ -230,26 +230,12 @@ function renderCommentList(comments, reviewId) {
 
     const currentUser = JSON.parse(localStorage.getItem('usuario') || '{}');
     const currentUserId = currentUser.id || currentUser._id;
-
-    console.log('🔍 DEBUG: Usuario actual:', currentUser);
-    console.log('🔍 DEBUG: ID del usuario actual:', currentUserId);
-
     const htmlParts = [];
 
     comments.forEach(c => {
         const commentUserId = (c.user && c.user._id) ? c.user._id : c.user;
         const commentUserName = (c.user && c.user.nombre) ? c.user.nombre : 'Usuario';
-
-        console.log('🔍 DEBUG Comentario:', {
-            commentId: c._id,
-            commentUserId: commentUserId,
-            currentUserId: currentUserId,
-            userObject: c.user
-        });
-
         const isOwner = currentUserId && commentUserId && commentUserId.toString() === currentUserId.toString();
-
-        console.log(isOwner ? '✅ ES DUEÑO' : '❌ NO ES DUEÑO');
 
         const reactions = c.reactions || { '👍': [], '❤️': [], '😂': [] };
         const dateStr = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '';
@@ -408,7 +394,8 @@ async function sendComment() {
 function setupEventListeners() {
     document.getElementById('btnCerrarSesion').addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.href = 'login.html';
+        localStorage.removeItem('usuario');
+        window.location.replace('./login.html');
     });
 
     document.getElementById('btnCerrarModal').addEventListener('click', () => {
@@ -425,9 +412,6 @@ function setupEventListeners() {
 function applyFilters() {
     const category = document.getElementById('filterCategory').value;
     const sort = document.getElementById('filterSort').value;
-
-    console.log('🔄 Aplicando filtros:', { category, sort });
-
     let filtered = [...allReviews];
 
     if (category) {
@@ -474,7 +458,6 @@ function applyFilters() {
         filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
 
-    console.log(`✅ ${filtered.length} reseñas filtradas y ordenadas`);
     renderReviews(filtered);
 }
 

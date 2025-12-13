@@ -25,34 +25,43 @@ const FORM_ID = 'reseñaForm';
 
 let editingId = null; // id actual en edición (si aplica)
 let allReviewsCache = []; // Caché para guardar todas las reseñas y filtrar en el frontend
+let isSubmittingReview = false; // Flag para evitar doble envío de reseñas
+let isSubmittingComment = false; // Flag para evitar doble envío de comentarios
+let pendingDeleteId = null; // ID de la reseña pendiente de eliminar
+let pendingDeleteContainer = null; // Referencia al contenedor para refrescar después de eliminar
 
-// Inicializa reseñas públicas en index.html
+// Variables para el carrusel
+let carouselReviews = []; // Las 4 reseñas para el carrusel
+let carouselIndex = 0; // Índice actual del carrusel
+let carouselInterval = null; // Intervalo para auto-rotación
+
+// Inicializa reseñas públicas en index.html con carrusel
 export async function initPublicReviews() {
   const container = document.getElementById(PUBLIC_LIST_ID);
   if (!container) return;
 
-  // Función para recargar
-  const refresh = async () => {
-    try {
-      const reviews = await apiGetReviews();
-      // Limitar a las 3 más recientes
-      const recentReviews = reviews.slice(0, 3);
-      renderList(container, recentReviews, false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   try {
     const reviews = await apiGetReviews();
     allReviewsCache = reviews;
-    // Mostrar solo las 3 reseñas más recientes en index
-    const recentReviews = reviews.slice(0, 3);
-    renderList(container, recentReviews, false);
+    
+    // Obtener las 4 reseñas más recientes para el carrusel
+    carouselReviews = reviews.slice(0, 4);
+    
+    if (carouselReviews.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-3 text-center text-gray-400">
+          No hay reseñas aún.
+        </div>`;
+      return;
+    }
+    
+    // Inicializar el carrusel
+    initCarousel(container);
+    
   } catch (err) {
     console.error(err);
     container.innerHTML = `
-      <div class="text-center text-red-400">
+      <div class="col-span-3 text-center text-red-400">
         No se pudieron cargar las reseñas.
       </div>`;
   }
@@ -77,8 +86,6 @@ export async function initPublicReviews() {
       try {
         await import('./utils/api.js').then(m => m.apiLikeReview(id));
         showToast('¡Te gusta esta reseña!', 'success');
-        // Recargar la lista para actualizar contadores
-        await refresh();
       } catch (err) {
         console.error(err);
         showToast('Error al dar like', 'error');
@@ -88,6 +95,97 @@ export async function initPublicReviews() {
       openCommentsModal(id);
     }
   });
+}
+
+// Inicializa el carrusel de reseñas
+function initCarousel(container) {
+  renderCarouselSlide(container);
+  renderCarouselIndicators();
+  startCarouselAutoPlay(container);
+}
+
+// Renderiza las 3 reseñas visibles del carrusel
+function renderCarouselSlide(container) {
+  const visibleReviews = getVisibleReviews();
+  
+  // Añadir clase de animación
+  container.classList.add('carousel-fade-out');
+  
+  setTimeout(() => {
+    let html = '';
+    for (const r of visibleReviews) {
+      html += createReviewCard(r, { controls: false });
+    }
+    container.innerHTML = html;
+    container.classList.remove('carousel-fade-out');
+    container.classList.add('carousel-fade-in');
+    
+    setTimeout(() => {
+      container.classList.remove('carousel-fade-in');
+    }, 300);
+  }, 150);
+}
+
+// Obtiene las 3 reseñas visibles según el índice actual
+function getVisibleReviews() {
+  const total = carouselReviews.length;
+  if (total <= 3) return carouselReviews;
+  
+  const visible = [];
+  for (let i = 0; i < 3; i++) {
+    const idx = (carouselIndex + i) % total;
+    visible.push(carouselReviews[idx]);
+  }
+  return visible;
+}
+
+// Renderiza los indicadores del carrusel
+function renderCarouselIndicators() {
+  const indicatorsContainer = document.getElementById('carouselIndicators');
+  if (!indicatorsContainer) return;
+  
+  const total = carouselReviews.length;
+  if (total <= 3) {
+    indicatorsContainer.innerHTML = '';
+    return;
+  }
+  
+  let html = '';
+  for (let i = 0; i < total; i++) {
+    const isActive = i === carouselIndex;
+    html += `<button class="carousel-dot w-3 h-3 rounded-full transition-all duration-300 ${isActive ? 'bg-gradient-to-r from-cyan-400 to-blue-500 w-8 shadow-lg shadow-cyan-500/50' : 'bg-white/30 hover:bg-cyan-400/50'}" data-index="${i}"></button>`;
+  }
+  indicatorsContainer.innerHTML = html;
+  
+  // Event listeners para los indicadores
+  indicatorsContainer.querySelectorAll('.carousel-dot').forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      carouselIndex = parseInt(e.target.dataset.index);
+      renderCarouselSlide(document.getElementById(PUBLIC_LIST_ID));
+      renderCarouselIndicators();
+      resetCarouselAutoPlay(document.getElementById(PUBLIC_LIST_ID));
+    });
+  });
+}
+
+
+// Inicia la rotación automática del carrusel
+function startCarouselAutoPlay(container) {
+  if (carouselReviews.length <= 3) return;
+  
+  carouselInterval = setInterval(() => {
+    carouselIndex = (carouselIndex + 1) % carouselReviews.length;
+    renderCarouselSlide(container);
+    renderCarouselIndicators();
+  }, 5000); // Rota cada 5 segundos
+}
+
+// Reinicia el autoplay cuando el usuario interactúa manualmente
+function resetCarouselAutoPlay(container) {
+  if (carouselInterval) {
+    clearInterval(carouselInterval);
+  }
+  startCarouselAutoPlay(container);
 }
 
 // Inicializa el dashboard del usuario (CRUD)
@@ -141,10 +239,10 @@ export async function initDashboard() {
       openModal(id);
     } else if (delBtn) {
       const id = delBtn.dataset.id;
-      if (confirm('¿Eliminar reseña?')) {
-        await apiDeleteReview(id);
-        await refreshMyReviews(container);
-      }
+      // Buscar el título de la reseña para mostrarlo en el modal
+      const review = allReviewsCache.find(r => r._id === id);
+      const reviewTitle = review?.title || review?.titulo || 'esta reseña';
+      openDeleteModal(id, reviewTitle, container);
     } else if (likeBtn) {
       const id = likeBtn.dataset.id;
       // Agregar animación de like
@@ -375,6 +473,84 @@ function closeModal(modal) {
   editingId = null;
 }
 
+// Abre modal de confirmación de eliminación
+function openDeleteModal(reviewId, reviewTitle, container) {
+  const modal = document.getElementById('modalConfirmarEliminar');
+  const titleEl = document.getElementById('eliminarReseñaTitulo');
+  const cancelBtn = document.getElementById('cancelarEliminarBtn');
+  const confirmBtn = document.getElementById('confirmarEliminarBtn');
+  
+  if (!modal) return;
+  
+  // Guardar referencias para usar en la confirmación
+  pendingDeleteId = reviewId;
+  pendingDeleteContainer = container;
+  
+  // Mostrar el título de la reseña
+  if (titleEl) {
+    titleEl.textContent = `"${reviewTitle}"`;
+  }
+  
+  // Configurar botón cancelar
+  cancelBtn.onclick = () => closeDeleteModal();
+  
+  // Configurar botón confirmar
+  confirmBtn.onclick = async () => {
+    if (!pendingDeleteId) return;
+    
+    // Guardar referencias antes de cerrar el modal
+    const deleteId = pendingDeleteId;
+    const containerRef = pendingDeleteContainer;
+    
+    // Deshabilitar botón mientras se procesa
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Eliminando...';
+    
+    try {
+      await apiDeleteReview(deleteId);
+      closeDeleteModal();
+      
+      // Refrescar la lista usando la referencia guardada
+      if (containerRef) {
+        await refreshMyReviews(containerRef);
+      }
+      showToast('Reseña eliminada correctamente', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Error al eliminar la reseña', 'error');
+      // Restaurar botón solo si hay error
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Eliminar';
+    }
+  };
+  
+  // Cerrar al hacer clic fuera del modal
+  modal.onclick = (e) => {
+    if (e.target === modal) closeDeleteModal();
+  };
+  
+  // Cerrar con ESC
+  document.addEventListener('keydown', handleDeleteModalEsc);
+  
+  modal.classList.remove('hidden');
+}
+
+// Handler para cerrar con ESC
+function handleDeleteModalEsc(e) {
+  if (e.key === 'Escape') {
+    closeDeleteModal();
+  }
+}
+
+// Cierra modal de confirmación de eliminación
+function closeDeleteModal() {
+  const modal = document.getElementById('modalConfirmarEliminar');
+  if (modal) modal.classList.add('hidden');
+  pendingDeleteId = null;
+  pendingDeleteContainer = null;
+  document.removeEventListener('keydown', handleDeleteModalEsc);
+}
+
 // Actualiza la apariencia de las estrellas
 function updateStars(rating, isHover = false) {
   const stars = document.querySelectorAll('#ratingStars .star');
@@ -407,6 +583,19 @@ function updateStars(rating, isHover = false) {
 
 // Envía formulario (crear o editar)
 async function submitReviewForm(form, container, modal) {
+  // Prevenir doble envío - BLOQUEAR INMEDIATAMENTE
+  if (isSubmittingReview) return;
+  isSubmittingReview = true;
+  
+  const submitBtn = document.getElementById('submitReviewBtn');
+  const originalBtnText = submitBtn?.textContent || 'Crear';
+  
+  // Deshabilitar botón inmediatamente
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Guardando...';
+  }
+  
   const titulo = form.querySelector('#titulo')?.value.trim();
   const descripcion = form.querySelector('#contenido')?.value.trim();
   const category = form.querySelector('#category')?.value;
@@ -427,6 +616,12 @@ async function submitReviewForm(form, container, modal) {
   const valid = validateReviewPayload({ titulo, descripcion, calificacion, category });
   if (!valid.ok) {
     alert(valid.msg);
+    // Restaurar estado si la validación falla
+    isSubmittingReview = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
     return;
   }
 
@@ -456,6 +651,13 @@ async function submitReviewForm(form, container, modal) {
   } catch (err) {
     console.error(err);
     alert('Error al guardar la reseña');
+  } finally {
+    // Restaurar estado del botón
+    isSubmittingReview = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
   }
 }
 
@@ -501,21 +703,50 @@ async function openCommentsModal(reviewId) {
     // Configurar envío de formulario
     form.onsubmit = async (e) => {
       e.preventDefault();
+      
+      // Prevenir doble envío - BLOQUEAR INMEDIATAMENTE
+      if (isSubmittingComment) return;
+      isSubmittingComment = true;
+      
       const textarea = document.getElementById('nuevoComentarioTexto');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn?.textContent || 'Enviar';
+      
+      // Deshabilitar botón inmediatamente
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+      }
+      
       const comment = textarea.value.trim();
 
-      if (comment) {
-        try {
-          await apiAddComment(reviewId, comment);
-          textarea.value = '';
+      if (!comment) {
+        // Restaurar si no hay comentario
+        isSubmittingComment = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
+        return;
+      }
+      
+      try {
+        await apiAddComment(reviewId, comment);
+        textarea.value = '';
 
-          // Actualizar comentarios
-          const newComments = await apiGetComments(reviewId);
-          renderComments(newComments, reviewId);
+        // Actualizar comentarios
+        const newComments = await apiGetComments(reviewId);
+        renderComments(newComments, reviewId);
 
-        } catch (err) {
-          console.error(err);
-          alert('Error al agregar comentario');
+      } catch (err) {
+        console.error(err);
+        alert('Error al agregar comentario');
+      } finally {
+        // Restaurar estado del botón
+        isSubmittingComment = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
         }
       }
     };

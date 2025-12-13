@@ -1,6 +1,12 @@
 import { handleLogin } from './auth.js';
 import { clearFormErrors, showFormError } from './utils/validation.js';
 
+// --- Si ya hay sesión activa, redirigir al perfil ---
+const token = localStorage.getItem('token');
+if (token) {
+  window.location.replace('./profile.html');
+}
+
 // --- Elementos del DOM ---
 const form = document.getElementById('loginForm');
 const emailEl = document.getElementById('email');
