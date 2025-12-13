@@ -97,14 +97,52 @@
         <textarea id="inputComentario"
           class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"
           rows="3" placeholder="Escribe tu comentario..."></textarea>
-        <button id="btnEnviarComentario" class="mt-2 bg-cyan-600 hover:bg-cyan-700 px-6 py-2 rounded-lg transition">
-          Enviar comentario
+        <button id="btnEnviarComentario" class="mt-2 px-6 py-2 rounded-lg font-semibold transition bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 hover:from-cyan-400 hover:via-blue-400 hover:to-purple-400 text-white shadow-lg">
+          ✨ Enviar comentario
         </button>
       </div>
 
       <!-- Lista de comentarios -->
       <div id="listaComentarios" class="space-y-4">
         <!-- Los comentarios se cargarán aquí -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar Comentario -->
+  <div id="modalEditarComentario" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
+    <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-md border border-gray-700 shadow-2xl" style="z-index: 100000;">
+      <h3 class="text-lg font-bold mb-4 text-white flex items-center gap-2">
+        <span class="text-2xl">✏️</span> Editar comentario
+      </h3>
+      <textarea id="inputEditarComentario" rows="4" 
+        class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white mb-4"></textarea>
+      <div class="flex justify-end gap-3">
+        <button id="btnCancelarEditar" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition text-sm">
+          Cancelar
+        </button>
+        <button id="btnConfirmarEditar" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg transition text-sm font-semibold">
+          Guardar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Eliminar Comentario -->
+  <div id="modalEliminarComentario" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4" style="z-index: 99999 !important;">
+    <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-sm border border-red-900/50 shadow-2xl" style="z-index: 100000;">
+      <div class="text-center">
+        <div class="text-4xl mb-3">🗑️</div>
+        <h3 class="text-lg font-bold mb-2 text-white">¿Eliminar comentario?</h3>
+        <p class="text-sm text-gray-400 mb-4">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="flex justify-center gap-3">
+        <button id="btnCancelarEliminar" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition text-sm">
+          Cancelar
+        </button>
+        <button id="btnConfirmarEliminar" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition text-sm font-semibold">
+          Eliminar
+        </button>
       </div>
     </div>
   </div>
