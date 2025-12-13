@@ -230,26 +230,12 @@ function renderCommentList(comments, reviewId) {
 
     const currentUser = JSON.parse(localStorage.getItem('usuario') || '{}');
     const currentUserId = currentUser.id || currentUser._id;
-
-    console.log('🔍 DEBUG: Usuario actual:', currentUser);
-    console.log('🔍 DEBUG: ID del usuario actual:', currentUserId);
-
     const htmlParts = [];
 
     comments.forEach(c => {
         const commentUserId = (c.user && c.user._id) ? c.user._id : c.user;
         const commentUserName = (c.user && c.user.nombre) ? c.user.nombre : 'Usuario';
-
-        console.log('🔍 DEBUG Comentario:', {
-            commentId: c._id,
-            commentUserId: commentUserId,
-            currentUserId: currentUserId,
-            userObject: c.user
-        });
-
         const isOwner = currentUserId && commentUserId && commentUserId.toString() === currentUserId.toString();
-
-        console.log(isOwner ? '✅ ES DUEÑO' : '❌ NO ES DUEÑO');
 
         const reactions = c.reactions || { '👍': [], '❤️': [], '😂': [] };
         const dateStr = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '';
@@ -426,9 +412,6 @@ function setupEventListeners() {
 function applyFilters() {
     const category = document.getElementById('filterCategory').value;
     const sort = document.getElementById('filterSort').value;
-
-    console.log('🔄 Aplicando filtros:', { category, sort });
-
     let filtered = [...allReviews];
 
     if (category) {
@@ -475,7 +458,6 @@ function applyFilters() {
         filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
 
-    console.log(`✅ ${filtered.length} reseñas filtradas y ordenadas`);
     renderReviews(filtered);
 }
 

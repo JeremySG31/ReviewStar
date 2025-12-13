@@ -101,7 +101,6 @@ export async function initPublicReviews() {
 function initCarousel(container) {
   renderCarouselSlide(container);
   renderCarouselIndicators();
-  setupCarouselControls(container);
   startCarouselAutoPlay(container);
 }
 
@@ -169,10 +168,6 @@ function renderCarouselIndicators() {
   });
 }
 
-// Configura los controles del carrusel (solo indicadores)
-function setupCarouselControls(container) {
-  // Los indicadores ya tienen sus event listeners en renderCarouselIndicators
-}
 
 // Inicia la rotación automática del carrusel
 function startCarouselAutoPlay(container) {

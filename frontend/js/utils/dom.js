@@ -14,12 +14,8 @@ export function renderStars(rating) {
   return `<span class="star-group">${out}</span>`;
 }
 
-// Crea el HTML de una tarjeta de reseña (frontend generic)
+// Crea el HTML de una tarjeta de reseña
 export function createReviewCard(review, options = {}) {
-  // review can come from backend (title, description, image, rating, user)
-  // or from frontend shapes (titulo, descripcion, imagenURL, calificacion, autor)
-  // options: { controls: true, prefix: '', showInteractions: false }
-  const prefix = options.prefix || '';
   const showInteractions = options.showInteractions || false;
 
   const controlsHtml = options.controls ? `
