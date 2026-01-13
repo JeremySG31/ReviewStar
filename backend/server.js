@@ -15,32 +15,42 @@ dotenv.config();
 
 const app = express();
 
-// Seguridad mejorada con Helmet
-app.use(helmet());
+// Seguridad mejorada con Helmet (ajustada para permitir APIs externas y scripts)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false, // Desactivamos CSP temporalmente para evitar problemas con Cloudinary/Google en esta fase
+}));
 
-// Habilitar CORS con configuración específica
+// Habilitar CORS con configuración robusta
 const allowedOrigins = [
   'http://localhost:5500',
   'http://127.0.0.1:5500',
-  'https://review-star-eight.vercel.app'
+  'https://review-star-eight.vercel.app',
+  'https://review-star-eight-git-main-jeremysg31s-projects.vercel.app' // Añadimos URL de preview por si acaso
 ];
 
-const corsOptions = {
+app.use(cors({
   origin: function (origin, callback) {
-    // Permitir peticiones sin origen (como apps móviles o curl)
+    // Permitir peticiones sin origen (como postman o el propio servidor)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1 || (process.env.CLIENT_URL && origin === process.env.CLIENT_URL)) {
+    // Si el origen está en la lista o contiene 'vercel.app'
+    const isAllowed = allowedOrigins.includes(origin) ||
+      (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) ||
+      origin.endsWith('.vercel.app');
+
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.log('Origen no permitido por CORS:', origin);
       callback(new Error('Bloqueado por política CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
-app.use(cors(corsOptions));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 
 // Rate Limiting Global
 const limiter = rateLimit({
