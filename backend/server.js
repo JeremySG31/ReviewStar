@@ -18,7 +18,8 @@ const app = express();
 // Seguridad mejorada con Helmet (ajustada para permitir APIs externas y scripts)
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
-  contentSecurityPolicy: false, // Desactivamos CSP temporalmente para evitar problemas con Cloudinary/Google en esta fase
+  crossOriginEmbedderPolicy: false, // ¡ESTO ES CLAVE para Cloudinary!
+  contentSecurityPolicy: false,
 }));
 
 // Habilitar CORS con configuración robusta
