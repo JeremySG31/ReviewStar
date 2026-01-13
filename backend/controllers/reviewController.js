@@ -15,11 +15,35 @@ cloudinary.config({
 export const createReview = async (req, res) => {
     try {
         const { title, description, rating, category } = req.body;
+
+        // Validaciones básicas de entrada
+        if (!title || title.trim().length < 3) {
+            return res.status(400).json({ message: 'El título debe tener al menos 3 caracteres' });
+        }
+        if (!description || description.trim().length < 10) {
+            return res.status(400).json({ message: 'La descripción debe tener al menos 10 caracteres' });
+        }
+
+        const numericRating = parseFloat(rating);
+        if (isNaN(numericRating) || numericRating < 0 || numericRating > 5) {
+            return res.status(400).json({ message: 'La calificación debe ser un número entre 0 y 5' });
+        }
+
+        const allowedCategories = ['Películas', 'Series', 'Libros', 'Videojuegos', 'Tecnología', 'Otros'];
+        if (!allowedCategories.includes(category)) {
+            return res.status(400).json({ message: 'Categoría no válida' });
+        }
+
         let imageUrl = '';
 
         if (req.files && req.files.image) {
             const file = req.files.image;
-            const uploadFolder = `Home/categoria/${category || 'general'}`;
+            // Validar tipo de archivo
+            if (!file.mimetype.startsWith('image/')) {
+                return res.status(400).json({ message: 'Solo se permiten imágenes' });
+            }
+
+            const uploadFolder = `Home/categoria/${category}`;
             const result = await cloudinary.uploader.upload(file.tempFilePath, {
                 folder: uploadFolder
             });
@@ -221,6 +245,15 @@ export const getCommentsForReview = async (req, res) => {
 export const addCommentToReview = async (req, res) => {
     try {
         const { comment } = req.body;
+
+        if (!comment || comment.trim().length === 0) {
+            return res.status(400).json({ message: 'El comentario no puede estar vacío' });
+        }
+
+        if (comment.length > 500) {
+            return res.status(400).json({ message: 'El comentario es demasiado largo (máximo 500 caracteres)' });
+        }
+
         const review = await Review.findById(req.params.id);
 
         if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });

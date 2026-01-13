@@ -1,6 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
 import reviewRoutes from './routes/reviews.js';
@@ -12,14 +15,32 @@ dotenv.config();
 
 const app = express();
 
-// Habilitar CORS para desarrollo
-app.use(cors());
+// Seguridad mejorada con Helmet
+app.use(helmet());
+
+// Habilitar CORS con configuración específica
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'http://localhost:5500',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+// Rate Limiting Global
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // Límite de 100 peticiones por IP por ventana
+  message: { message: 'Demasiadas peticiones desde esta IP, por favor intenta más tarde.' }
+});
+app.use(limiter);
+
 app.use(express.json()); // Para parsear application/json
-app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload({
   useTempFiles: true,
   tempFileDir: '/tmp/',
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  limits: { fileSize: 5 * 1024 * 1024 }, // Reducido a 5MB por seguridad
 }));
 
 // Conexión a MongoDB

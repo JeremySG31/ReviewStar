@@ -15,6 +15,18 @@ function getAuthHeaders() {
 async function safeFetch(url, options = {}) {
   try {
     const res = await fetch(url, options);
+
+    // Si el backend dice que no estamos autorizados (token inválido/expirado)
+    if (res.status === 401 && !url.includes('/auth/login')) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      // Redirigir a login solo si no estamos ya en una página pública que no lo requiera
+      // Para simplificar, redirigimos siempre que el backend rechace el token
+      if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('register.html')) {
+        window.location.href = './login.html?error=session_expired';
+      }
+    }
+
     let data;
     try {
       data = await res.json();
