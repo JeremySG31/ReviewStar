@@ -19,8 +19,23 @@ const app = express();
 app.use(helmet());
 
 // Habilitar CORS con configuración específica
+const allowedOrigins = [
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'https://review-star-eight.vercel.app'
+];
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5500',
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origen (como apps móviles o curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1 || (process.env.CLIENT_URL && origin === process.env.CLIENT_URL)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado por política CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
