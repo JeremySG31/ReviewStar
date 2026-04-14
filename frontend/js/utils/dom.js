@@ -72,13 +72,15 @@ export function createReviewCard(review, options = {}) {
     `;
 
   return `
-    <article class="review-card bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition" data-id="${review._id}">
-      ${controlsHtml}
-      <div class="relative h-48 group">
+    <article class="review-card bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition flex flex-col h-full" data-id="${review._id}">
+      <div class="relative h-48 group mb-4">
+        <!-- Controles de edicion absolutos sobre la imagen -->
+        ${controlsHtml}
+        
         <div class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 transition-transform group-hover:scale-105">
           ${escapeHtml(category)}
         </div>
-        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-yellow-400 text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10 flex items-center gap-1 border border-white/10">
+        <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md text-yellow-400 text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10 flex items-center gap-1 border border-white/10">
           ★ ${rating.toFixed(1)}
         </div>
         ${imgHtml}

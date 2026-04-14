@@ -56,21 +56,27 @@
 
     /* FIXES DE ESTRUCTURA PARA EL PERFIL (Garantiza que funcione sin recompilar Tailwind) */
     .profile-avatar-container {
-      width: 128px !important;
-      height: 128px !important;
+      width: 100px !important;
+      height: 100px !important;
       border-radius: 50% !important;
       border: 4px solid #111827 !important;
       background-color: #1f2937 !important;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      font-size: 3rem !important;
+      font-size: 2.5rem !important;
       position: relative !important;
       overflow: hidden !important;
       flex-shrink: 0 !important;
-      margin-top: 1rem !important;
       z-index: 10 !important;
+    }
+
+    .profile-info-pull {
+      margin-top: -50px !important; /* Forces overlap with banner */
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
     }
 
     .profile-avatar-img {
@@ -83,7 +89,7 @@
     }
 
     .profile-banner {
-      height: 160px !important;
+      height: 120px !important;
       background: linear-gradient(to right, #1d4ed8, #4f46e5, #7e22ce) !important;
       position: relative !important;
       width: 100% !important;
@@ -125,25 +131,25 @@
       </div>
 
       <div class="p-6">
-        <div class="flex flex-col items-center -mt-24">
+        <div class="profile-info-pull">
           <!-- Avatar del usuario -->
-          <div class="relative group mt-4">
+          <div class="relative group" style="width: 100px; height: 100px; border-radius: 50%;">
             <div id="avatarContainer" class="profile-avatar-container">
               <span id="profileAvatarText" class="text-gray-400">👤</span>
               <img id="profileAvatarImg" src="" alt="Avatar" class="hidden profile-avatar-img">
               <!-- Overlay de carga -->
-              <div id="avatarLoading" class="absolute inset-0 bg-black/70 hidden flex flex-col items-center justify-center z-30">
-                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400"></div>
+              <div id="avatarLoading" class="absolute inset-0 bg-black/70 hidden" style="display: flex; align-items: center; justify-content: center; z-index: 30;">
+                 <div class="animate-spin" style="width: 24px; height: 24px; border-radius: 50%; border-bottom: 2px solid #22d3ee;"></div>
               </div>
             </div>
             
             <!-- Overlay flotante al hacer hover -->
-            <div class="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-2 shadow-inner" style="border-radius: 50%;">
-               <label class="cursor-pointer text-xs font-semibold text-white hover:text-cyan-400 transition bg-black/50 px-3 py-1 rounded-full">
-                  📷 Editar
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-1 shadow-inner" style="border-radius: 50%;">
+               <label class="cursor-pointer text-[10px] uppercase font-bold text-white hover:text-cyan-400 transition mb-1 text-center w-full">
+                  📷 Subir
                   <input type="file" id="avatarInput" accept="image/*" class="hidden">
                </label>
-               <button id="deleteAvatarBtn" class="text-[10px] text-red-300 hover:text-red-400 font-semibold transition bg-red-900/30 px-3 py-1 rounded-full hidden">🗑️ Quitar</button>
+               <button id="deleteAvatarBtn" class="text-[9px] uppercase tracking-wider text-red-300 hover:text-red-400 font-bold transition hidden underline">Eliminar</button>
             </div>
           </div>
           
