@@ -293,7 +293,7 @@ export const updateAvatar = async (req, res) => {
     }
 
     const result = await cloudinary.uploader.upload(file.tempFilePath, {
-       folder: 'Home/avatars',
+       folder: 'avatars',
        moderation: 'aws_rek'
     });
 
@@ -303,8 +303,16 @@ export const updateAvatar = async (req, res) => {
 
     res.json({ avatar: user.avatar });
   } catch (error) {
-    console.error('Error al subir avatar:', error);
-    res.status(500).json({ message: 'Error al subir la imagen' });
+    console.error('Error detallado al subir avatar:', error);
+    
+    let errorMessage = 'Error al subir la imagen';
+    if (error.message && error.message.includes('Moderation')) {
+        errorMessage = 'Error de moderación: Asegúrate de tener activado "Amazon Rekognition" en Cloudinary o sube una imagen válida.';
+    } else if (error.message) {
+        errorMessage = `Error: ${error.message}`;
+    }
+
+    res.status(500).json({ message: errorMessage });
   }
 };
 

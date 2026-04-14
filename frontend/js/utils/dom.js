@@ -21,7 +21,7 @@ export function renderStars(rating) {
   
   // Estrellas vacías
   for (let i = 0; i < emptyStars; i++) {
-    out += '<span class="text-gray-500">☆</span>';
+    out += '<span class="text-gray-500">★</span>';
   }
   
   return `<span class="star-group inline-flex">${out}</span>`;
@@ -64,8 +64,8 @@ export function createReviewCard(review, options = {}) {
     const authorHtml = `
       <div class="flex items-center gap-2">
         ${author?.avatar 
-          ? `<img src="${escapeHtml(author.avatar)}" class="w-7 h-7 rounded-full object-cover shadow border border-gray-600">`
-          : `<div class="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 shadow flex items-center justify-center text-white font-bold text-xs">${userName.charAt(0).toUpperCase()}</div>`
+          ? `<img src="${escapeHtml(author.avatar)}" style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #4b5563; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">`
+          : `<div style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; background-color: #1f2937; border: 1px solid #4b5563; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 14px;">👤</div>`
         }
         <span class="text-sm font-semibold text-gray-300 truncate max-w-[120px]">${userName}</span>
       </div>
@@ -77,10 +77,13 @@ export function createReviewCard(review, options = {}) {
         <!-- Controles de edicion absolutos sobre la imagen -->
         ${controlsHtml}
         
-        <div class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 transition-transform group-hover:scale-105">
-          ${escapeHtml(category)}
-        </div>
-        <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md text-yellow-400 text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10 flex items-center gap-1 border border-white/10">
+        ${category && category !== 'Sin categoría' ? `
+          <div class="absolute bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 transition-transform group-hover:scale-105" style="top: 12px; left: 12px;">
+            ${escapeHtml(category)}
+          </div>
+        ` : ''}
+        
+        <div class="absolute bg-black/70 backdrop-blur-md text-yellow-400 text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10 flex items-center gap-1 border border-white/10" style="bottom: 12px; right: 12px; top: auto; left: auto;">
           ★ ${rating.toFixed(1)}
         </div>
         ${imgHtml}

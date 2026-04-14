@@ -154,7 +154,7 @@ function createFeedCard(review) {
         '<span class="block text-gray-300 font-semibold">' + escapeHtml(author.nombre || author.name || 'Anónimo') + '</span>' +
         '<span class="block">' + dateStr + '</span>' +
         '</div>' +
-        (author.avatar ? '<img src="' + escapeHtml(author.avatar) + '" class="w-8 h-8 rounded-full object-cover shadow border border-gray-600">' : '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 shadow flex items-center justify-center text-white font-bold">' + escapeHtml((author.nombre || author.name || 'A').charAt(0).toUpperCase()) + '</div>') +
+        (author.avatar ? '<img src="' + escapeHtml(author.avatar) + '" style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #4b5563; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">' : '<div style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; background-color: #1f2937; border: 1px solid #4b5563; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 14px;">👤</div>') +
         '</div>' +
         '</div>' +
         '<div class="flex items-center gap-4 pt-4 border-t border-gray-700">' +
@@ -276,9 +276,9 @@ function renderCommentList(comments, reviewId) {
         let commentHtml = '<div class="flex gap-3 animate-fadeIn comment-item mb-4" data-comment-id="' + c._id + '">';
         commentHtml += '<div class="flex-shrink-0 mt-1">';
         if (avatarUrl) {
-            commentHtml += '<img src="' + escapeHtml(avatarUrl) + '" class="w-8 h-8 rounded-full object-cover shadow-md border border-gray-600">';
+            commentHtml += '<img src="' + escapeHtml(avatarUrl) + '" style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #4b5563; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">';
         } else {
-            commentHtml += '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md select-none">' + escapeHtml(commentUserName.charAt(0).toUpperCase()) + '</div>';
+            commentHtml += '<div style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; border-radius: 50%; background-color: #1f2937; border: 1px solid #4b5563; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 14px;">👤</div>';
         }
         commentHtml += '</div>';
         commentHtml += '<div class="w-full bg-gray-700/50 rounded-2xl rounded-tl-none p-3 border border-gray-600/50 shadow-sm relative group">';

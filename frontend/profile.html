@@ -59,17 +59,30 @@
       width: 100px !important;
       height: 100px !important;
       border-radius: 50% !important;
-      border: 4px solid #111827 !important;
-      background-color: #1f2937 !important;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+      border: none !important; /* Remove physical border to stop bleeding */
+      background-color: #000000 !important; /* True black to hide aliasing */
+      box-shadow: 0 0 0 4px #111827, 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important; /* Use shadow-based border */
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      font-size: 2.5rem !important;
       position: relative !important;
       overflow: hidden !important;
       flex-shrink: 0 !important;
       z-index: 10 !important;
+      transform: translateZ(0); 
+      -webkit-mask-image: -webkit-radial-gradient(white, black);
+    }
+
+    .profile-avatar-img {
+      position: absolute !important;
+      top: -1% !important; /* Slight over-bleed to cover edges */
+      left: -1% !important;
+      width: 102% !important; /* Force overflow of 2% to ensure no gaps */
+      height: 102% !important;
+      object-fit: cover !important;
+      z-index: 10;
+      border-radius: 50% !important;
+      background-color: #000000 !important;
     }
 
     .profile-info-pull {
@@ -86,6 +99,7 @@
       width: 100% !important;
       height: 100% !important;
       object-fit: cover !important;
+      z-index: 10;
     }
 
     .profile-banner {
@@ -93,6 +107,8 @@
       background: linear-gradient(to right, #1d4ed8, #4f46e5, #7e22ce) !important;
       position: relative !important;
       width: 100% !important;
+      border-top-left-radius: 0.75rem !important;
+      border-top-right-radius: 0.75rem !important;
     }
 
     .profile-stats-card {
@@ -138,24 +154,33 @@
               <span id="profileAvatarText" class="text-gray-400">👤</span>
               <img id="profileAvatarImg" src="" alt="Avatar" class="hidden profile-avatar-img">
               <!-- Overlay de carga -->
-              <div id="avatarLoading" class="absolute inset-0 bg-black/70 hidden" style="display: flex; align-items: center; justify-content: center; z-index: 30;">
+              <div id="avatarLoading" class="absolute inset-0 bg-black/70" style="display: none; align-items: center; justify-content: center; z-index: 30;">
                  <div class="animate-spin" style="width: 24px; height: 24px; border-radius: 50%; border-bottom: 2px solid #22d3ee;"></div>
               </div>
             </div>
             
-            <!-- Overlay flotante al hacer hover -->
-            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-1 shadow-inner" style="border-radius: 50%;">
-               <label class="cursor-pointer text-[10px] uppercase font-bold text-white hover:text-cyan-400 transition mb-1 text-center w-full">
-                  📷 Subir
-                  <input type="file" id="avatarInput" accept="image/*" class="hidden">
-               </label>
-               <button id="deleteAvatarBtn" class="text-[9px] uppercase tracking-wider text-red-300 hover:text-red-400 font-bold transition hidden underline">Eliminar</button>
+            <!-- INPUT INVISIBLE (Ocupa todo el círculo para el clic) -->
+            <input type="file" id="avatarInput" accept="image/*" 
+              style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 40; font-size: 0;" 
+              title="Cambiar avatar">
+
+            <!-- Overlay visual (Solo en HOVER) -->
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-30 pointer-events-none shadow-inner" style="border-radius: 50%;">
+                 <span class="text-[10px] uppercase font-bold text-white">📷 Cambiar</span>
             </div>
+
+            <!-- Botón de ELIMINAR (Más pequeño y más abajo a la DERECHA) -->
+            <button id="deleteAvatarBtn" 
+              class="absolute bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 active:scale-95 z-50 hidden border border-slate-900" 
+              style="width: 22px !important; height: 22px !important; min-width: 22px !important; left: 108px; top: 60px;"
+              title="Quitar foto de perfil">
+              <span style="font-size: 11px;">🗑️</span>
+            </button>
           </div>
           
           <!-- Info de Usuario -->
           <div class="mt-4 text-center">
-            <h1 id="profileName" class="text-4xl md:text-5xl font-extrabold" style="background: linear-gradient(to right, #60a5fa, #c084fc); -webkit-background-clip: text; color: transparent;">Cargando...</h1>
+            <h1 id="profileName" class="text-4xl md:text-5xl font-extrabold" style="background: linear-gradient(to right, #60a5fa, #c084fc); -webkit-background-clip: text; background-clip: text; color: transparent;">Cargando...</h1>
             <p id="profileEmail" class="text-cyan-200 mt-1 font-medium bg-black/30 inline-block px-4 py-1 rounded-full text-sm">cargando@email.com</p>
             
             <!-- Estadísticas -->

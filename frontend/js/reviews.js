@@ -321,10 +321,12 @@ function updateUIAvatar(avatarUrl) {
     const deleteBtn = document.getElementById('deleteAvatarBtn');
 
     if (avatarUrl) {
-      avatarImg.src = avatarUrl;
+      // Agregar cache-buster para asegurar que se refresque instantáneamente
+      const busterUrl = avatarUrl.includes('?') ? `${avatarUrl}&t=${Date.now()}` : `${avatarUrl}?t=${Date.now()}`;
+      avatarImg.src = busterUrl;
       avatarImg.classList.remove('hidden');
-      avatarText.classList.add('hidden');
-      deleteBtn.classList.remove('hidden');
+      if (avatarText) avatarText.classList.add('hidden');
+      if (deleteBtn) deleteBtn.classList.remove('hidden');
     } else {
       avatarImg.src = '';
       avatarImg.classList.add('hidden');
@@ -338,13 +340,14 @@ function setupAvatarListeners() {
   const avatarInput = document.getElementById('avatarInput');
   const deleteBtn = document.getElementById('deleteAvatarBtn');
   const loadingOverlay = document.getElementById('avatarLoading');
-  
+
+
   if (avatarInput) {
     avatarInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      loadingOverlay.classList.remove('hidden');
+      if (loadingOverlay) loadingOverlay.style.display = 'flex';
       const formData = new FormData();
       formData.append('avatar', file);
 
@@ -362,17 +365,20 @@ function setupAvatarListeners() {
 
         updateUIAvatar(data.avatar);
         
-        // Update local storage
-        const user = JSON.parse(localStorage.getItem('usuario'));
-        user.avatar = data.avatar;
-        localStorage.setItem('usuario', JSON.stringify(user));
+        // Actualizar localStorage de forma segura
+        const userData = localStorage.getItem('usuario');
+        if (userData) {
+          const user = JSON.parse(userData);
+          user.avatar = data.avatar;
+          localStorage.setItem('usuario', JSON.stringify(user));
+        }
 
         showToast('Avatar actualizado con éxito', 'success');
       } catch (err) {
         console.error(err);
         showToast(err.message, 'error');
       } finally {
-        loadingOverlay.classList.add('hidden');
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
         avatarInput.value = ''; // clean input
       }
     });
@@ -382,7 +388,7 @@ function setupAvatarListeners() {
     deleteBtn.addEventListener('click', async () => {
       if (!confirm('¿Estás seguro de que quieres eliminar tu avatar?')) return;
       
-      loadingOverlay.classList.remove('hidden');
+      if (loadingOverlay) loadingOverlay.style.display = 'flex';
       try {
         const token = localStorage.getItem('token');
         const { API_BASE } = await import('./utils/api.js');
@@ -395,17 +401,20 @@ function setupAvatarListeners() {
 
         updateUIAvatar(null);
 
-        // Update local storage
-        const user = JSON.parse(localStorage.getItem('usuario'));
-        user.avatar = '';
-        localStorage.setItem('usuario', JSON.stringify(user));
+        // Actualizar localStorage de forma segura
+        const userData = localStorage.getItem('usuario');
+        if (userData) {
+          const user = JSON.parse(userData);
+          user.avatar = '';
+          localStorage.setItem('usuario', JSON.stringify(user));
+        }
 
         showToast('Avatar eliminado', 'success');
       } catch (err) {
         console.error(err);
         showToast(err.message, 'error');
       } finally {
-         loadingOverlay.classList.add('hidden');
+         if (loadingOverlay) loadingOverlay.style.display = 'none';
       }
     });
   }
@@ -893,7 +902,7 @@ function renderComments(comments, reviewId) {
       const userName = escapeHtml(c.user?.nombre || 'Usuario');
       const avatarHtml = c.user?.avatar 
           ? `<img src="${escapeHtml(c.user.avatar)}" class="w-8 h-8 rounded-full object-cover shadow border border-gray-600">`
-          : `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md select-none">${userName.charAt(0).toUpperCase()}</div>`;
+          : `<div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm text-gray-400 shadow-md select-none border border-gray-600">👤</div>`;
 
       return `
         <div class="flex gap-3 animate-fadeIn comment-item" data-comment-id="${c._id}">

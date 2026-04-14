@@ -64,15 +64,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Actualizamos el nombre de usuario donde se encuentre.
     if (usernameDisplay) usernameDisplay.textContent = user.nombre || 'Usuario';
-
-    // Añadimos el evento de logout SIEMPRE que el botón exista.
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('usuario');
-        localStorage.removeItem('token');
-        // Usamos replace para que el botón "atrás" no vuelva a la sesión anterior
-        window.location.replace('./login.html');
-      });
-    }
+  }
+  
+  // Siempre permitir cerrar sesión, incluso si userData falla
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('token');
+      window.location.replace('./login.html');
+    });
   }
 });
