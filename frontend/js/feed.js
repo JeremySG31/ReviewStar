@@ -108,6 +108,25 @@ function createFeedCard(review) {
     const description = review.descripcion || review.description || '';
     const category = review.category || 'Sin categoría';
 
+    // Generar fecha relativa (ej. "Hace 2 horas")
+    const reviewDate = new Date(review.createdAt || Date.now());
+    const now = new Date();
+    const diffMs = now - reviewDate;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    let dateStr = "Hace un momento";
+    if (diffDays > 30) {
+        dateStr = reviewDate.toLocaleDateString();
+    } else if (diffDays > 0) {
+        dateStr = `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+    } else if (diffHours > 0) {
+        dateStr = `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+    } else if (diffMins > 0) {
+        dateStr = `Hace ${diffMins} min${diffMins > 1 ? 's' : ''}`;
+    }
+
     const imgHtml = '<img src="' + (image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen') + '" alt="' + escapeHtml(title) + '" loading="lazy" class="w-full h-48 object-cover rounded-md mb-3 bg-gray-900" onerror="this.src=\'https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible\'">';
 
     const isLongText = description.length > 200;
@@ -130,8 +149,9 @@ function createFeedCard(review) {
         '<span class="text-yellow-400">⭐</span>' +
         '<span class="font-semibold">' + rating.toFixed(1) + '/5.0</span>' +
         '</div>' +
-        '<div class="text-xs text-gray-400">' +
-        'por ' + escapeHtml(author.nombre || author.name || 'Anónimo') +
+        '<div class="text-xs text-gray-400 text-right">' +
+        '<span class="block text-gray-300">por ' + escapeHtml(author.nombre || author.name || 'Anónimo') + '</span>' +
+        '<span class="block">' + dateStr + '</span>' +
         '</div>' +
         '</div>' +
         '<div class="flex items-center gap-4 pt-4 border-t border-gray-700">' +
@@ -493,15 +513,31 @@ function setupEventListeners() {
 
     document.getElementById('filterCategory').addEventListener('change', applyFilters);
     document.getElementById('filterSort').addEventListener('change', applyFilters);
+    
+    // El buscador filtra en tiempo real
+    const searchInput = document.getElementById('filterSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', applyFilters);
+    }
 }
 
 function applyFilters() {
     const category = document.getElementById('filterCategory').value;
     const sort = document.getElementById('filterSort').value;
+    const searchTerm = document.getElementById('filterSearch') ? document.getElementById('filterSearch').value.trim().toLowerCase() : '';
+    
     let filtered = [...allReviews];
 
     if (category) {
         filtered = filtered.filter(r => r.category === category);
+    }
+
+    if (searchTerm) {
+        filtered = filtered.filter(r => {
+            const title = (r.titulo || r.title || '').toLowerCase();
+            const desc = (r.descripcion || r.description || '').toLowerCase();
+            return title.includes(searchTerm) || desc.includes(searchTerm);
+        });
     }
 
     // Función auxiliar para parsear valores numéricos de forma segura
@@ -511,33 +547,55 @@ function applyFilters() {
     };
 
     if (sort === 'likes') {
-        // Lógica mejorada de popularidad: Likes > Calificación > Comentarios
+        // Populares: Likes > Comentarios > Calificación > Fecha
         filtered.sort((a, b) => {
             const likesA = getNum(a.likes);
             const likesB = getNum(b.likes);
+            if (likesB !== likesA) return likesB - likesA; 
 
-            if (likesB !== likesA) return likesB - likesA; // Principal: Likes
+            const commentsA = Array.isArray(a.comments) ? a.comments.length : 0;
+            const commentsB = Array.isArray(b.comments) ? b.comments.length : 0;
+            if (commentsB !== commentsA) return commentsB - commentsA;
 
             const ratingA = getNum(a.calificacion || a.rating);
             const ratingB = getNum(b.calificacion || b.rating);
+            if (ratingB !== ratingA) return ratingB - ratingA;
 
-            if (ratingB !== ratingA) return ratingB - ratingA; // Desempate 1: Calificación
-
-            // Desempate 2: Fecha (más reciente primero)
             return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         });
     } else if (sort === 'comments') {
-        // Ordenar por cantidad de comentarios
+        // Comentadas: Comentarios > Likes > Calificación > Fecha
         filtered.sort((a, b) => {
             const countA = Array.isArray(a.comments) ? a.comments.length : 0;
             const countB = Array.isArray(b.comments) ? b.comments.length : 0;
-            return countB - countA;
+            if (countB !== countA) return countB - countA;
+
+            const likesA = getNum(a.likes);
+            const likesB = getNum(b.likes);
+            if (likesB !== likesA) return likesB - likesA;
+
+            const ratingA = getNum(a.calificacion || a.rating);
+            const ratingB = getNum(b.calificacion || b.rating);
+            if (ratingB !== ratingA) return ratingB - ratingA;
+
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         });
     } else if (sort === 'rating') {
+        // Valoradas: Calificación > Likes > Comentarios > Fecha
         filtered.sort((a, b) => {
             const ratingA = getNum(a.calificacion || a.rating);
             const ratingB = getNum(b.calificacion || b.rating);
-            return ratingB - ratingA;
+            if (ratingB !== ratingA) return ratingB - ratingA;
+
+            const likesA = getNum(a.likes);
+            const likesB = getNum(b.likes);
+            if (likesB !== likesA) return likesB - likesA;
+
+            const countA = Array.isArray(a.comments) ? a.comments.length : 0;
+            const countB = Array.isArray(b.comments) ? b.comments.length : 0;
+            if (countB !== countA) return countB - countA;
+
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         });
     } else {
         // Por defecto: Más recientes primero
