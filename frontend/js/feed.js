@@ -108,7 +108,7 @@ function createFeedCard(review) {
     const description = review.descripcion || review.description || '';
     const category = review.category || 'Sin categoría';
 
-    const imgHtml = '<img src="' + (image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen') + '" alt="' + escapeHtml(title) + '" class="w-full h-48 object-cover rounded-md mb-3 bg-gray-900" onerror="this.src=\'https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible\'">';
+    const imgHtml = '<img src="' + (image || 'https://placehold.co/400x200/1f2937/6b7280?text=Sin+imagen') + '" alt="' + escapeHtml(title) + '" loading="lazy" class="w-full h-48 object-cover rounded-md mb-3 bg-gray-900" onerror="this.src=\'https://placehold.co/400x200/1f2937/6b7280?text=Imagen+no+disponible\'">';
 
     const isLongText = description.length > 200;
     const shortDescription = isLongText ? description.substring(0, 200) + '...' : description;

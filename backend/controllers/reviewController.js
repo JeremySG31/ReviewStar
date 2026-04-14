@@ -44,10 +44,21 @@ export const createReview = async (req, res) => {
             }
 
             const uploadFolder = `Home/categoria/${category}`;
-            const result = await cloudinary.uploader.upload(file.tempFilePath, {
-                folder: uploadFolder
-            });
-            imageUrl = result.secure_url;
+            try {
+                const result = await cloudinary.uploader.upload(file.tempFilePath, {
+                    folder: uploadFolder,
+                    moderation: 'aws_rek' // Moderación automática contra contenido NSFW/adultos
+                });
+                // Optimización de velocidad: Forzar WebP y calidad automática para fluidez
+                imageUrl = result.secure_url.replace('/upload/', '/upload/f_auto,q_auto/');
+            } catch (uploadError) {
+                console.error(uploadError);
+                return res.status(400).json({ 
+                    message: uploadError.message && uploadError.message.includes('Moderation') 
+                        ? 'Contenido bloqueado. O no tienes activado "Amazon Rekognition" en Cloudinary, o la imagen es obscena.' 
+                        : 'Error al subir la imagen' 
+                });
+            }
         } else if (req.body.image) {
             imageUrl = req.body.image;
         }
@@ -142,10 +153,20 @@ export const updateReview = async (req, res) => {
             }
 
             const uploadFolder = `Home/categoria/${category || review.category || 'general'}`;
-            const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
-                folder: uploadFolder
-            });
-            review.image = result.secure_url;
+            try {
+                const result = await cloudinary.uploader.upload(req.files.image.tempFilePath, {
+                    folder: uploadFolder,
+                    moderation: 'aws_rek' // Moderación automática contra contenido NSFW/adultos
+                });
+                review.image = result.secure_url.replace('/upload/', '/upload/f_auto,q_auto/');
+            } catch (uploadError) {
+                console.error(uploadError);
+                 return res.status(400).json({ 
+                    message: uploadError.message && uploadError.message.includes('Moderation') 
+                        ? 'Contenido bloqueado. O no tienes activado "Amazon Rekognition" en Cloudinary, o la imagen es obscena.' 
+                        : 'Error al subir la imagen' 
+                });
+            }
         }
 
         const updatedReview = await review.save();

@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { validateRegisterInput } from '../utils/validation.js';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -12,12 +13,13 @@ export const register = async (req, res) => {
     // Log de datos recibidos (sin la contraseña)
     console.log('Intentando registro con:', { nombre, email });
 
-    // Validar que tenemos todos los campos
-    if (!nombre || !email || !password) {
-      console.log('Faltan campos requeridos');
+    // Validar que tenemos todos los campos y cumplen requisitos
+    const validation = validateRegisterInput(nombre, email, password);
+    if (!validation.isValid) {
+      console.log('Validación fallida:', validation.errors);
       return res.status(400).json({
-        message: 'Todos los campos son requeridos',
-        missing: (!nombre ? 'nombre ' : '') + (!email ? 'email ' : '') + (!password ? 'password' : '')
+        message: validation.errors[0].message,
+        errors: validation.errors
       });
     }
 
@@ -58,6 +60,10 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Por favor provea email y contraseña' });
+    }
+
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Usuario no encontrado' });
 

@@ -17,7 +17,7 @@ const app = express();
 
 // Seguridad mejorada con Helmet (ajustada para permitir APIs externas y scripts)
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginResourcePolicy: false, // Permitir recursos cruzados sin restricciones estrictas para evitar bloqueo de imágenes en algunas PCs
   crossOriginEmbedderPolicy: false, // ¡ESTO ES CLAVE para Cloudinary!
   contentSecurityPolicy: false,
 }));
