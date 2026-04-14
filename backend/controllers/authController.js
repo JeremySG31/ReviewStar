@@ -297,6 +297,12 @@ export const updateAvatar = async (req, res) => {
        moderation: 'aws_rek'
     });
 
+    // VERIFICACIÓN MANUAL DE MODERACIÓN (Cloudinary a veces devuelve éxito pero estado 'rejected')
+    if (result.moderation && result.moderation.some(m => m.status === 'rejected')) {
+        await cloudinary.uploader.destroy(result.public_id);
+        throw new Error('Moderation: Contenido inapropiado detectado');
+    }
+
     user.avatar = result.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_400,h_400,c_fill/');
     user.avatarId = result.public_id;
     await user.save();
@@ -306,13 +312,15 @@ export const updateAvatar = async (req, res) => {
     console.error('Error detallado al subir avatar:', error);
     
     let errorMessage = 'Error al subir la imagen';
-    if (error.message && error.message.includes('Moderation')) {
-        errorMessage = 'Error de moderación: Asegúrate de tener activado "Amazon Rekognition" en Cloudinary o sube una imagen válida.';
+    const isModeration = error.message && error.message.includes('Moderation');
+    
+    if (isModeration) {
+        errorMessage = 'Contenido inapropiado detectado: Esta imagen no cumple con nuestras normas de comunidad y ha sido bloqueada.';
     } else if (error.message) {
         errorMessage = `Error: ${error.message}`;
     }
 
-    res.status(500).json({ message: errorMessage });
+    res.status(isModeration ? 400 : 500).json({ message: errorMessage });
   }
 };
 

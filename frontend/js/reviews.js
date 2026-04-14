@@ -296,7 +296,11 @@ async function loadProfileData() {
           profileEmailEl.textContent = userData.email || 'email@desconocido.com';
 
           // Actualizar avatar fresco
-          if (userData.avatar) updateUIAvatar(userData.avatar);
+          if (userData.avatar) {
+              updateUIAvatar(userData.avatar);
+          } else {
+              updateUIAvatar(null);
+          }
 
           // Actualizar métricas
           if (totalReviewsEl) totalReviewsEl.textContent = userData.totalReviews || 0;

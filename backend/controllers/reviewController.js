@@ -49,13 +49,22 @@ export const createReview = async (req, res) => {
                     folder: uploadFolder,
                     moderation: 'aws_rek' // Moderación automática contra contenido NSFW/adultos
                 });
+
+                // VERIFICACIÓN MANUAL DE MODERACIÓN
+                if (result.moderation && result.moderation.some(m => m.status === 'rejected')) {
+                    await cloudinary.uploader.destroy(result.public_id);
+                    return res.status(400).json({ 
+                        message: 'Contenido inapropiado detectado: Esta imagen no cumple con nuestras normas de comunidad y ha sido bloqueada.' 
+                    });
+                }
+
                 // Optimización de velocidad: Forzar WebP y calidad automática para fluidez
                 imageUrl = result.secure_url.replace('/upload/', '/upload/f_auto,q_auto/');
             } catch (uploadError) {
                 console.error(uploadError);
                 return res.status(400).json({ 
                     message: uploadError.message && uploadError.message.includes('Moderation') 
-                        ? 'Contenido bloqueado. O no tienes activado "Amazon Rekognition" en Cloudinary, o la imagen es obscena.' 
+                        ? 'Contenido inapropiado detectado: Esta imagen no cumple con nuestras normas de comunidad y ha sido bloqueada.' 
                         : 'Error al subir la imagen' 
                 });
             }
