@@ -21,7 +21,7 @@ function initScrollAnimations(once = false){
         entry.target.classList.remove('visible');
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
   animatedElements.forEach(el => observer.observe(el));
 }
 
