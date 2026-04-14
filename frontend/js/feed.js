@@ -149,9 +149,12 @@ function createFeedCard(review) {
         '<span class="text-yellow-400">⭐</span>' +
         '<span class="font-semibold">' + rating.toFixed(1) + '/5.0</span>' +
         '</div>' +
-        '<div class="text-xs text-gray-400 text-right">' +
-        '<span class="block text-gray-300">por ' + escapeHtml(author.nombre || author.name || 'Anónimo') + '</span>' +
+        '<div class="flex items-center gap-2 text-xs text-gray-400 text-right">' +
+        '<div class="text-right">' +
+        '<span class="block text-gray-300 font-semibold">' + escapeHtml(author.nombre || author.name || 'Anónimo') + '</span>' +
         '<span class="block">' + dateStr + '</span>' +
+        '</div>' +
+        (author.avatar ? '<img src="' + escapeHtml(author.avatar) + '" class="w-8 h-8 rounded-full object-cover shadow border border-gray-600">' : '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 shadow flex items-center justify-center text-white font-bold">' + escapeHtml((author.nombre || author.name || 'A').charAt(0).toUpperCase()) + '</div>') +
         '</div>' +
         '</div>' +
         '<div class="flex items-center gap-4 pt-4 border-t border-gray-700">' +
@@ -269,9 +272,14 @@ function renderCommentList(comments, reviewId) {
         const reactions = c.reactions || { '👍': [], '❤️': [], '😂': [] };
         const dateStr = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '';
 
+        const avatarUrl = (c.user && c.user.avatar) ? c.user.avatar : null;
         let commentHtml = '<div class="flex gap-3 animate-fadeIn comment-item mb-4" data-comment-id="' + c._id + '">';
         commentHtml += '<div class="flex-shrink-0 mt-1">';
-        commentHtml += '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md select-none">💬</div>';
+        if (avatarUrl) {
+            commentHtml += '<img src="' + escapeHtml(avatarUrl) + '" class="w-8 h-8 rounded-full object-cover shadow-md border border-gray-600">';
+        } else {
+            commentHtml += '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md select-none">' + escapeHtml(commentUserName.charAt(0).toUpperCase()) + '</div>';
+        }
         commentHtml += '</div>';
         commentHtml += '<div class="w-full bg-gray-700/50 rounded-2xl rounded-tl-none p-3 border border-gray-600/50 shadow-sm relative group">';
         commentHtml += '<div class="flex justify-between items-start mb-1">';

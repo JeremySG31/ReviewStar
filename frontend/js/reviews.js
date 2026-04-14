@@ -207,6 +207,9 @@ export async function initDashboard() {
     });
   }
 
+  // Setup de eventos y variables del Avatar
+  setupAvatarListeners();
+
   // Botón nueva reseña (Navbar)
   const nuevaBtn = document.getElementById('nuevaReseñaBtn');
   if (nuevaBtn) nuevaBtn.addEventListener('click', () => openModal());
@@ -272,6 +275,7 @@ async function loadProfileData() {
       if (localUser) {
         profileNameEl.textContent = localUser.nombre || 'Usuario';
         profileEmailEl.textContent = localUser.email || 'email@desconocido.com';
+        if (localUser.avatar) updateUIAvatar(localUser.avatar);
       }
 
       // 2. Obtener datos actualizados desde el backend
@@ -291,6 +295,9 @@ async function loadProfileData() {
           profileNameEl.textContent = userData.nombre || 'Usuario';
           profileEmailEl.textContent = userData.email || 'email@desconocido.com';
 
+          // Actualizar avatar fresco
+          if (userData.avatar) updateUIAvatar(userData.avatar);
+
           // Actualizar métricas
           if (totalReviewsEl) totalReviewsEl.textContent = userData.totalReviews || 0;
           if (totalLikesEl) totalLikesEl.textContent = userData.totalLikes || 0;
@@ -304,6 +311,103 @@ async function loadProfileData() {
       profileNameEl.textContent = 'Error al cargar';
       profileEmailEl.textContent = 'Intente recargar la página';
     }
+  }
+}
+
+// Actualiza visualmente el avatar en el DOM
+function updateUIAvatar(avatarUrl) {
+    const avatarImg = document.getElementById('profileAvatarImg');
+    const avatarText = document.getElementById('profileAvatarText');
+    const deleteBtn = document.getElementById('deleteAvatarBtn');
+
+    if (avatarUrl) {
+      avatarImg.src = avatarUrl;
+      avatarImg.classList.remove('hidden');
+      avatarText.classList.add('hidden');
+      deleteBtn.classList.remove('hidden');
+    } else {
+      avatarImg.src = '';
+      avatarImg.classList.add('hidden');
+      avatarText.classList.remove('hidden');
+      deleteBtn.classList.add('hidden');
+    }
+}
+
+// Configurar los listeners para el input del avatar
+function setupAvatarListeners() {
+  const avatarInput = document.getElementById('avatarInput');
+  const deleteBtn = document.getElementById('deleteAvatarBtn');
+  const loadingOverlay = document.getElementById('avatarLoading');
+  
+  if (avatarInput) {
+    avatarInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      loadingOverlay.classList.remove('hidden');
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      try {
+        const token = localStorage.getItem('token');
+        const { API_BASE } = await import('./utils/api.js');
+        const res = await fetch(`${API_BASE}/auth/avatar`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Error al subir avatar');
+
+        updateUIAvatar(data.avatar);
+        
+        // Update local storage
+        const user = JSON.parse(localStorage.getItem('usuario'));
+        user.avatar = data.avatar;
+        localStorage.setItem('usuario', JSON.stringify(user));
+
+        showToast('Avatar actualizado con éxito', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast(err.message, 'error');
+      } finally {
+        loadingOverlay.classList.add('hidden');
+        avatarInput.value = ''; // clean input
+      }
+    });
+  }
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm('¿Estás seguro de que quieres eliminar tu avatar?')) return;
+      
+      loadingOverlay.classList.remove('hidden');
+      try {
+        const token = localStorage.getItem('token');
+        const { API_BASE } = await import('./utils/api.js');
+        const res = await fetch(`${API_BASE}/auth/avatar`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error('Error al eliminar avatar');
+
+        updateUIAvatar(null);
+
+        // Update local storage
+        const user = JSON.parse(localStorage.getItem('usuario'));
+        user.avatar = '';
+        localStorage.setItem('usuario', JSON.stringify(user));
+
+        showToast('Avatar eliminado', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast(err.message, 'error');
+      } finally {
+         loadingOverlay.classList.add('hidden');
+      }
+    });
   }
 }
 
@@ -786,17 +890,20 @@ function renderComments(comments, reviewId) {
       const isOwner = currentUserId && c.user?._id === currentUserId;
       const reactions = c.reactions || { '👍': [], '❤️': [], '😂': [] };
 
+      const userName = escapeHtml(c.user?.nombre || 'Usuario');
+      const avatarHtml = c.user?.avatar 
+          ? `<img src="${escapeHtml(c.user.avatar)}" class="w-8 h-8 rounded-full object-cover shadow border border-gray-600">`
+          : `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md select-none">${userName.charAt(0).toUpperCase()}</div>`;
+
       return `
         <div class="flex gap-3 animate-fadeIn comment-item" data-comment-id="${c._id}">
           <div class="flex-shrink-0 mt-1">
-             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
-               💬
-             </div>
+             ${avatarHtml}
           </div>
           <div class="flex-grow bg-gray-800/40 rounded-2xl rounded-tl-none p-3 border border-gray-700/50 shadow-sm">
             <div class="flex justify-between items-start mb-1">
               <div class="flex-grow">
-                <span class="text-xs font-bold text-blue-300">${escapeHtml(c.user?.nombre || 'Usuario')}</span>
+                <span class="text-xs font-bold text-blue-300">${userName}</span>
                 ${c.edited ? '<span class="text-xs text-gray-500 ml-2">(editado)</span>' : ''}
                 <span class="text-xs text-gray-500 ml-2">${c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ''}</span>
               </div>

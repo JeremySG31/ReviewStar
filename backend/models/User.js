@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   totalReviews: { type: Number, default: 0 },
   totalLikes: { type: Number, default: 0 },
+  avatar: { type: String, default: '' },
+  avatarId: { type: String, default: '' },
   resetPasswordToken: String,
   resetPasswordExpire: Date
 }, { timestamps: true });

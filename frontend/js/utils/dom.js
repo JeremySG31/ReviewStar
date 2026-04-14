@@ -57,18 +57,37 @@ export function createReviewCard(review, options = {}) {
       <button class="text-sm btn-comment px-2 py-1 bg-white/10 rounded hover:bg-white/20 transition" data-id="${review._id}">💬 ${comments.length}</button>
     </div>` : '';
 
+    const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const dateStr = new Date(review.createdAt).toLocaleDateString('es-ES', dateOptions);
+
+    const userName = escapeHtml(author?.nombre || author?.name || 'Anónimo');
+    const authorHtml = `
+      <div class="flex items-center gap-2">
+        ${author?.avatar 
+          ? `<img src="${escapeHtml(author.avatar)}" class="w-7 h-7 rounded-full object-cover shadow border border-gray-600">`
+          : `<div class="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 shadow flex items-center justify-center text-white font-bold text-xs">${userName.charAt(0).toUpperCase()}</div>`
+        }
+        <span class="text-sm font-semibold text-gray-300 truncate max-w-[120px]">${userName}</span>
+      </div>
+    `;
+
   return `
     <article class="review-card bg-gray-800 rounded-xl p-4 relative shadow hover:shadow-lg transition" data-id="${review._id}">
       ${controlsHtml}
-      ${imgHtml}
+      <div class="relative h-48 group">
+        <div class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 transition-transform group-hover:scale-105">
+          ${escapeHtml(category)}
+        </div>
+        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-yellow-400 text-sm font-bold px-2 py-1 rounded-md shadow-lg z-10 flex items-center gap-1 border border-white/10">
+          ★ ${rating.toFixed(1)}
+        </div>
+        ${imgHtml}
+      </div>
       <h3 class="font-semibold text-lg mb-1">${escapeHtml(title)}</h3>
       <p class="text-sm text-gray-300 mb-3 max-h-24 overflow-y-auto custom-scrollbar pr-2">${escapeHtml(short)}</p>
       <div class="flex items-center justify-between">
-        <div class="text-xs text-gray-400 mt-2">por ${escapeHtml(author?.nombre || author?.name || 'Anónimo')}</div>
-        <div class="flex items-center gap-2">
-          ${renderStars(rating)}
-          <span class="text-yellow-400 font-semibold ml-2">${rating.toFixed(1)}/5.0</span>
-        </div>
+        ${authorHtml}
+        <span class="text-xs text-gray-500 bg-gray-900/50 px-2 py-1 rounded-md">${dateStr}</span>
       </div>
       ${interactionsHtml}
     </article>

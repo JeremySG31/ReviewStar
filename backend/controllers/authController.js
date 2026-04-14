@@ -1,6 +1,13 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import { validateRegisterInput } from '../utils/validation.js';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -45,7 +52,8 @@ export const register = async (req, res) => {
         nombre: user.nombre,
         email: user.email,
         totalReviews: user.totalReviews,
-        totalLikes: user.totalLikes
+        totalLikes: user.totalLikes,
+        avatar: user.avatar
       }
     });
   } catch (error) {
@@ -214,7 +222,8 @@ export const googleLogin = async (req, res) => {
         nombre: user.nombre,
         email: user.email,
         totalReviews: user.totalReviews,
-        totalLikes: user.totalLikes
+        totalLikes: user.totalLikes,
+        avatar: user.avatar
       }
     });
 
@@ -252,10 +261,76 @@ export const getUserProfile = async (req, res) => {
       nombre: user.nombre,
       email: user.email,
       totalReviews: user.totalReviews,
-      totalLikes: user.totalLikes
+      totalLikes: user.totalLikes,
+      avatar: user.avatar
     });
   } catch (error) {
     console.error('Error obteniendo perfil:', error);
     res.status(500).json({ message: 'Error obteniendo perfil del usuario', error: error.message });
+  }
+};
+
+// @desc    Actualizar Avatar
+// @route   PUT /api/auth/avatar
+// @access  Private
+export const updateAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    if (!req.files || !req.files.avatar) {
+      return res.status(400).json({ message: 'Debes proporcionar una imagen de avatar' });
+    }
+
+    const file = req.files.avatar;
+
+    if (user.avatarId) {
+       try {
+           await cloudinary.uploader.destroy(user.avatarId);
+       } catch (err) {
+           console.warn('Error eliminando avatar anterior:', err);
+       }
+    }
+
+    const result = await cloudinary.uploader.upload(file.tempFilePath, {
+       folder: 'Home/avatars',
+       moderation: 'aws_rek'
+    });
+
+    user.avatar = result.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_400,h_400,c_fill/');
+    user.avatarId = result.public_id;
+    await user.save();
+
+    res.json({ avatar: user.avatar });
+  } catch (error) {
+    console.error('Error al subir avatar:', error);
+    res.status(500).json({ message: 'Error al subir la imagen' });
+  }
+};
+
+// @desc    Eliminar Avatar
+// @route   DELETE /api/auth/avatar
+// @access  Private
+export const deleteAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    if (user.avatarId) {
+       try {
+           await cloudinary.uploader.destroy(user.avatarId);
+       } catch (err) {
+           console.warn('Error eliminando avatar de Cloudinary:', err);
+       }
+    }
+
+    user.avatar = '';
+    user.avatarId = '';
+    await user.save();
+
+    res.json({ message: 'Avatar eliminado exitosamente' });
+  } catch (error) {
+    console.error('Error eliminando avatar:', error);
+    res.status(500).json({ message: 'Error eliminando avatar' });
   }
 };

@@ -100,7 +100,7 @@ export const createReview = async (req, res) => {
 export const getReviews = async (req, res) => {
     try {
         const reviews = await Review.find({})
-            .populate('user', 'nombre email')
+            .populate('user', 'nombre email avatar')
             .sort({ createdAt: -1 });
         res.json(reviews);
     } catch (error) {
@@ -113,7 +113,7 @@ export const getReviews = async (req, res) => {
 // @access  Private
 export const getMyReviews = async (req, res) => {
     try {
-        const reviews = await Review.find({ user: req.user._id }).populate('user', 'nombre email').sort({ createdAt: -1 });
+        const reviews = await Review.find({ user: req.user._id }).populate('user', 'nombre email avatar').sort({ createdAt: -1 });
         res.json(reviews);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener mis reseñas' });
@@ -251,7 +251,7 @@ export const likeReview = async (req, res) => {
 export const getCommentsForReview = async (req, res) => {
     try {
         // IMPORTANTE: Populate user para que frontend detecte isOwner
-        const review = await Review.findById(req.params.id).populate('comments.user', 'nombre email');
+        const review = await Review.findById(req.params.id).populate('comments.user', 'nombre email avatar');
         if (!review) return res.status(404).json({ message: 'Reseña no encontrada' });
 
         res.json(review.comments);
