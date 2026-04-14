@@ -262,8 +262,8 @@ export async function initDashboard() {
 async function loadProfileData() {
   const profileNameEl = document.getElementById('profileName');
   const profileEmailEl = document.getElementById('profileEmail');
-  const totalReviewsEl = document.getElementById('totalReviews');
-  const totalLikesEl = document.getElementById('totalLikes');
+  const totalReviewsEl = document.getElementById('totalReviewsCount');
+  const totalLikesEl = document.getElementById('totalLikesCount');
 
   if (profileNameEl && profileEmailEl) {
     try {
@@ -316,8 +316,8 @@ async function refreshMyReviews(container) {
     filterAndRenderReviews(container, allReviewsCache, currentFilter, true);
 
     // Actualizar estadísticas
-    const totalReviewsEl = document.getElementById('totalReviews');
-    const totalLikesEl = document.getElementById('totalLikes');
+    const totalReviewsEl = document.getElementById('totalReviewsCount');
+    const totalLikesEl = document.getElementById('totalLikesCount');
     if (totalReviewsEl && totalLikesEl) {
       // Intentar usar los datos del usuario persistido si están disponibles
       const user = JSON.parse(localStorage.getItem('usuario') || 'null');

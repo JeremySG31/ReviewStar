@@ -549,8 +549,8 @@ function applyFilters() {
     if (sort === 'likes') {
         // Populares: Likes > Comentarios > Calificación > Fecha
         filtered.sort((a, b) => {
-            const likesA = getNum(a.likes);
-            const likesB = getNum(b.likes);
+            const likesA = Math.max(getNum(a.likes), Array.isArray(a.likedBy) ? a.likedBy.length : 0);
+            const likesB = Math.max(getNum(b.likes), Array.isArray(b.likedBy) ? b.likedBy.length : 0);
             if (likesB !== likesA) return likesB - likesA; 
 
             const commentsA = Array.isArray(a.comments) ? a.comments.length : 0;
