@@ -53,6 +53,52 @@
     #fabNuevaReseña {
       animation: pulse-subtle 3s ease-in-out infinite;
     }
+
+    /* FIXES DE ESTRUCTURA PARA EL PERFIL (Garantiza que funcione sin recompilar Tailwind) */
+    .profile-avatar-container {
+      width: 128px !important;
+      height: 128px !important;
+      border-radius: 50% !important;
+      border: 4px solid #111827 !important;
+      background-color: #1f2937 !important;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 3rem !important;
+      position: relative !important;
+      overflow: hidden !important;
+      flex-shrink: 0 !important;
+      margin-top: 1rem !important;
+      z-index: 10 !important;
+    }
+
+    .profile-avatar-img {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+
+    .profile-banner {
+      height: 160px !important;
+      background: linear-gradient(to right, #1d4ed8, #4f46e5, #7e22ce) !important;
+      position: relative !important;
+      width: 100% !important;
+    }
+
+    .profile-stats-card {
+      background-color: rgba(31, 41, 55, 0.8) !important;
+      border: 1px solid rgba(55, 65, 81, 0.5) !important;
+      backdrop-filter: blur(12px) !important;
+      padding: 1rem 2rem !important;
+      border-radius: 1rem !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+      text-align: center !important;
+      min-width: 160px !important;
+    }
   </style>
 </head>
 
@@ -73,8 +119,8 @@
   <main class="container mx-auto px-4 py-8">
     <!-- Sección de Perfil y Cabecera -->
     <header class="bg-black/30 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-8 border border-white/5">
-      <!-- Imagen de portada (placeholder) -->
-      <div class="h-40 bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 relative">
+      <!-- Imagen de portada -->
+      <div class="profile-banner">
         <div class="absolute inset-0 bg-black/20"></div>
       </div>
 
@@ -82,17 +128,17 @@
         <div class="flex flex-col items-center -mt-24">
           <!-- Avatar del usuario -->
           <div class="relative group mt-4">
-            <div id="avatarContainer" class="w-32 h-32 rounded-full border-4 border-gray-900 bg-gray-800 shadow-xl flex items-center justify-center text-5xl z-10 overflow-hidden relative">
+            <div id="avatarContainer" class="profile-avatar-container">
               <span id="profileAvatarText" class="text-gray-400">👤</span>
-              <img id="profileAvatarImg" src="" alt="Avatar" class="hidden absolute inset-0 w-full h-full object-cover">
+              <img id="profileAvatarImg" src="" alt="Avatar" class="hidden profile-avatar-img">
               <!-- Overlay de carga -->
               <div id="avatarLoading" class="absolute inset-0 bg-black/70 hidden flex flex-col items-center justify-center z-30">
                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400"></div>
               </div>
             </div>
             
-            <!-- Overlay flotante al hacer hover (Solo visible al tener mouse encima) -->
-            <div class="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-2 shadow-inner">
+            <!-- Overlay flotante al hacer hover -->
+            <div class="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center z-20 gap-2 shadow-inner" style="border-radius: 50%;">
                <label class="cursor-pointer text-xs font-semibold text-white hover:text-cyan-400 transition bg-black/50 px-3 py-1 rounded-full">
                   📷 Editar
                   <input type="file" id="avatarInput" accept="image/*" class="hidden">
@@ -103,18 +149,18 @@
           
           <!-- Info de Usuario -->
           <div class="mt-4 text-center">
-            <h1 id="profileName" class="text-4xl md:text-5xl font-extrabold animate-shine">Cargando...</h1>
-            <p id="profileEmail" class="text-cyan-200/70 mt-1 font-medium bg-black/20 inline-block px-4 py-1 rounded-full text-sm">cargando@email.com</p>
+            <h1 id="profileName" class="text-4xl md:text-5xl font-extrabold" style="background: linear-gradient(to right, #60a5fa, #c084fc); -webkit-background-clip: text; color: transparent;">Cargando...</h1>
+            <p id="profileEmail" class="text-cyan-200 mt-1 font-medium bg-black/30 inline-block px-4 py-1 rounded-full text-sm">cargando@email.com</p>
             
             <!-- Estadísticas -->
-            <div class="flex justify-center gap-4 mt-8">
-              <div class="text-center bg-gray-800/80 border border-gray-700/50 backdrop-blur px-8 py-4 rounded-2xl shadow-lg hover:shadow-cyan-500/10 transition">
+            <div class="flex flex-wrap justify-center gap-4 mt-8">
+              <div class="profile-stats-card hover:shadow-cyan-500/20 transition">
                 <p class="text-3xl font-extrabold text-white" id="totalReviewsCount">0</p>
-                <p class="text-sm text-cyan-400 uppercase tracking-widest font-semibold mt-1">Reseñas</p>
+                <p class="text-xs text-cyan-400 uppercase tracking-widest font-semibold mt-1">Reseñas</p>
               </div>
-              <div class="text-center bg-gray-800/80 border border-gray-700/50 backdrop-blur px-8 py-4 rounded-2xl shadow-lg hover:shadow-pink-500/10 transition">
+              <div class="profile-stats-card hover:shadow-pink-500/20 transition">
                 <p class="text-3xl font-extrabold text-white" id="totalLikesCount">0</p>
-                <p class="text-sm text-pink-400 uppercase tracking-widest font-semibold mt-1">Likes Recibidos</p>
+                <p class="text-xs text-pink-400 uppercase tracking-widest font-semibold mt-1">Likes Recibidos</p>
               </div>
             </div>
             
